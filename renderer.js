@@ -1,4 +1,6 @@
 import { getCharacters, saveCharacters } from './utils.js';
+import pkg from 'electron';
+const { ipcRenderer } = pkg;
 
 document.addEventListener("DOMContentLoaded", async () => {
     const characterList = document.getElementById("character-list");
@@ -81,4 +83,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     renderCharacters();
+});
+
+document.getElementById('minimize').addEventListener('click', () => {
+    ipcRenderer.send('window:minimize');
+});
+
+document.getElementById('maximize').addEventListener('click', () => {
+    ipcRenderer.send('window:toggleMaximize');
+});
+
+document.getElementById('close').addEventListener('click', () => {
+    ipcRenderer.send('window:close');
 });

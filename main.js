@@ -1,13 +1,6 @@
 import pkg from 'electron';
 const { app, BrowserWindow, Tray, Menu, ipcMain } = pkg;
 
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-// Заменяем __dirname для ES-модулей
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 import path from 'path';
 import fs from 'fs';
 import {parseLostArkProfile} from "./parser.js";
@@ -15,7 +8,7 @@ import {parseLostArkProfile} from "./parser.js";
 let mainWindow;
 let tray;
 
-function createWindow() {
+async function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
@@ -25,20 +18,28 @@ function createWindow() {
         }
     });
 
-    mainWindow.loadFile('index.html');
+    await mainWindow.loadFile('index.html');
 
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
 }
 
-await app.on('ready', () => {
-    createWindow();
+await app.on('ready', async () => {
+    await createWindow();
 
-    tray = new Tray(path.join(__dirname, 'icon.png'));
+    tray = new Tray(path.join(app.getAppPath(), 'assets', 'icon.png'))
     const contextMenu = Menu.buildFromTemplate([
-        { label: 'Открыть', click: () => { mainWindow.show(); } },
-        { label: 'Выход', click: () => { app.quit(); } }
+        {
+            label: 'Открыть', click: () => {
+                mainWindow.show();
+            }
+        },
+        {
+            label: 'Выход', click: () => {
+                app.quit();
+            }
+        }
     ]);
     tray.setContextMenu(contextMenu);
     tray.setToolTip('Lost Ark Character Manager');

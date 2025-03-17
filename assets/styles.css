@@ -3,6 +3,7 @@ body {
     padding: 20px;
     background: #222;
     color: white;
+    -webkit-app-region: drag; /* Позволяет перемещать окно */
 }
 
 #character-list {
@@ -50,4 +51,29 @@ body {
 
 .btn:hover {
     background: #666;
+}
+
+#title-bar {
+    width: 100%;
+    height: 30px;
+    background-color: #333;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+#window-controls {
+    display: flex;
+    gap: 10px;
+}
+
+#window-controls button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
 }
