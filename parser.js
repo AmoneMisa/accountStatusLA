@@ -18,7 +18,7 @@ export async function parseLostArkProfile(nickname) {
             let className = getClassName(_page);
             if (!className) continue;
 
-            characters.push({ name, gearScore: parseFloat(gearScore), className });
+            characters.push({ name, gearScore:gearScore, className });
             await new Promise(res => setTimeout(res, 1000));
         }
 
@@ -49,7 +49,7 @@ export async function getCharacterPage(nickname) {
 
 export function getGearScore(page) {
     let elem = page.querySelector('.level-info2__item');
-    return elem ? elem.innerText.match(/\d+/)[0] : null;
+    return elem ? elem.innerText.match(/[\d,.]+/)[0].replace(".", "") : null;
 }
 
 export function getClassName(page) {

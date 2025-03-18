@@ -6,29 +6,9 @@ body {
     -webkit-app-region: drag; /* Позволяет перемещать окно */
 }
 
-#character-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.character-card {
-    background: #333;
-    padding: 10px;
-    border-radius: 8px;
-    width: 200px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 2px solid transparent;
-}
-
-.character-card h3 {
-    margin: 0;
-}
-
-.character-card p {
-    margin: 5px 0;
+.error {
+    color: #cc1b1b;
+    margin: 10px 0;
 }
 
 .char-actions {
@@ -62,6 +42,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 10px;
+    border-radius: 10px;
 }
 
 #window-controls {
@@ -82,5 +63,47 @@ body {
     cursor: pointer;
     height: 24px;
     width: 28px;
+    padding-bottom: 1px;
     -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
+}
+
+.loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #FFD700;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+    display: none; /* скрыт по умолчанию */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#character-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
+}
+
+.character {
+    border-radius: 10px;
+    background-color: #333333;
+    border: 1px solid #444444;
+    color: white;
+    transition: .2s ease;
+    cursor: pointer;
+    padding: 16px;
+}
+
+.character:hover {
+    background-color: #444444;
+}
+
+.inactive {
+    filter: grayscale(1);
 }

@@ -1,10 +1,10 @@
 import {app, BrowserWindow, Tray, Menu, ipcMain, dialog} from 'electron';
 import path from 'path';
-// import fs from 'fs';
-// import {parseLostArkProfile} from "./parser.js";
+import {parseLostArkProfile} from "./parser.js";
 import {fileURLToPath} from 'url';
 import {dirname, join} from 'path';
 import {loadSettings, saveSettings} from "./storage.js";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -119,14 +119,17 @@ ipcMain.on('save-nickname', (event, nickname) => {
     saveSettings({ nickname });
     event.sender.getOwnerBrowserWindow().close();
 });
-// ipcMain.on('fetch-characters', async (event, nickname) => {
-//     const characters = await parseLostArkProfile(nickname);
-//     if (!characters) {
-//         event.reply('characters-fetch-error', 'Ошибка получения персонажей');
-//         return;
-//     }
-//
-//     const filePath = path.join(app.getPath('userData'), 'characters.json');
-//     fs.writeFileSync(filePath, JSON.stringify(characters, null, 2), 'utf-8');
-//     event.reply('characters-fetched', characters);
-// });
+
+ipcMain.handle('fetch-characters', async (_, nickname) => {
+    try {
+        const characters = await parseLostArkProfile(nickname);
+        if (!characters) throw new Error('Ошибка получения персонажей');
+
+        const filePath = path.join(app.getPath('userData'), 'characters.json');
+        fs.writeFileSync(filePath, JSON.stringify(characters, null, 2), 'utf-8');
+
+        return characters;
+    } catch (error) {
+        return { error: error.message };
+    }
+});
