@@ -24,6 +24,15 @@ select {
     border-radius: 5px;
     border: 1px solid #444;
     color: white;
+    padding: 5px;
+}
+
+input {
+    background-color: transparent;
+    border-radius: 5px;
+    border: 1px solid #444;
+    color: white;
+    padding: 5px;
 }
 
 .button {
@@ -91,7 +100,14 @@ select {
 
 .nickname-block {
     display: flex;
-    width: 300px;
+    min-width: 300px;
+    max-width: 80%;
+    align-items: center;
+}
+
+.nickname-block__nickname {
+    display: flex;
+    gap: 5px;
     align-items: center;
 }
 

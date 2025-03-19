@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         `).join('');
 
         nicknameElement.innerHTML = `
-            <input type="text" id="nickname-input" value="${currentNickname}" />
+        <input type="text" id="nickname-input" value="${currentNickname}" />
             или выбрать из списка:
             <select id="nickname-select">
                 <option value="">- Выбрать -</option>
