@@ -8,3 +8,13 @@ contextBridge.exposeInMainWorld('electron', {
         on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args))
     }
 });
+
+ipcRenderer.on('clear-character-settings', () => {
+    localStorage.removeItem('characterSettings');
+    location.reload();
+});
+
+ipcRenderer.on('clear-characters-list', () => {
+    localStorage.removeItem('charactersList');
+    location.reload();
+});

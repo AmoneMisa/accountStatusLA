@@ -1,4 +1,4 @@
-import characters from "./characters.js";
+import {loadCharacters, renderCharacters, setEditable, sortCharacters} from "./characters.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const nicknameElement = document.getElementById('nickname');
@@ -8,8 +8,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             const nickname = await window.electron.ipcRenderer.getNickname();
             nicknameElement.innerText = `Ваш ник: ${nickname}`;
-            await characters(nickname);
+            const savedCharacters = localStorage.getItem('charactersList');
 
+            if (savedCharacters) {
+                renderCharacters(false); // Просмотр без крестиков
+            } else {
+                await loadCharacters(nickname);
+                renderCharacters(false);
+            }
         } catch (error) {
             console.error("Ошибка загрузки ника:", error);
             nicknameElement.innerText = "Ошибка загрузки ника";
@@ -26,5 +32,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('close').addEventListener('click', () => {
         window.electron.ipcRenderer.send('window:close');
+    });
+
+    document.getElementById('save-button').addEventListener('click', () => {
+        sortCharacters();
+        setEditable(false);
+        renderCharacters(false); // Переотрисовка без крестиков
+    });
+
+    document.getElementById('refresh-characters').addEventListener('click', async () => {
+        const nickname = await window.electron.ipcRenderer.getNickname();
+        if (nickname) {
+            await loadCharacters(nickname);
+            document.getElementById('save-button').style.display = 'block'; // Показываем кнопку сохранить при обновлении
+            setEditable(true);
+        }
+    });
+
+    document.getElementById('edit-characters').addEventListener('click', () => {
+        renderCharacters(true); // Перерисовываем со всеми персонажами
+        setEditable(true);
     });
 });

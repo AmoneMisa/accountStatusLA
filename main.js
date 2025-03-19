@@ -60,6 +60,15 @@ async function createWindow() {
 
     await mainWindow.loadFile('index.html');
 
+    const contextMenu = Menu.buildFromTemplate([
+        { label: 'Сбросить настройки персонажей', click: () => mainWindow.webContents.send('clear-character-settings') },
+        { label: 'Сбросить список персонажей', click: () => mainWindow.webContents.send('clear-characters-list') }
+    ]);
+
+    mainWindow.webContents.on('context-menu', () => {
+        contextMenu.popup();
+    });
+
     mainWindow.on('closed', () => {
         mainWindow = null;
     });

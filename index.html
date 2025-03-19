@@ -7,20 +7,30 @@
     <link rel="stylesheet" href="./assets/styles.css">
 </head>
 <body>
-<div id="title-bar">
-    <span id="title">Lost Ark Character Manager</span>
+<div id="title-bar" class="title-bar">
+    <div id="title" class="title">Lost Ark Character Manager</div>
     <div id="window-controls">
         <button id="minimize">—</button>
         <button id="maximize">⬜</button>
         <button id="close">✖</button>
     </div>
 </div>
-<p id="nickname">Загрузка ника...</p>
-<h1>Список персонажей</h1>
-<div id="character-list"></div>
-<button id="save-button">Сохранить</button>
-<div id="error"></div>
-<div id="loader" class="loader"></div>
+<div class="wrapper">
+    <div class="header">
+        <div id="nickname">Загрузка ника...</div>
+        <div id="controls" class="controls">
+            <button type="button" id="refresh-characters">🔄</button>
+            <button type="button" id="edit-characters">✏️</button>
+        </div>
+    </div>
+    <div class="main">
+        <h1>Список персонажей</h1>
+        <div id="character-list"></div>
+    </div>
+    <button id="save-button" class="btn save-button">Сохранить</button>
+    <div id="error"></div>
+    <div id="loader" class="loader"></div>
+</div>
 <script type="module" src="./renderer.js"></script>
 </body>
 </html>
