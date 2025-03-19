@@ -15,7 +15,11 @@ body {
     margin: 10px 0;
 }
 
-.btn {
+input {
+    -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
+}
+
+.button {
     border: none;
     background: gold;
     padding: 10px;
@@ -27,8 +31,42 @@ body {
     height: 40px;
 }
 
-.btn:hover {
+.button:hover {
     background: #666;
+}
+
+.button_icon {
+    background-color: transparent;
+    -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
+    transition: .3s ease-in-out;
+    cursor: pointer;
+    border: none;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+    width: 28px;
+}
+
+.button_icon:hover {
+    background-color: transparent;
+    transform: scale(120%);
+}
+
+.button_control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid #444;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    height: 28px;
+    width: 28px;
+    padding-bottom: 12px;
+    border-radius: 5px;
 }
 
 .title-bar {
@@ -46,28 +84,18 @@ body {
     margin-left: 5px;
 }
 
+.nickname-block {
+    display: flex;
+    width: 300px;
+    align-items: center;
+}
+
 #window-controls {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     width: 90px;
     padding: 0 5px;
-}
-
-#window-controls button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: 1px solid #444;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    height: 28px;
-    width: 28px;
-    padding-bottom: 3px;
-    border-radius: 5px;
-    -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
 }
 
 .loader {
@@ -90,25 +118,40 @@ body {
     }
 }
 
-#character-list {
+.character-list {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    flex-direction: column;
+    width: 100%;
     -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
 }
 
 .character {
-    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    border-radius: 5px;
     background-color: #333333;
     border: 1px solid #444444;
     color: white;
     transition: .2s ease;
     cursor: pointer;
-    padding: 16px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: center;
 }
 
 .character:hover {
     background-color: #444444;
+}
+
+.character .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
 .inactive {
@@ -127,26 +170,6 @@ body {
 .controls {
     display: flex;
     justify-content: space-between;
-}
-
-#refresh-characters,
-#edit-characters {
-    -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
-    transition: .3s ease-in-out;
-    cursor: pointer;
-    background-color: transparent;
-    border: none;
-    padding: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 28px;
-    width: 28px;
-}
-
-#refresh-characters:hover,
-#edit-characters:hover {
-    transform: scale(120%);
 }
 
 .header {

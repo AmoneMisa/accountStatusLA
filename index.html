@@ -10,24 +10,28 @@
 <div id="title-bar" class="title-bar">
     <div id="title" class="title">Lost Ark Character Manager</div>
     <div id="window-controls">
-        <button id="minimize">—</button>
-        <button id="maximize">⬜</button>
-        <button id="close">✖</button>
+        <button id="minimize" class="button button_control">—</button>
+        <button id="maximize" class="button button_control">⬜</button>
+        <button id="close" class="button button_control">✖</button>
     </div>
 </div>
 <div class="wrapper">
     <div class="header">
-        <div id="nickname">Загрузка ника...</div>
+        <div class="nickname-block">
+            <div id="nickname" class="nickname-block__nickname">Загрузка ника...</div>
+            <button type="button" id="edit-nickname" class="button button_icon nickname-block__button">✏️</button>
+            <button id="save-nickname" class="button button_icon" style="display:none">💾 Сохранить</button>
+        </div>
         <div id="controls" class="controls">
-            <button type="button" id="refresh-characters">🔄</button>
-            <button type="button" id="edit-characters">✏️</button>
+            <button type="button" id="refresh-characters" class="button button_icon">🔄</button>
+            <button type="button" id="edit-characters" class="button button_icon">✏️</button>
         </div>
     </div>
     <div class="main">
-        <h1>Список персонажей</h1>
-        <div id="character-list"></div>
+        <h1 class="title">Список персонажей</h1>
+        <div id="character-list" class="character-list"></div>
     </div>
-    <button id="save-button" class="btn save-button">Сохранить</button>
+    <button id="save-button" class="button save-button">Сохранить</button>
     <div id="error"></div>
     <div id="loader" class="loader"></div>
 </div>

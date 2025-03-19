@@ -123,10 +123,8 @@ ipcMain.handle('get-nickname', () => {
     return settings.nickname || 'Неизвестный';
 });
 
-ipcMain.on('save-nickname', (event, nickname) => {
-    console.log("Получен ник:", nickname); // Проверка в консоли
+ipcMain.handle('set-nickname', (event, nickname) => {
     saveSettings({ nickname });
-    event.sender.getOwnerBrowserWindow().close();
 });
 
 ipcMain.handle('fetch-characters', async (_, nickname) => {
