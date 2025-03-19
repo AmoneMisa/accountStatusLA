@@ -164,46 +164,51 @@ export function renderCharacters(editMode = false) {
     container.innerHTML = '';
     const settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
     const charactersList = JSON.parse(localStorage.getItem('charactersList') || '[]');
-
-    if (!editMode) {
-        const headers = document.createElement('div');
-        headers.className = 'character view-mode';
-        headers.innerHTML = `
-            <span>Персонаж</span>
-            <span>Класс</span>
-            <span>GS</span>
-            <span>Статусы</span>
-            <span></span>
-        `;
-        container.appendChild(headers);
-    }
+    const selectedRaids = JSON.parse(localStorage.getItem('selectedRaids') || '[]');
 
     charactersList.forEach(char => {
         const charSettings = settings[char.name] || {};
-        // В режиме просмотра не показываем персонажей с ❌
+
         if (!editMode && charSettings.delete) {
             return;
         }
 
         const icons = `
-            <span data-type="legate" class="${charSettings.legate ? '' : 'inactive'}">👑</span>
-            <span data-type="goldReceiver" class="${charSettings.goldReceiver ? '' : 'inactive'}">💰</span>
-            <span data-type="favorite" class="${charSettings.favorite ? '' : 'inactive'}">⭐</span>
-            ${editMode ? `<span data-type="delete" class="${charSettings.delete ? '' : 'inactive'}">❌</span>` : ''}
+        
+            <div data-type="legate" class="${charSettings.legate ? '' : 'inactive'}">👑</div>
+            <div data-type="goldReceiver" class="${charSettings.goldReceiver ? '' : 'inactive'}">💰</div>
+            <div data-type="favorite" class="${charSettings.favorite ? '' : 'inactive'}">⭐</div>
+            ${editMode ? `<div data-type="delete" class="${charSettings.delete ? '' : 'inactive'}">❌</div>` : ''}   
         `;
 
         const charDiv = document.createElement('div');
-        charDiv.className = `character ${editMode ? '' : 'view-mode'}`;
+        const isSupport = ['Художница', 'Менестрель', 'Паладин'].includes(char.className);
+
+        charDiv.className = `character ${editMode ? '' : 'view-mode'} ${isSupport ? 'character_support' : 'character_dd'}`;
         charDiv.dataset.name = char.name;
         charDiv.dataset.gs = char.gearScore;
 
+        let raidCells = (charSettings.raids || []).map(raid => `
+            <div data-raid="${raid}" class="raid">
+                <div class="raid__header">
+                    <div class="raid__name">${raid}</div>
+                    <button class="remove-raid button button_icon" data-name="${char.name}" data-raid="${raid}">🗑</button>
+                </div>
+                <button class="raid-status button button_icon">${charSettings.raidStatus?.[raid] ? '✔' : '❌'}</button>
+                
+            </div>
+        `).join('');
+
         if (!editMode) {
             charDiv.innerHTML = `
-                <span>${char.name}</span>
-                <span>${char.className}</span>
-                <span>${char.gearScore}</span>
-                <span>${icons}</span>
-                <div class="actions"></div>
+        <div class="character__cell character__icons">${icons}</div>
+        <div class="character__cell character__info">
+                <div class="character__name">${char.name}</div>
+                <div class="character__gearscore">${char.gearScore}</div>
+                <div class="character__class">${char.className}</div>
+        </div>
+        <div class="character__cell character__raids">${raidCells}</div>
+        <div class="character__cell character__actions"><button type="button" class="button button_icon add-raid" data-name="${char.name}">➕</button></div>
             `;
         } else {
             charDiv.innerHTML = `
@@ -219,6 +224,18 @@ export function renderCharacters(editMode = false) {
             });
             document.getElementById('save-button').style.display = 'block';
         }
+
+        charDiv.addEventListener('click', (e) => {
+            if (e.target.classList.contains('raid-status')) {
+                toggleRaidStatus(char.name, e.target.dataset.raid, e.target);
+            }
+        });
+
+        charDiv.querySelectorAll('.remove-raid').forEach(button => {
+            button.addEventListener('click', e => removeRaidFromCharacter(e.target.dataset.name, e.target.dataset.raid));
+        });
+
+        charDiv.querySelector('.add-raid')?.addEventListener('click', () => showRaidSelector(char.name));
 
         container.appendChild(charDiv);
     });
@@ -249,4 +266,63 @@ export async function loadCharactersForCurrentNickname() {
     }
 }
 
+function toggleRaidStatus(characterName, raid, element) {
+    let settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
+    if (!settings[characterName]) settings[characterName] = {};
 
+    settings[characterName].raidStatus = settings[characterName].raidStatus || {};
+    settings[characterName].raidStatus[raid] = !settings[characterName].raidStatus[raid];
+
+    element.innerHTML = settings[characterName].raidStatus[raid] ? '✔' : '❌';
+
+    localStorage.setItem('characterSettings', JSON.stringify(settings));
+}
+
+function showRaidSelector(characterName) {
+    const raids = ["Камен 2.0 (гер)", "Камен 2.0 (нормал)", "Аврель (гер)", "Аврель (нормал)", "Эгир (гер)", "Эгир (нормал)", "Ехидна", "Бехемос", "Камен (гер)" , "Хаос", "Хранитель"];
+    let select = document.createElement('select');
+    select.multiple = true;
+
+    raids.forEach(raid => {
+        let option = document.createElement('option');
+        option.value = raid;
+        option.innerText = raid;
+        select.appendChild(option);
+    });
+
+    let applyButton = document.createElement('button');
+    applyButton.id = 'apply-raids';
+    applyButton.className = "apply-button button";
+    applyButton.innerText = "Применить";
+    applyButton.addEventListener('click', () => applyRaidSelection(characterName, select));
+
+    document.body.appendChild(select);
+    document.body.appendChild(applyButton);
+}
+
+function applyRaidSelection(characterName, select) {
+    let selectedRaids = Array.from(select.selectedOptions).map(opt => opt.value);
+    let settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
+
+    if (!settings[characterName]) settings[characterName] = {};
+    settings[characterName].raids = selectedRaids;
+
+    localStorage.setItem('characterSettings', JSON.stringify(settings));
+
+    select.remove();
+    document.querySelector('.apply-button').remove();
+
+    renderCharacters(false);
+}
+
+function removeRaidFromCharacter(characterName, raidName) {
+    let settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
+
+    if (settings[characterName]?.raids) {
+        settings[characterName].raids = settings[characterName].raids.filter(r => r !== raidName);
+        delete settings[characterName].raidStatus?.[raidName]; // Удаляем статус рейда тоже
+    }
+
+    localStorage.setItem('characterSettings', JSON.stringify(settings));
+    renderCharacters(false);
+}

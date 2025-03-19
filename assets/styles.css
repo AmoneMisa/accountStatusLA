@@ -15,8 +15,15 @@ body {
     margin: 10px 0;
 }
 
-input {
+input, button, select, textarea, a {
     -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
+}
+
+select {
+    background-color: transparent;
+    border-radius: 5px;
+    border: 1px solid #444;
+    color: white;
 }
 
 .button {
@@ -26,7 +33,6 @@ input {
     border-radius: 5px;
     cursor: pointer;
     transition: 0.3s;
-    -webkit-app-region: no-drag;
     width: 160px;
     height: 40px;
 }
@@ -37,7 +43,6 @@ input {
 
 .button_icon {
     background-color: transparent;
-    -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
     transition: .3s ease-in-out;
     cursor: pointer;
     border: none;
@@ -106,7 +111,7 @@ input {
     height: 60px;
     animation: spin 1s linear infinite;
     margin: 20px auto;
-    display: none; /* скрыт по умолчанию */
+    display: none;
 }
 
 @keyframes spin {
@@ -139,24 +144,81 @@ input {
 }
 
 .character.view-mode {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-    gap: 10px;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 10px;
     margin-bottom: 10px;
     width: 100%;
     text-align: center;
+    font-size: 13px;
+}
+
+.character_support.view-mode .character__info div:last-child {
+    color: #00d9d9;
+}
+
+.character_dd.view-mode .character__info div:last-child {
+    color: #d013ef;
 }
 
 .character:hover {
     background-color: #444444;
 }
 
-.character .actions {
+.character__cell {
     display: flex;
-    justify-content: flex-end;
+    min-width: 20px;
+    padding: 0 10px;
+}
+
+.character__cell:not(:last-child) {
+    border-right: 2px solid #444444;
+}
+
+.character__cell:not(:last-child):hover {
+    border-right: 2px solid #333333;
+}
+
+.character__cell:not(:last-child):hover .raid {
+    border-right: 1px solid #333333;
+}
+
+.character__icons,
+.character__info {
+    flex-direction: column;
+}
+
+.character__info {
+    width: 120px;
+    gap: 5px;
+}
+
+.character__raids {
     gap: 10px;
+    width: -webkit-fill-available;
+}
+
+.raid {
+    width: min-content;
+    border-right: 1px solid #444444;
+}
+
+.raid__header {
+    min-width: 80px;
+    width: max-content;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+
+.raid-status {
+    width: 100%;
+    text-align: center;
+}
+
+.character__info div:nth-child(2) {
+    color: #eab00f;
 }
 
 .inactive {

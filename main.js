@@ -1,10 +1,10 @@
-import {app, BrowserWindow, Tray, Menu, ipcMain, dialog} from 'electron';
-import path from 'path';
+import {app, BrowserWindow, ipcMain, Menu, Tray} from 'electron';
+import path, {dirname, join} from 'path';
 import {parseLostArkProfile} from "./parser.js";
 import {fileURLToPath} from 'url';
-import {dirname, join} from 'path';
 import {loadSettings, saveSettings} from "./storage.js";
 import fs from "fs";
+import cron from "node-cron";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -39,7 +39,6 @@ async function showNicknameWindow() {
 
 async function createWindow() {
     const settings = loadSettings();
-
 
     if (!settings.nickname) {
         settings.nickname = await showNicknameWindow();
@@ -130,7 +129,9 @@ ipcMain.handle('set-nickname', (event, nickname) => {
 ipcMain.handle('fetch-characters', async (_, nickname) => {
     try {
         const characters = await parseLostArkProfile(nickname);
-        if (!characters) throw new Error('Ошибка получения персонажей');
+        if (!characters) {
+            throw new Error('Ошибка получения персонажей');
+        }
 
         const filePath = path.join(app.getPath('userData'), 'characters.json');
         fs.writeFileSync(filePath, JSON.stringify(characters, null, 2), 'utf-8');
@@ -139,4 +140,37 @@ ipcMain.handle('fetch-characters', async (_, nickname) => {
     } catch (error) {
         return { error: error.message };
     }
+});
+
+function resetRaids() {
+    let settings = loadSettings();
+    const now = new Date();
+    const day = now.getUTCDay(); // 0 = воскресенье, 3 = среда
+
+    Object.keys(settings).forEach(charName => {
+        if (settings[charName].raids) {
+            settings[charName].raids.forEach(raid => {
+                if (["Chaos", "Guard"].includes(raid)) {
+                    settings[charName].raidStatus[raid] = false;
+                } else if (day === 3) {
+                    settings[charName].raidStatus[raid] = false;
+                }
+            });
+        }
+    });
+
+    saveSettings(settings);
+    console.log("Рейды сброшены!");
+}
+
+// Сбрасываем Chaos и Guard в 06:00 каждый день
+cron.schedule('0 6 * * *', () => {
+    console.log("Сбрасываем Хаос и Хранителей...");
+    resetRaids();
+});
+
+// Сбрасываем все остальные рейды в 06:00 по средам
+cron.schedule('0 6 * * 3', () => {
+    console.log("Сбрасываем недельные рейды...");
+    resetRaids();
 });

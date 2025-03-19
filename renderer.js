@@ -117,6 +117,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('edit-nickname').style.display = 'inline-block';
 
         // Загружаем персонажей, которые привязаны к этому нику
-        loadCharactersForCurrentNickname();
+        await loadCharactersForCurrentNickname();
     });
+
+    if (document.getElementById('apply-raids')) {
+        document.getElementById('apply-raids').addEventListener('click', () => {
+            const selectedOptions = Array.from(document.getElementById('raid-select').selectedOptions).map(option => option.value);
+            localStorage.setItem('selectedRaids', JSON.stringify(selectedOptions));
+            renderCharacters(false); // Перерисовываем список с новыми рейдами
+        });
+    }
 });
