@@ -165,6 +165,19 @@ export function renderCharacters(editMode = false) {
     const settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
     const charactersList = JSON.parse(localStorage.getItem('charactersList') || '[]');
 
+    if (!editMode) {
+        const headers = document.createElement('div');
+        headers.className = 'character view-mode';
+        headers.innerHTML = `
+            <span>Персонаж</span>
+            <span>Класс</span>
+            <span>GS</span>
+            <span>Статусы</span>
+            <span></span>
+        `;
+        container.appendChild(headers);
+    }
+
     charactersList.forEach(char => {
         const charSettings = settings[char.name] || {};
         // В режиме просмотра не показываем персонажей с ❌
@@ -180,10 +193,23 @@ export function renderCharacters(editMode = false) {
         `;
 
         const charDiv = document.createElement('div');
-        charDiv.className = 'character';
+        charDiv.className = `character ${editMode ? '' : 'view-mode'}`;
         charDiv.dataset.name = char.name;
         charDiv.dataset.gs = char.gearScore;
-        charDiv.innerHTML = `${char.name} (${char.className}, GS: ${char.gearScore}) ${icons}`;
+
+        if (!editMode) {
+            charDiv.innerHTML = `
+                <span>${char.name}</span>
+                <span>${char.className}</span>
+                <span>${char.gearScore}</span>
+                <span>${icons}</span>
+                <div class="actions"></div>
+            `;
+        } else {
+            charDiv.innerHTML = `
+                ${char.name} (${char.className}, GS: ${char.gearScore}) ${icons}
+            `;
+        }
 
         if (editMode) {
             charDiv.addEventListener('click', (e) => {

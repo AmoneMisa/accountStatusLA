@@ -128,16 +128,21 @@ input {
 }
 
 .character {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-    gap: 10px;
-    align-items: center;
-    border-radius: 5px;
+    border-radius: 10px;
     background-color: #333333;
     border: 1px solid #444444;
     color: white;
     transition: .2s ease;
     cursor: pointer;
+    padding: 16px;
+    max-width: -webkit-fill-available;
+}
+
+.character.view-mode {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    align-items: center;
     padding: 10px;
     margin-bottom: 10px;
     width: 100%;
