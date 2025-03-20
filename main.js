@@ -12,38 +12,7 @@ const __dirname = dirname(__filename);
 let mainWindow;
 let tray;
 
-async function showNicknameWindow() {
-    return new Promise((resolve) => {
-        let nicknameWindow = new BrowserWindow({
-            width: 500,
-            height: 350,
-            frame: false,
-            modal: true,
-            parent: mainWindow,
-            webPreferences: {
-                preload: join(__dirname, 'preload.cjs'),
-                contextIsolation: true,
-                nodeIntegration: false
-            }
-        });
-
-        nicknameWindow.loadFile(path.join(app.getAppPath(), 'assets', 'nickname.html'));
-
-        ipcMain.once('save-nickname', (event, nickname) => {
-            saveSettings({nickname});
-            nicknameWindow.close();
-            resolve(nickname);
-        });
-    });
-}
-
 async function createWindow() {
-    const settings = loadSettings();
-
-    if (!settings.nickname) {
-        settings.nickname = await showNicknameWindow();
-    }
-
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
@@ -80,6 +49,10 @@ await app.on('ready', async () => {
         { label: 'Сбросить настройки кубов', click: () => {
                 mainWindow.webContents.send('clear-characters-qubes');
             }},
+        {
+            label: 'Очистить ник',
+            click: () => mainWindow.webContents.send('clear-nickname')
+        },
         { type: 'separator' },
         { label: 'Выход', click: () => app.quit() }
     ]);
@@ -137,6 +110,10 @@ ipcMain.handle('set-nickname', (event, nickname) => {
 
 ipcMain.handle('fetch-characters', async (_, nickname) => {
     try {
+        if (nickname === "Неизвестный" || !nickname) {
+            return;
+        }
+
         const characters = await parseLostArkProfile(nickname);
         if (!characters) {
             throw new Error('Ошибка получения персонажей');

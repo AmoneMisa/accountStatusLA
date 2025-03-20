@@ -3,11 +3,19 @@ import {renderCharacterTable} from "./qubes.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const nicknameElement = document.getElementById('nickname');
-    let nickname = localStorage.getItem('nickname');
+    const editNicknameButton = document.getElementById('edit-nickname');
+    const saveNicknameButton = document.getElementById('save-nickname');
+
+    let nickname = localStorage.getItem('nickname') || '';
 
     if (!nickname) {
-        document.getElementById('edit-nickname').click();
-        return;
+        // Если ника нет, сразу включаем редактирование
+        nicknameElement.innerHTML = `<input type="text" id="nickname-input" placeholder="Введите ник" autofocus />`;
+        editNicknameButton.style.display = 'none';
+        saveNicknameButton.style.display = 'inline-block';
+    } else {
+        // Если ник есть, показываем его как текст
+        nicknameElement.innerText = `Ваш ник: ${nickname}`;
     }
 
     nicknameElement.innerText = "Загружаю ник...";
@@ -37,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     document.getElementById('minimize').addEventListener('click', () => {
-        window.electron.ipcRenderer.send('window:minimize');
+        window.electron.ipcRenderer.send('window:close');
     });
 
     document.getElementById('maximize').addEventListener('click', () => {
@@ -45,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.getElementById('close').addEventListener('click', () => {
-        window.electron.ipcRenderer.send('window:close');
+        window.electron.ipcRenderer.send('window:quit');
     });
 
     document.getElementById('save-button').addEventListener('click', () => {
@@ -88,9 +96,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        console.log(newNickname)
-        console.log(JSON.parse(localStorage.getItem('charactersList')))
-        console.log(JSON.parse(localStorage.getItem('charactersList'))[nickname])
         await window.electron.ipcRenderer.setNickname(newNickname);
         localStorage.setItem('nickname', newNickname);
 
@@ -144,5 +149,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 renderCharacterTable();
             }
         });
+    });
+
+    window.electron.ipcRenderer.on('clear-nickname', () => {
+        // Удаляем ник из localStorage
+        localStorage.removeItem('nickname');
+
+        // Обновляем интерфейс
+        document.getElementById('nickname').innerText = "Ник не установлен";
     });
 });

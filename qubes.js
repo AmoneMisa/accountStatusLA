@@ -3,8 +3,8 @@ export function renderCharacterTable() {
     tableContainer.innerHTML = '';
 
     const charactersList = JSON.parse(localStorage.getItem('charactersList') || '[]');
+    const characterSettings= JSON.parse(localStorage.getItem('characterSettings') || '[]');
     const tableData = JSON.parse(localStorage.getItem('tableData') || '{}');
-    console.log("tableData", tableData);
     // Заголовки колонок
     const columnNames = ['3.1', '3.2', '3.3', '3.4', '3.5', '4.1', '4.2'];
 
@@ -18,7 +18,12 @@ export function renderCharacterTable() {
     headerRow += '</div>';
     table.innerHTML = headerRow;
 
-    charactersList.forEach(char => {
+    for (const char of charactersList) {
+        console.log(characterSettings[char.name])
+        if (characterSettings[char.name] && characterSettings[char.name].delete) {
+            continue;
+        }
+
         let row = `<div class="character-table__row"><div class="character-table__cell character-table__cell_name">${char.name}</div>`;
 
         columnNames.forEach(col => {
@@ -36,7 +41,7 @@ export function renderCharacterTable() {
         });
         row += `</div>`;
         table.innerHTML += row;
-    });
+    }
 
     tableContainer.appendChild(table);
 

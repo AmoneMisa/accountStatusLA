@@ -5,7 +5,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder --win portable"
   },
   "private": true,
   "dependencies": {
@@ -15,6 +16,19 @@
     "sortablejs": "^1.15.6"
   },
   "devDependencies": {
-    "electron": "^35.0.2"
+    "electron": "^35.0.2",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.example.yourapp",
+    "productName": "LostArkCharacterManager",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": "portable",
+      "artifactName": "${productName}.exe"
+    }
   }
 }
