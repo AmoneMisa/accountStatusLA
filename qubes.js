@@ -19,7 +19,6 @@ export function renderCharacterTable() {
     table.innerHTML = headerRow;
 
     for (const char of charactersList) {
-        console.log(characterSettings[char.name])
         if (characterSettings[char.name] && characterSettings[char.name].delete) {
             continue;
         }
@@ -31,7 +30,7 @@ export function renderCharacterTable() {
 
             row += `
                 <div class="character-table__cell">
-                    <input class="character-table__input" type="number" value="${value}" data-char="${char.name}" data-col="${col}">
+                    <input class="character-table__input" type="number" value="${value}" data-char="${char.name}" data-col="${col}" min="0">
                     <div class="character-table__controls">
                         <button class="button button_control btn-minus" data-char="${char.name}" data-col="${col}">-</button>
                         <button class="button button_control btn-plus" data-char="${char.name}" data-col="${col}">+</button>
@@ -67,6 +66,30 @@ export function renderCharacterTable() {
             saveTableData(input.dataset.char, input.dataset.col, input.value);
         });
     });
+
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        // Если поле ввода становится пустым, подставляем 0
+        input.addEventListener('blur', () => {
+            if (input.value.trim() === '') {
+                input.value = 0;
+            }
+        });
+
+        // Запрещаем ввод пустого значения (если пользователь удаляет цифры)
+        input.addEventListener('input', () => {
+            if (input.value === '') {
+                input.value = 0;
+            }
+        });
+
+        // Если пользователь нажимает Delete/Backspace на пустом поле, ставим 0
+        input.addEventListener('keydown', (event) => {
+            if ((event.key === 'Delete' || event.key === 'Backspace') && input.value.length === 1) {
+                input.value = 0;
+                event.preventDefault(); // Останавливаем дальнейшее удаление
+            }
+        });
+    });
 }
 
 export function saveTableData(charName, column, value) {
@@ -75,8 +98,6 @@ export function saveTableData(charName, column, value) {
     if (!tableData[charName]) {
         tableData[charName] = {};
     }
-    console.log("tableData[charName][column]", tableData[charName][column]);
-    console.log("tableData", tableData);
 
     tableData[charName][column] = value;
     localStorage.setItem('tableData', JSON.stringify(tableData));

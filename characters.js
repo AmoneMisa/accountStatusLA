@@ -80,7 +80,6 @@ export function saveCharacterSetting(character, type, state) {
 
     settings[character][type] = state;
     localStorage.setItem('characterSettings', JSON.stringify(settings));
-    console.log("Сохранённые настройки персонажей:", settings);
 }
 
 // Загрузка и применение настроек персонажей
@@ -203,14 +202,13 @@ export function renderCharacters(editMode = false) {
         charDiv.dataset.className = char.className;
         charDiv.dataset.isSupport = char.isSupport;
 
-        console.log(charSettings)
         let raidCells = (charSettings.raids || []).map(raid => `
             <div data-raid="${raid}" class="raid">
                 <div class="raid__header">
                     <div class="raid__name">${raid}</div>
-                    <button class="remove-raid button button_icon" data-name="${char.name}" data-raid="${raid}">🗑</button>
+                    <button class="remove-raid button button_icon" data-name="${char.name}" data-raid="${raid}">🗑️</button>
                 </div>
-                <button class="raid-status button button_icon" data-raid="${raid}">${charSettings.raidStatus?.[raid] ? '✔' : '❌'}</button>
+                <button class="raid-status button button_icon" data-raid="${raid}">${charSettings.raidStatus?.[raid] ? '✅' : '❌'}</button>
                 
             </div>
         `).join('');
@@ -274,11 +272,7 @@ function toggleRaidStatus(characterName, raid, element) {
     settings[characterName].raidStatus = settings[characterName].raidStatus || {};
     settings[characterName].raidStatus[raid] = !settings[characterName].raidStatus[raid];
 
-    element.innerHTML = settings[characterName].raidStatus[raid] ? '✔' : '❌';
-    console.log("settings[characterName].raidStatus[raid]", settings[characterName].raidStatus[raid]);
-    console.log(settings);
-    console.log(raid);
-    console.log(characterName);
+    element.innerHTML = settings[characterName].raidStatus[raid] ? '✅' : '❌';
     localStorage.setItem('characterSettings', JSON.stringify(settings));
 }
 
@@ -307,7 +301,6 @@ function showRaidSelector(characterName) {
     if (settings[characterName] && settings[characterName].raids && settings[characterName].raids.length > 0) {
         console.log(settings[characterName].raids.length);
         Array.from(select.options).forEach(option => {
-            console.log(option.value);
 
             if (settings[characterName].raids.includes(option.value)) {
                 option.selected = true;
@@ -365,8 +358,8 @@ function enableDragAndDrop() {
 
     new Sortable(characterList, {
         animation: 150,
-        ghostClass: 'dragging', // Класс для тени элемента во время перетаскивания
-        handle: '.character__drag', // Позволяет перетаскивать только за иконку
+        ghostClass: 'dragging',
+        handle: '.character__drag',
         onEnd: function (evt) {
             updateCharacterOrder();
         }
@@ -378,13 +371,12 @@ function updateCharacterOrder() {
     const newOrder = [];
 
     characterList.querySelectorAll('.character').forEach((charDiv) => {
-        newOrder.push(charDiv.dataset.name); // Сохраняем порядок персонажей по имени
+        newOrder.push(charDiv.dataset.name);
     });
 
     let characters = JSON.parse(localStorage.getItem('charactersList') || '[]');
 
     // Переставляем персонажей по новому порядку
     characters.sort((a, b) => newOrder.indexOf(a.name) - newOrder.indexOf(b.name));
-
     localStorage.setItem('charactersList', JSON.stringify(characters));
 }
