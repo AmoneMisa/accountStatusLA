@@ -1,11 +1,4 @@
-import {
-    loadCharacters,
-    loadCharactersForCurrentNickname,
-    renderCharacters,
-    setEditable,
-    sortCharacters,
-    updatePreviousNicknames
-} from "./characters.js";
+import {loadCharacters, renderCharacters, setEditable, sortCharacters,} from "./characters.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const nicknameElement = document.getElementById('nickname');
@@ -79,45 +72,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('edit-nickname').addEventListener('click', () => {
         const currentNickname = localStorage.getItem('nickname');
-        const previousNicknames = JSON.parse(localStorage.getItem('previousNicknames') || '[]');
 
-        const nicknameOptions = previousNicknames.map(nick => `
-            <option ${nick === currentNickname ? 'selected' : ''}>${nick}</option>
-        `).join('');
-
-        nicknameElement.innerHTML = `
-        <input type="text" id="nickname-input" value="${currentNickname}" />
-            или выбрать из списка:
-            <select id="nickname-select">
-                <option value="">- Выбрать -</option>
-                ${nicknameOptions}
-            </select>
-        `;
+        nicknameElement.innerHTML = `<input type="text" id="nickname-input" value="${currentNickname}" />`;
 
         document.getElementById('edit-nickname').style.display = 'none';
         document.getElementById('save-nickname').style.display = 'inline-block';
     });
 
     document.getElementById('save-nickname').addEventListener('click', async () => {
-        const nicknameInputValue = document.getElementById('nickname-input').value.trim();
-        const nicknameSelectValue = document.getElementById('nickname-select').value;
-        const newNickname = nicknameSelectValue || nicknameInputValue;
+        const newNickname = document.getElementById('nickname-input').value.trim();
 
         if (!newNickname) {
             alert('Введите корректный ник!');
             return;
         }
 
+        console.log(newNickname)
+        console.log(JSON.parse(localStorage.getItem('charactersList')))
+        console.log(JSON.parse(localStorage.getItem('charactersList'))[nickname])
         await window.electron.ipcRenderer.setNickname(newNickname);
         localStorage.setItem('nickname', newNickname);
-        updatePreviousNicknames(newNickname);
 
         document.getElementById('nickname').innerText = `Ваш ник: ${newNickname}`;
         document.getElementById('save-nickname').style.display = 'none';
         document.getElementById('edit-nickname').style.display = 'inline-block';
 
-        // Загружаем персонажей, которые привязаны к этому нику
-        await loadCharactersForCurrentNickname();
+        if (JSON.parse(localStorage.getItem('charactersList'))[newNickname]) {
+            renderCharacters(true);
+        } else {
+            await loadCharacters(newNickname);
+        }
     });
 
     if (document.getElementById('apply-raids')) {

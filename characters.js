@@ -79,10 +79,7 @@ export function saveCharacterSetting(character, type, state) {
     }
 
     settings[character][type] = state;
-    console.log(character, type, settings);
     localStorage.setItem('characterSettings', JSON.stringify(settings));
-    console.log(localStorage.getItem('characterSettings'));
-
     console.log("Сохранённые настройки персонажей:", settings);
 }
 
@@ -146,6 +143,7 @@ export function setEditable(state) {
 export async function loadCharacters(nickname) {
     const container = document.getElementById('character-list');
     container.innerHTML = 'Загрузка...';
+    const charactersList = JSON.parse(localStorage.getItem('charactersList') || '[]');
     const result = await window.electron.ipcRenderer.fetchCharacters(nickname);
 
     if (result.error) {
@@ -153,8 +151,23 @@ export async function loadCharacters(nickname) {
         return;
     }
 
-    localStorage.setItem('charactersList', JSON.stringify(result));
-    renderCharacters(true);  // Показываем всех при редактировании
+    const isValidCharacter = char => char && char.name && char.gearScore;
+
+    let filteredCharacters = new Map();
+    [...charactersList, ...result].forEach(char => {
+        if (!isValidCharacter(char)) {
+            return;
+        }
+
+        const existingChar = filteredCharacters.get(char.name);
+
+        if (!existingChar || parseFloat(char.gearScore.replace(',', '')) > parseFloat(existingChar.gearScore.replace(',', ''))) {
+            filteredCharacters.set(char.name, char);
+        }
+    });
+
+    localStorage.setItem('charactersList', JSON.stringify(Array.from(filteredCharacters.values())));
+    renderCharacters(true);
     loadCharacterSettings();
     sortCharacters();
 }
@@ -164,7 +177,6 @@ export function renderCharacters(editMode = false) {
     container.innerHTML = '';
     const settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
     const charactersList = JSON.parse(localStorage.getItem('charactersList') || '[]');
-    const selectedRaids = JSON.parse(localStorage.getItem('selectedRaids') || '[]');
 
     charactersList.forEach(char => {
         const charSettings = settings[char.name] || {};
@@ -173,12 +185,13 @@ export function renderCharacters(editMode = false) {
             return;
         }
 
+        const dragBurger = "<div class='drag-burger'>≡</div>"
+
         const icons = `
-        
-            <div data-type="legate" class="${charSettings.legate ? '' : 'inactive'}">👑</div>
-            <div data-type="goldReceiver" class="${charSettings.goldReceiver ? '' : 'inactive'}">💰</div>
-            <div data-type="favorite" class="${charSettings.favorite ? '' : 'inactive'}">⭐</div>
-            ${editMode ? `<div data-type="delete" class="${charSettings.delete ? '' : 'inactive'}">❌</div>` : ''}   
+            <div data-type="legate" class="character__icon ${charSettings.legate ? '' : 'inactive'}">👑</div>
+            <div data-type="goldReceiver" class="character__icon ${charSettings.goldReceiver ? '' : 'inactive'}">💰</div>
+            <div data-type="favorite" class="character__icon ${charSettings.favorite ? '' : 'inactive'}">⭐</div>
+            ${editMode ? `<div data-type="delete" class="character__icon ${charSettings.delete ? '' : 'inactive'}">❌</div>` : ''}   
         `;
 
         const charDiv = document.createElement('div');
@@ -187,6 +200,8 @@ export function renderCharacters(editMode = false) {
         charDiv.className = `character ${editMode ? '' : 'view-mode'} ${isSupport ? 'character_support' : 'character_dd'}`;
         charDiv.dataset.name = char.name;
         charDiv.dataset.gs = char.gearScore;
+        charDiv.dataset.className = char.className;
+        charDiv.dataset.isSupport = char.isSupport;
 
         let raidCells = (charSettings.raids || []).map(raid => `
             <div data-raid="${raid}" class="raid">
@@ -201,6 +216,7 @@ export function renderCharacters(editMode = false) {
 
         if (!editMode) {
             charDiv.innerHTML = `
+        <div class="character__cell character__drag">${dragBurger}</div>
         <div class="character__cell character__icons">${icons}</div>
         <div class="character__cell character__info">
                 <div class="character__name">${char.name}</div>
@@ -218,7 +234,7 @@ export function renderCharacters(editMode = false) {
 
         if (editMode) {
             charDiv.addEventListener('click', (e) => {
-                if (e.target.tagName === 'SPAN') {
+                if (e.target.classList.contains("character__icon")) {
                     handleIconClick(char, e.target.dataset.type, e.target);
                 }
             });
@@ -244,26 +260,8 @@ export function renderCharacters(editMode = false) {
         document.getElementById('save-button').style.display = 'none';
         sortCharacters();
     }
-}
 
-export function updatePreviousNicknames(nickname) {
-    let previousNicknames = JSON.parse(localStorage.getItem('previousNicknames') || '[]');
-    if (!previousNicknames.includes(nickname)) {
-        previousNicknames.push(nickname);
-        localStorage.setItem('previousNicknames', JSON.stringify(previousNicknames));
-    }
-}
-
-export async function loadCharactersForCurrentNickname() {
-    const nickname = localStorage.getItem('nickname');
-    const allNickCharacters = JSON.parse(localStorage.getItem('allNickCharacters') || '{}');
-
-    if (allNickCharacters[nickname]) {
-        localStorage.setItem('charactersList', JSON.stringify(allNickCharacters[nickname]));
-        renderCharacters(true);
-    } else {
-        await loadCharacters(nickname);
-    }
+    enableDragAndDrop();
 }
 
 function toggleRaidStatus(characterName, raid, element) {
@@ -325,4 +323,39 @@ function removeRaidFromCharacter(characterName, raidName) {
 
     localStorage.setItem('characterSettings', JSON.stringify(settings));
     renderCharacters(false);
+}
+
+import Sortable from "./node_modules/sortablejs/modular/sortable.core.esm.js";
+
+function enableDragAndDrop() {
+    const characterList = document.getElementById('character-list');
+
+    if (!characterList) {
+        return;
+    }
+
+    new Sortable(characterList, {
+        animation: 150,
+        ghostClass: 'dragging', // Класс для тени элемента во время перетаскивания
+        handle: '.character__drag', // Позволяет перетаскивать только за иконку
+        onEnd: function (evt) {
+            updateCharacterOrder();
+        }
+    });
+}
+
+function updateCharacterOrder() {
+    const characterList = document.getElementById('character-list');
+    const newOrder = [];
+
+    characterList.querySelectorAll('.character').forEach((charDiv) => {
+        newOrder.push(charDiv.dataset.name); // Сохраняем порядок персонажей по имени
+    });
+
+    let characters = JSON.parse(localStorage.getItem('charactersList') || '[]');
+
+    // Переставляем персонажей по новому порядку
+    characters.sort((a, b) => newOrder.indexOf(a.name) - newOrder.indexOf(b.name));
+
+    localStorage.setItem('charactersList', JSON.stringify(characters));
 }
