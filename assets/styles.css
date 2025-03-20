@@ -238,7 +238,6 @@ input[type=number] {
 .character__drag {
     width: 20px;
     padding-right: 0;
-    cursor: grab;
     height: 60px;
     align-items: center;
 }
@@ -247,6 +246,7 @@ input[type=number] {
     height: 100%;
     display: flex;
     align-items: center;
+    cursor: grab;
 }
 
 .character__cell:not(:last-child) {
@@ -389,6 +389,7 @@ input[type=number] {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    -webkit-app-region: no-drag;
 }
 
 .character-table__row {
@@ -438,4 +439,55 @@ input[type=number] {
 .character-table__controls {
     display: flex;
     gap: 5px;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.tooltip::after {
+    content: attr(data-tooltip); /* Берем текст из data-tooltip */
+    position: absolute;
+    bottom: 120%; /* Поднимаем выше элемента */
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--black);
+    color: var(--white);
+    padding: 5px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: wrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none; /* Чтоб не мешал клику */
+    z-index: 1;
+}
+
+.tooltip:hover::after {
+    opacity: 1;
+}
+
+::-webkit-scrollbar {
+    width: 8px; /* Ширина вертикального скролла */
+    height: 8px; /* Высота горизонтального скролла */
+    cursor: move;
+}
+
+/* Полоса прокрутки (фон) */
+::-webkit-scrollbar-track {
+    background: var(--black); /* Тёмный фон */
+    border-radius: 10px;
+}
+
+/* Ползунок скролла */
+::-webkit-scrollbar-thumb {
+    background: var(--grey);
+    border-radius: 10px;
+}
+
+/* При наведении на ползунок */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--light-grey);
 }

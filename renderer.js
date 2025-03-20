@@ -152,10 +152,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     window.electron.ipcRenderer.on('clear-nickname', () => {
-        // Удаляем ник из localStorage
         localStorage.removeItem('nickname');
-
-        // Обновляем интерфейс
         document.getElementById('nickname').innerText = "Ник не установлен";
     });
 });

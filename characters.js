@@ -32,13 +32,6 @@ function handleLegateClick(characterObj, element) {
 }
 
 function handleGoldReceiverClick(characterObj, element) {
-    const activeGoldReceivers = document.querySelectorAll('.character span[data-type="goldReceiver"]:not(.inactive)').length;
-
-    if (element.classList.contains('inactive') && activeGoldReceivers >= 6) {
-        showError("Максимум 6 получателей золота!");
-        return;
-    }
-
     element.classList.toggle('inactive');
     saveCharacterSetting(
         characterObj.name,
@@ -100,12 +93,6 @@ export function loadCharacterSettings() {
             });
         }
     });
-}
-
-export function showError(message) {
-    const errorMessage = document.getElementById('error');
-    errorMessage.innerText = message;
-    setTimeout(() => { errorMessage.innerText = ''; }, 3000);
 }
 
 export function sortCharacters() {
@@ -187,10 +174,10 @@ export function renderCharacters(editMode = false) {
         const dragBurger = "<div class='drag-burger'>≡</div>"
 
         const icons = `
-            <div data-type="legate" class="character__icon ${charSettings.legate ? '' : 'inactive'}">👑</div>
-            <div data-type="goldReceiver" class="character__icon ${charSettings.goldReceiver ? '' : 'inactive'}">💰</div>
-            <div data-type="favorite" class="character__icon ${charSettings.favorite ? '' : 'inactive'}">⭐</div>
-            ${editMode ? `<div data-type="delete" class="character__icon ${charSettings.delete ? '' : 'inactive'}">❌</div>` : ''}   
+            <div data-type="legate" data-tooltip="Легат" class="tooltip character__icon ${charSettings.legate ? '' : 'inactive'}">👑</div>
+            <div data-type="goldReceiver" data-tooltip="Получатель голды" class="tooltip character__icon ${charSettings.goldReceiver ? '' : 'inactive'}">💰</div>
+            <div data-type="favorite" data-tooltip="Избранное"  class="tooltip character__icon ${charSettings.favorite ? '' : 'inactive'}">⭐</div>
+            ${editMode ? `<div data-type="delete" data-tooltip="Скрыть из списка"  class="tooltip character__icon ${charSettings.delete ? '' : 'inactive'}">❌</div>` : ''}   
         `;
 
         const charDiv = document.createElement('div');
@@ -206,16 +193,16 @@ export function renderCharacters(editMode = false) {
             <div data-raid="${raid}" class="raid">
                 <div class="raid__header">
                     <div class="raid__name">${raid}</div>
-                    <button class="remove-raid button button_icon" data-name="${char.name}" data-raid="${raid}">🗑️</button>
+                    <button data-tooltip="Удалить рейд из списка" class="tooltip remove-raid button button_icon" data-name="${char.name}" data-raid="${raid}">🗑️</button>
                 </div>
-                <button class="raid-status button button_icon" data-raid="${raid}">${charSettings.raidStatus?.[raid] ? '✅' : '❌'}</button>
+                <button data-tooltip="Отметка пройдена ли активность" class="tooltip raid-status button button_icon" data-raid="${raid}">${charSettings.raidStatus?.[raid] ? '✅' : '❌'}</button>
                 
             </div>
         `).join('');
 
         if (!editMode) {
             charDiv.innerHTML = `
-        <div class="character__cell character__drag">${dragBurger}</div>
+        <div data-tooltip="Изменить порядок персонажей" class="tooltip character__cell character__drag">${dragBurger}</div>
         <div class="character__cell character__icons">${icons}</div>
         <div class="character__cell character__info">
                 <div class="character__name">${char.name}</div>
@@ -223,7 +210,7 @@ export function renderCharacters(editMode = false) {
                 <div class="character__class">${char.className}</div>
         </div>
         <div class="character__cell character__raids">${raidCells}</div>
-        <div class="character__cell character__actions"><button type="button" class="button button_icon add-raid" data-name="${char.name}">➕</button></div>
+        <div class="character__cell character__actions"><button type="button" data-tooltip="Добавить или убрать активность" class="tooltip button button_icon add-raid" data-name="${char.name}">➕</button></div>
             `;
         } else {
             charDiv.innerHTML = `
@@ -277,7 +264,7 @@ function toggleRaidStatus(characterName, raid, element) {
 }
 
 function showRaidSelector(characterName) {
-    const raids = ["Камен 2.0 (гер)", "Камен 2.0 (нормал)", "Аврель (гер)", "Аврель (нормал)", "Эгир (гер)", "Эгир (нормал)", "Ехидна", "Бехемос", "Камен (гер)" , "Хаос", "Хранитель"];
+    const raids = ["Камен 2.0 (гер)", "Камен 2.0 (нормал)", "Аврель (гер)", "Аврель (нормал)", "Эгир (гер)", "Эгир (нормал)", "Ехидна", "Бехемос", "Камен (гер)", "Хаос", "Хранитель", "Эфонка"];
     let settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
     let selectContainer = document.createElement("div");
     let selectLabel = document.createElement("label");
@@ -376,7 +363,6 @@ function updateCharacterOrder() {
 
     let characters = JSON.parse(localStorage.getItem('charactersList') || '[]');
 
-    // Переставляем персонажей по новому порядку
     characters.sort((a, b) => newOrder.indexOf(a.name) - newOrder.indexOf(b.name));
     localStorage.setItem('charactersList', JSON.stringify(characters));
 }

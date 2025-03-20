@@ -136,7 +136,7 @@ function resetRaids() {
     Object.keys(settings).forEach(charName => {
         if (settings[charName].raids) {
             settings[charName].raids.forEach(raid => {
-                if (["Chaos", "Guard"].includes(raid)) {
+                if (["Хаос", "Хранитель", "Эфонка"].includes(raid)) {
                     settings[charName].raidStatus[raid] = false;
                 } else if (day === 3) {
                     settings[charName].raidStatus[raid] = false;
