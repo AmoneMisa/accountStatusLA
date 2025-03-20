@@ -1,4 +1,5 @@
 import {loadCharacters, renderCharacters, setEditable, sortCharacters,} from "./characters.js";
+import {renderCharacterTable} from "./qubes.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const nicknameElement = document.getElementById('nickname');
@@ -111,4 +112,37 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderCharacters(false); // Перерисовываем список с новыми рейдами
         });
     }
+
+    window.electron.ipcRenderer.on('clear-character-settings', () => {
+        localStorage.removeItem('characterSettings');
+        console.log('Настройки персонажей сброшены.');
+        renderCharacters(false); // Перерисовываем список персонажей
+    });
+
+    window.electron.ipcRenderer.on('clear-characters-list', () => {
+        localStorage.removeItem('charactersList');
+        console.log('Список персонажей сброшен.');
+        renderCharacters(false);
+    });
+
+    window.electron.ipcRenderer.on('clear-characters-qubes', () => {
+        localStorage.removeItem('tableData');
+        console.log('Настройки кубов сброшены.');
+        renderCharacters(false);
+    });
+
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+
+            const tabId = button.dataset.tab;
+            button.classList.add('active');
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+
+            if (tabId === 'table') {
+                renderCharacterTable();
+            }
+        });
+    });
 });

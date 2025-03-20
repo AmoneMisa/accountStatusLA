@@ -59,15 +59,6 @@ async function createWindow() {
 
     await mainWindow.loadFile('index.html');
 
-    const contextMenu = Menu.buildFromTemplate([
-        { label: 'Сбросить настройки персонажей', click: () => mainWindow.webContents.send('clear-character-settings') },
-        { label: 'Сбросить список персонажей', click: () => mainWindow.webContents.send('clear-characters-list') }
-    ]);
-
-    mainWindow.webContents.on('context-menu', () => {
-        contextMenu.popup();
-    });
-
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
@@ -78,16 +69,19 @@ await app.on('ready', async () => {
 
     tray = new Tray(path.join(app.getAppPath(), 'assets', 'icon.png'));
     const contextMenu = Menu.buildFromTemplate([
-        {
-            label: 'Открыть', click: () => {
-                mainWindow.show();
-            }
-        },
-        {
-            label: 'Выход', click: () => {
-                app.quit();
-            }
-        }
+        { label: 'Открыть', click: () => mainWindow.show() },
+        { type: 'separator' },
+        { label: 'Сбросить настройки персонажей', click: () => {
+                mainWindow.webContents.send('clear-character-settings');
+            }},
+        { label: 'Сбросить список персонажей', click: () => {
+                mainWindow.webContents.send('clear-characters-list');
+            }},
+        { label: 'Сбросить настройки кубов', click: () => {
+                mainWindow.webContents.send('clear-characters-qubes');
+            }},
+        { type: 'separator' },
+        { label: 'Выход', click: () => app.quit() }
     ]);
     tray.setContextMenu(contextMenu);
     tray.setToolTip('Lost Ark Character Manager');
@@ -95,6 +89,21 @@ await app.on('ready', async () => {
     tray.on('click', () => {
         mainWindow.show();
     });
+});
+
+ipcMain.handle('clear-character-settings', () => {
+    console.log("Очищаем настройки персонажей...");
+    mainWindow.webContents.send('clear-character-settings');
+});
+
+ipcMain.handle('clear-characters-list', () => {
+    console.log("Очищаем список персонажей...");
+    mainWindow.webContents.send('clear-characters-list');
+});
+
+ipcMain.handle('clear-characters-qubes', () => {
+    console.log("Очищаем список персонажей...");
+    mainWindow.webContents.send('clear-characters-qubes');
 });
 
 ipcMain.on('window:minimize', () => {

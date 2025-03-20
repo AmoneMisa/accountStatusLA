@@ -15,21 +15,30 @@
         <button id="close" class="window-controls__button button button_control">✖</button>
     </div>
 </div>
+<div class="tabs">
+    <button class="tab-button active" data-tab="main">Активности</button>
+    <button class="tab-button" data-tab="table">Кубы</button>
+</div>
 <div class="wrapper">
-    <div class="header">
-        <div class="nickname-block">
-            <div id="nickname" class="nickname-block__nickname">Загрузка ника...</div>
-            <button type="button" id="edit-nickname" class="button button_icon nickname-block__button">✏️</button>
-            <button id="save-nickname" class="button button_icon" style="display:none">💾</button>
-        </div>
-        <div id="controls" class="controls">
-            <button type="button" id="refresh-characters" class="button button_icon">🔄</button>
-            <button type="button" id="edit-characters" class="button button_icon">✏️</button>
-        </div>
-    </div>
     <div class="main">
-        <h1 class="title">Список персонажей</h1>
-        <div id="character-list" class="character-list"></div>
+        <div id="main-tab" class="tab-content active">
+            <div class="header">
+                <div class="nickname-block">
+                    <div id="nickname" class="nickname-block__nickname">Загрузка ника...</div>
+                    <button type="button" id="edit-nickname" class="button button_icon nickname-block__button">✏️</button>
+                    <button id="save-nickname" class="button button_icon" style="display:none">💾</button>
+                </div>
+                <div id="controls" class="controls">
+                    <button type="button" id="refresh-characters" class="button button_icon">🔄</button>
+                    <button type="button" id="edit-characters" class="button button_icon">✏️</button>
+                </div>
+            </div>
+            <h1 class="title">Список персонажей</h1>
+            <div id="character-list" class="character-list"></div>
+        </div>
+        <div id="table-tab" class="tab-content">
+            <div id="character-table"></div>
+        </div>
     </div>
     <button id="save-button" class="button save-button">Сохранить</button>
     <div id="error"></div>
