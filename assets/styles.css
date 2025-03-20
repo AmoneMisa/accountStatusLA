@@ -29,6 +29,7 @@ body {
 
 .wrapper {
     padding: 15px;
+    position: relative;
 }
 
 .error {
@@ -301,4 +302,35 @@ input {
     align-items: flex-start;
     width: 100%;
     padding-top: 20px;
+}
+
+.raid-selector {
+    border-radius: 5px;
+    width: 300px;
+    height: 350px;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: var(--black);
+    color: var(--white);
+    padding: 20px;
+    margin: auto;
+}
+
+.raid-selector__label {
+    font-size: 12px;
+}
+
+.raid-selector__label i {
+    font-style: normal;
+    font-family: Caveat, serif;
+    color: var(--gold);
+    font-size: 16px;
+}
+
+.raid-selector__select {
+    height: 200px;
+    margin-top: 10px;
 }

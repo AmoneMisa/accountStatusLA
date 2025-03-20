@@ -278,8 +278,18 @@ function toggleRaidStatus(characterName, raid, element) {
 
 function showRaidSelector(characterName) {
     const raids = ["Камен 2.0 (гер)", "Камен 2.0 (нормал)", "Аврель (гер)", "Аврель (нормал)", "Эгир (гер)", "Эгир (нормал)", "Ехидна", "Бехемос", "Камен (гер)" , "Хаос", "Хранитель"];
+    let settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
+    let selectContainer = document.createElement("div");
+    let selectLabel = document.createElement("label");
     let select = document.createElement('select');
     select.multiple = true;
+
+    selectLabel.innerHTML = `Выбери активность для персонажа: <i>${characterName}</i>.<br>Для мульти-выбора: нажми <i>Cntrl</i> и выбирай необходимые пункты`;
+    selectLabel.classList.add("raid-selector__label");
+    select.classList.add("raid-selector__select");
+    selectLabel.appendChild(select);
+    selectContainer.appendChild(selectLabel);
+    selectContainer.classList.add('raid-selector');
 
     raids.forEach(raid => {
         let option = document.createElement('option');
@@ -288,14 +298,27 @@ function showRaidSelector(characterName) {
         select.appendChild(option);
     });
 
+    if (settings[characterName].raids.length > 0) {
+        console.log(settings[characterName].raids.length);
+        Array.from(select.options).forEach(option => {
+            console.log(option.value);
+
+            if (settings[characterName].raids.includes(option.value)) {
+                option.selected = true;
+                console.log(option);
+
+            }
+        });
+    }
+
     let applyButton = document.createElement('button');
     applyButton.id = 'apply-raids';
     applyButton.className = "apply-button button";
     applyButton.innerText = "Применить";
     applyButton.addEventListener('click', () => applyRaidSelection(characterName, select));
 
-    document.body.appendChild(select);
-    document.body.appendChild(applyButton);
+    selectContainer.appendChild(applyButton);
+    document.body.appendChild(selectContainer);
 }
 
 function applyRaidSelection(characterName, select) {
@@ -306,9 +329,7 @@ function applyRaidSelection(characterName, select) {
     settings[characterName].raids = selectedRaids;
 
     localStorage.setItem('characterSettings', JSON.stringify(settings));
-
-    select.remove();
-    document.querySelector('.apply-button').remove();
+    document.querySelector('.raid-selector').remove();
 
     renderCharacters(false);
 }
