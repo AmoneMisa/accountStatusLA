@@ -6,8 +6,7 @@ contextBridge.exposeInMainWorld('electron', {
         getNickname: () => ipcRenderer.invoke('get-nickname'),
         setNickname: (event, nickname) => ipcRenderer.invoke('set-nickname', event, nickname),
         send: (channel, data) => ipcRenderer.send(channel, data),
-        on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args))
-    }
+        on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args))}
 });
 
 ipcRenderer.on('clear-character-settings', () => {

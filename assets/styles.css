@@ -14,6 +14,11 @@
     --gs: #eab00f;
 }
 
+@font-face {
+    font-family: 'Caveat';
+    src: url('./fonts/Caveat-VariableFont_wght.ttf') format('truetype');
+}
+
 body {
     font-family: Arial, sans-serif;
     background: var(--black);
@@ -40,6 +45,14 @@ select {
     border-radius: 5px;
     border: 1px solid var(--grey);
     color: var(--white);
+    padding: 10px;
+    width: 100%;
+    height: 120px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+option {
     padding: 5px;
 }
 
@@ -102,7 +115,6 @@ input {
 .title-bar {
     width: 100%;
     height: 35px;
-    background-color: var(--dark-grey);
     color: var(--white);
     display: flex;
     align-items: center;
@@ -110,8 +122,10 @@ input {
     border-radius: 5px;
 }
 
-.title {
+.title-bar__title {
     margin-left: 5px;
+    font-family: Caveat, serif;
+    font-size: 18px;
 }
 
 .nickname-block {
@@ -188,10 +202,14 @@ input {
 
 .character_support.view-mode .character__info div:last-child {
     color: var(--support);
+    font-family: Caveat, serif;
+    font-size: 16px;
 }
 
 .character_dd.view-mode .character__info div:last-child {
     color: var(--dd);
+    font-family: Caveat, serif;
+    font-size: 16px;
 }
 
 .character:hover {
@@ -228,7 +246,7 @@ input {
 }
 
 .character__info {
-    width: 120px;
+    width: 140px;
     gap: 5px;
 }
 
