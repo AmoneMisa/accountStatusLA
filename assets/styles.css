@@ -9,8 +9,8 @@
     --gold: #FFD700FF;
     --loader-border: #f3f3f3;
     --loader-top: #FFD700;
-    --support: #00d9d9;
-    --dd: #d013ef;
+    --support: #5cffff;
+    --dd: #ea91ff;
     --gs: #eab00f;
 }
 
@@ -421,7 +421,6 @@ input[type=number] {
 
 .character-table__cell_name {
     width: 240px;
-    justify-content: flex-start;
     flex: none;
 }
 
@@ -439,6 +438,14 @@ input[type=number] {
 .character-table__controls {
     display: flex;
     gap: 5px;
+}
+
+.character-table_support {
+    color: var(--support);
+}
+
+.character-table_dd {
+    color: var(--dd);
 }
 
 .tooltip {

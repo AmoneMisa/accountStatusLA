@@ -5,7 +5,6 @@ export function renderCharacterTable() {
     const charactersList = JSON.parse(localStorage.getItem('charactersList') || '[]');
     const characterSettings= JSON.parse(localStorage.getItem('characterSettings') || '[]');
     const tableData = JSON.parse(localStorage.getItem('tableData') || '{}');
-    // Заголовки колонок
     const columnNames = ['3.1', '3.2', '3.3', '3.4', '3.5', '4.1', '4.2'];
 
     const table = document.createElement('div');
@@ -23,7 +22,8 @@ export function renderCharacterTable() {
             continue;
         }
 
-        let row = `<div class="character-table__row"><div class="character-table__cell character-table__cell_name">${char.name}</div>`;
+        const isSupport = ['Художница', 'Менестрель', 'Паладин'].includes(char.className);
+        let row = `<div class="character-table__row"><div class="character-table__cell character-table__cell_name ${isSupport ? 'character-table_support' : 'character-table_dd'}">${char.name}</div>`;
 
         columnNames.forEach(col => {
             let value = tableData[char.name]?.[col] || 0;
@@ -44,7 +44,6 @@ export function renderCharacterTable() {
 
     tableContainer.appendChild(table);
 
-    // Обработчики событий для кнопок и инпутов
     document.querySelectorAll('.btn-plus').forEach(btn => {
         btn.addEventListener('click', () => {
             let input = document.querySelector(`input[data-char="${btn.dataset.char}"][data-col="${btn.dataset.col}"]`);
@@ -68,21 +67,18 @@ export function renderCharacterTable() {
     });
 
     document.querySelectorAll('input[type="number"]').forEach(input => {
-        // Если поле ввода становится пустым, подставляем 0
         input.addEventListener('blur', () => {
             if (input.value.trim() === '') {
                 input.value = 0;
             }
         });
 
-        // Запрещаем ввод пустого значения (если пользователь удаляет цифры)
         input.addEventListener('input', () => {
             if (input.value === '') {
                 input.value = 0;
             }
         });
 
-        // Если пользователь нажимает Delete/Backspace на пустом поле, ставим 0
         input.addEventListener('keydown', (event) => {
             if ((event.key === 'Delete' || event.key === 'Backspace') && input.value.length === 1) {
                 input.value = 0;
