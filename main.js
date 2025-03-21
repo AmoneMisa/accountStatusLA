@@ -112,12 +112,15 @@ ipcMain.handle('fetch-characters', async (_, nickname) => {
             return;
         }
 
+        const settings = loadSettings(); // Загружаем настройки
+        const savePath = settings.savePath || app.getPath('userData');
+
         const characters = await parseLostArkProfile(nickname);
         if (!characters) {
             throw new Error('Ошибка получения персонажей');
         }
 
-        const filePath = path.join(app.getPath('userData'), 'characters.json');
+        const filePath = path.join(savePath, 'characters.json');
         fs.writeFileSync(filePath, JSON.stringify(characters, null, 2), 'utf-8');
 
         return characters;
