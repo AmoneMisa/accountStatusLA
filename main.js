@@ -108,6 +108,10 @@ ipcMain.handle('set-nickname', (event, nickname) => {
     saveSettings({ nickname });
 });
 
+ipcMain.handle('remove-nickname', (event, nickname) => {
+    saveSettings({ nickname });
+});
+
 ipcMain.handle('fetch-characters', async (_, nickname) => {
     try {
         if (nickname === "Неизвестный" || !nickname) {

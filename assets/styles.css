@@ -1,6 +1,7 @@
 /* variables */
 :root {
     --dark-grey: #333333;
+    --middle-grey: #2d2d2d;
     --grey: #444444;
     --light-grey: #666666;
     --black: #222222;
@@ -397,11 +398,19 @@ input[type=number] {
     align-items: center;
     width: 100%;
     border-bottom: 1px solid var(--grey);
+    border-left: 1px solid var(--grey);
+    border-right: 1px solid var(--grey);
 }
 
 .character-table__row:first-child {
     border-top: 1px solid var(--grey);
+    border-radius: 3px 3px 0 0;
 }
+
+.character-table__row:nth-child(even) .character-table__cell {
+    background-color: var(--middle-grey);
+}
+
 
 .character-table__cell {
     display: flex;
@@ -409,13 +418,15 @@ input[type=number] {
     align-items: center;
     justify-content: center;
     width: 80px;
-    border-radius: 3px;
-    border-left: 1px solid var(--grey);
     padding: 8px;
     height: 60px;
 }
 
 .character-table__cell:last-child {
+    border-right: 1px solid var(--grey);
+}
+
+.character-table__cell:not(:last-child) {
     border-right: 1px solid var(--grey);
 }
 
@@ -467,7 +478,7 @@ input[type=number] {
     font-size: 12px;
     white-space: wrap;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.5s;
     pointer-events: none; /* Чтоб не мешал клику */
     z-index: 1;
 }

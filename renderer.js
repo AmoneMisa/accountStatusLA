@@ -9,26 +9,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     let nickname = localStorage.getItem('nickname') || '';
 
     if (!nickname) {
-        // Если ника нет, сразу включаем редактирование
         nicknameElement.innerHTML = `<input type="text" id="nickname-input" placeholder="Введите ник" autofocus />`;
         editNicknameButton.style.display = 'none';
         saveNicknameButton.style.display = 'inline-block';
     } else {
-        // Если ник есть, показываем его как текст
         nicknameElement.innerText = `Ваш ник: ${nickname}`;
     }
 
-    nicknameElement.innerText = "Загружаю ник...";
     try {
-        nickname = await window.electron.ipcRenderer.getNickname();
-        nicknameElement.innerText = `Ваш ник: ${nickname}`;
-        localStorage.setItem('nickname', nickname);
+        if (!nickname) {
+            nickname = await window.electron.ipcRenderer.getNickname();
+            nicknameElement.innerText = `Ваш ник: ${nickname}`;
+            localStorage.setItem('nickname', nickname);
+        }
 
         const allNickCharacters = JSON.parse(localStorage.getItem('allNickCharacters') || '{}');
 
         if (!allNickCharacters[nickname]) {
             const characters = await window.electron.ipcRenderer.fetchCharacters(nickname);
-            if (!characters.error) {
+            if (characters && !characters?.error) {
                 allNickCharacters[nickname] = characters;
                 localStorage.setItem('allNickCharacters', JSON.stringify(allNickCharacters));
             }
@@ -42,6 +41,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         console.error("Ошибка загрузки ника:", error);
         nicknameElement.innerText = "Ошибка загрузки ника";
+        editNicknameButton.style.display = 'block';
+        saveNicknameButton.style.display = 'none';
     }
 
     document.getElementById('minimize').addEventListener('click', () => {
@@ -61,8 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         setEditable(false);
 
         console.log("Загружаем персонажей после сохранения...");
-        renderCharacters(true);  // Загружаем сначала всех
-        renderCharacters(false); // Потом скрываем тех, кто с ❌
+        renderCharacters(false);
     });
 
     document.getElementById('refresh-characters').addEventListener('click', async () => {
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.electron.ipcRenderer.on('clear-character-settings', () => {
         localStorage.removeItem('characterSettings');
         console.log('Настройки персонажей сброшены.');
-        renderCharacters(false); // Перерисовываем список персонажей
+        renderCharacters(false);
     });
 
     window.electron.ipcRenderer.on('clear-characters-list', () => {
@@ -151,8 +151,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    window.electron.ipcRenderer.on('clear-nickname', () => {
+    window.electron.ipcRenderer.on('clear-nickname', async () => {
         localStorage.removeItem('nickname');
+        await window.electron.ipcRenderer.removeNickname(nickname);
         document.getElementById('nickname').innerText = "Ник не установлен";
     });
 });
