@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
     ipcRenderer: {
+        invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args),
         fetchCharacters: (nickname) => ipcRenderer.invoke('fetch-characters', nickname),
         getNickname: () => ipcRenderer.invoke('get-nickname'),
         setNickname: (event, nickname) => ipcRenderer.invoke('set-nickname', event, nickname),

@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.getElementById('close').addEventListener('click', () => {
-        window.electron.ipcRenderer.send('window:quit');
+        window.electron.ipcRenderer.send('window:close');
     });
 
     document.getElementById('save-button').addEventListener('click', () => {
@@ -155,5 +155,63 @@ document.addEventListener('DOMContentLoaded', async () => {
         localStorage.removeItem('nickname');
         await window.electron.ipcRenderer.removeNickname(nickname);
         document.getElementById('nickname').innerText = "Ник не установлен";
+    });
+
+    const savePathInput = document.getElementById("savePath");
+    const chooseFolderButton = document.getElementById("choose-folder");
+    const themeSelect = document.getElementById("theme");
+    const minimizeOnCloseCheckbox = document.getElementById("minimizeOnClose");
+    const rememberWindowSizeCheckbox = document.getElementById("rememberWindowSize");
+    const rememberWindowPositionCheckbox = document.getElementById("rememberWindowPosition");
+    const updateAppButton = document.getElementById("update-app");
+    const saveSettingsButton = document.getElementById("save-settings");
+
+    // Загрузка текущих настроек из `main.js`
+    const settings = await window.electron.ipcRenderer.invoke("load-settings");
+    if (settings.savePath) {
+        savePathInput.value = settings.savePath;
+    }
+
+    if (settings.theme) {
+        themeSelect.value = settings.theme;
+    }
+
+    if (settings.minimizeOnClose) {
+        minimizeOnCloseCheckbox.checked = settings.minimizeOnClose;
+    }
+
+    if (settings.rememberWindowSize) {
+        rememberWindowSizeCheckbox.checked = settings.rememberWindowSize;
+    }
+
+    if (settings.rememberWindowPosition) {
+        rememberWindowPositionCheckbox.checked = settings.rememberWindowPosition;
+    }
+
+    // Выбор пути сохранения
+    chooseFolderButton.addEventListener("click", async () => {
+        const folderPath = await window.electron.ipcRenderer.invoke("choose-folder");
+        if (folderPath) {
+            savePathInput.value = folderPath;
+        }
+    });
+
+    // Сохранение настроек
+    saveSettingsButton.addEventListener("click", () => {
+        const newSettings = {
+            savePath: savePathInput.value,
+            theme: themeSelect.value,
+            minimizeOnClose: minimizeOnCloseCheckbox.checked,
+            rememberWindowSize: rememberWindowSizeCheckbox.checked,
+            rememberWindowPosition: rememberWindowPositionCheckbox.checked,
+        };
+
+        console.log(newSettings)
+        window.electron.ipcRenderer.send("save-settings", newSettings);
+    });
+
+    // Обновление приложения
+    updateAppButton.addEventListener("click", () => {
+        window.electron.ipcRenderer.send("update-app");
     });
 });

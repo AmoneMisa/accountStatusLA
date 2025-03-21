@@ -1,4 +1,4 @@
-import {app, BrowserWindow, ipcMain, Menu, Tray} from 'electron';
+import {app, BrowserWindow, ipcMain, Menu, Tray, dialog} from 'electron';
 import path, {dirname, join} from 'path';
 import {parseLostArkProfile} from "./parser.js";
 import {fileURLToPath} from 'url';
@@ -27,14 +27,13 @@ async function createWindow() {
     });
 
     await mainWindow.loadFile('index.html');
-
-    mainWindow.on('closed', () => {
-        mainWindow = null;
-    });
 }
 
 await app.on('ready', async () => {
     await createWindow();
+    const settings = loadSettings();
+    console.log(settings)
+    applySettings(settings);
 
     tray = new Tray(path.join(app.getAppPath(), 'assets', 'icon.png'));
     const contextMenu = Menu.buildFromTemplate([
@@ -89,10 +88,6 @@ ipcMain.on('window:toggleMaximize', () => {
     } else {
         mainWindow.maximize();
     }
-});
-
-ipcMain.on('window:close', () => {
-    mainWindow.hide();
 });
 
 ipcMain.on('window:quit', () => {
@@ -150,7 +145,118 @@ function resetRaids() {
     });
 
     saveSettings(settings);
-    console.log("Рейды сброшены!");
+}
+
+ipcMain.handle("load-settings", () => {
+    return loadSettings();
+});
+
+ipcMain.on("save-settings", (event, newSettings) => {
+    const currentSettings = loadSettings();
+    const updatedSettings = { ...currentSettings, ...newSettings };
+    saveSettings(updatedSettings);
+});
+
+// Выбор папки для сохранения
+ipcMain.handle("choose-folder", async () => {
+    const result = await dialog.showOpenDialog({
+        properties: ["openDirectory"]
+    });
+
+    if (!result.canceled && result.filePaths.length > 0) {
+        return result.filePaths[0];
+    }
+    return null;
+});
+
+// Закрытие или сворачивание при нажатии на крестик
+ipcMain.on("window:close", () => {
+    const settings = loadSettings();
+
+    if (settings.rememberWindowPosition) {
+        const bounds = mainWindow.getBounds();
+        settings.windowPosition = { x: bounds.x, y: bounds.y };
+    }
+
+    // Если включено запоминание размера окна
+    if (settings.rememberWindowSize) {
+        const bounds = mainWindow.getBounds();
+        settings.windowSize = { width: bounds.width, height: bounds.height };
+    }
+
+    saveSettings(settings);
+
+    if (settings.minimizeOnClose) {
+        mainWindow.hide();
+    } else {
+        app.quit();
+    }
+
+    mainWindow = null;
+});
+
+// Запоминание размера и позиции окна
+ipcMain.on("save-window-state", () => {
+    if (!mainWindow) return;
+
+    const settings = loadSettings();
+    const bounds = mainWindow.getBounds();
+
+    settings.windowSize = { width: bounds.width, height: bounds.height };
+    settings.windowPosition = { x: bounds.x, y: bounds.y };
+
+    saveSettings(settings);
+});
+
+// Восстановление размера и позиции окна при старте
+ipcMain.on("restore-window-state", () => {
+    const settings = loadSettings();
+
+    if (settings.windowSize) {
+        mainWindow.setSize(settings.windowSize.width, settings.windowSize.height);
+    }
+
+    if (settings.windowPosition) {
+        mainWindow.setBounds({
+            x: settings.windowPosition.x,
+            y: settings.windowPosition.y,
+            width: settings.windowSize.width,
+            height: settings.windowSize.height,
+        });
+    }
+});
+
+// Обновление приложения (загрузка нового `.exe`)
+ipcMain.on("update-app", async () => {
+    const repoUrl = "https://github.com/AmoneMisa/accountStatusLA/releases/latest";
+    await shell.openExternal(repoUrl);
+});
+
+function applySettings(settings) {
+    // 📌 Запоминать размер окна
+    if (settings.rememberWindowSize && settings.windowSize) {
+        mainWindow.setSize(settings.windowSize.width, settings.windowSize.height);
+    }
+
+    // 📌 Запоминать расположение окна
+    if (settings.rememberWindowPosition && settings.windowPosition) {
+        mainWindow.setBounds({
+            x: settings.windowPosition.x,
+            y: settings.windowPosition.y,
+            width: settings.windowSize ? settings.windowSize.width : 1200,  // fallback
+            height: settings.windowSize ? settings.windowSize.height : 800  // fallback
+        });
+    }
+
+    // 📌 Обрабатывать поведение кнопки закрытия
+    mainWindow.on('close', (event) => {
+        if (settings.minimizeOnClose) {
+            event.preventDefault();
+            mainWindow.hide();
+        } else {
+            app.quit();
+        }
+    });
 }
 
 // Сбрасываем Chaos и Guard в 06:00 каждый день
