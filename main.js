@@ -2,7 +2,7 @@ import {app, BrowserWindow, dialog, ipcMain, Menu, Tray, shell, net} from 'elect
 import path, {dirname, join} from 'path';
 import {parseLostArkProfile} from "./parser.js";
 import {fileURLToPath} from 'url';
-import {changeSettingsPath, loadSettings, saveSettings} from "./storage.js";
+import {changeSettingsPath, getLastReset, loadSettings, saveSettings, setLastReset} from "./storage.js";
 import fs from "fs";
 import cron from "node-cron";
 
@@ -125,26 +125,6 @@ ipcMain.handle('fetch-characters', async (_, nickname) => {
         return { error: error.message };
     }
 });
-
-function resetRaids() {
-    let settings = loadSettings();
-    const now = new Date();
-    const day = now.getUTCDay(); // 0 = воскресенье, 3 = среда
-
-    Object.keys(settings).forEach(charName => {
-        if (settings[charName].raids) {
-            settings[charName].raids.forEach(raid => {
-                if (["Хаос", "Хранитель", "Эфонка"].includes(raid)) {
-                    settings[charName].raidStatus[raid] = false;
-                } else if (day === 3) {
-                    settings[charName].raidStatus[raid] = false;
-                }
-            });
-        }
-    });
-
-    saveSettings(settings);
-}
 
 ipcMain.handle("load-settings", () => {
     return loadSettings();
@@ -301,14 +281,70 @@ ipcMain.handle('check-for-updates', async (event) => {
     }
 });
 
-// Сбрасываем Chaos и Guard в 06:00 каждый день
-cron.schedule('0 6 * * *', () => {
-    console.log("Сбрасываем Хаос и Хранителей...");
-    resetRaids();
-});
+function resetRaids() {
+    let settings = loadSettings();
+    const now = new Date();
+    const utcHour = now.getUTCHours();
+    const utcDay = now.getUTCDay();
 
-// Сбрасываем все остальные рейды в 06:00 по средам
-cron.schedule('0 6 * * 3', () => {
-    console.log("Сбрасываем недельные рейды...");
+    // Переводим время в МСК (UTC+3)
+    const mskHour = (utcHour + 3) % 24;
+
+    // Если сейчас **6 утра по МСК**, проверяем сброс
+    if (mskHour === 6) {
+        console.log(`Проверяем сброс рейдов (UTC: ${utcHour}, МСК: ${mskHour})`);
+
+        // Если среда (UTC: 3), сбрасываем **всё, кроме "Эфонка", "Хранитель", "Хаос"**
+        if (utcDay === 3) {
+            Object.keys(settings).forEach(charName => {
+                if (settings[charName]?.raids) {
+                    settings[charName].raids.forEach(raid => {
+                        if (!["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
+                            settings[charName].raidStatus[raid] = false;
+                        }
+                    });
+                }
+            });
+            console.log("Сброс недельных рейдов (по средам)");
+        }
+
+        // Каждый день сбрасываем **только "Эфонка", "Хранитель", "Хаос"**
+        Object.keys(settings).forEach(charName => {
+            if (settings[charName]?.raids) {
+                settings[charName].raids.forEach(raid => {
+                    if (["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
+                        settings[charName].raidStatus[raid] = false;
+                    }
+                });
+            }
+        });
+        console.log("Сброс ежедневных активностей");
+
+        saveSettings(settings);
+        setLastReset(now.toISOString());
+    }
+}
+
+// 🔄 Проверяем при старте, нужно ли сбрасывать активности
+function checkResetOnStartup() {
+    const lastReset = getLastReset();
+    const now = new Date();
+
+    // Переводим дату в UTC+3
+    const lastResetDate = lastReset ? new Date(lastReset) : null;
+    const nowMSK = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+
+    if (!lastResetDate || lastResetDate.getUTCDate() !== nowMSK.getUTCDate()) {
+        console.log("Прошлый сброс не найден или устарел. Выполняем сброс рейдов.");
+        resetRaids();
+    } else {
+        console.log("Сброс рейдов не требуется.");
+    }
+}
+
+checkResetOnStartup();
+
+// **Запуск по расписанию (каждый день в 06:00 МСК)**
+cron.schedule('0 3 * * *', () => {  // 06:00 МСК = 03:00 UTC
     resetRaids();
 });

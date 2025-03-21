@@ -29,3 +29,14 @@ export function changeSettingsPath(newPath) {
     dataPath = newDataPath;
     return newDataPath;
 }
+
+export function getLastReset() {
+    const settings = loadSettings();
+    return settings.lastReset || null;
+}
+
+export function setLastReset(date) {
+    const settings = loadSettings();
+    settings.lastReset = date;
+    saveSettings(settings);
+}
