@@ -264,7 +264,7 @@ function toggleRaidStatus(characterName, raid, element) {
 }
 
 function showRaidSelector(characterName) {
-    const raids = ["Камен 2.0 (гер)", "Камен 2.0 (нормал)", "Аврель (гер)", "Аврель (нормал)", "Эгир (гер)", "Эгир (нормал)", "Ехидна", "Бехемос", "Камен (гер)", "Хаос", "Хранитель", "Эфонка"];
+    const raids = ["Камен 2.0 (гер)", "Камен 2.0 (об)", "Аврель (гер)", "Аврель (об)", "Эгир (гер)", "Эгир (об)", "Ехидна", "Бехемос", "Камен (гер)", "Хаос", "Хранитель", "Эфонка"];
     let settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
     let selectContainer = document.createElement("div");
     let selectLabel = document.createElement("label");
@@ -286,13 +286,10 @@ function showRaidSelector(characterName) {
     });
 
     if (settings[characterName] && settings[characterName].raids && settings[characterName].raids.length > 0) {
-        console.log(settings[characterName].raids.length);
         Array.from(select.options).forEach(option => {
 
             if (settings[characterName].raids.includes(option.value)) {
                 option.selected = true;
-                console.log(option);
-
             }
         });
     }

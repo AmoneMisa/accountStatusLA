@@ -226,8 +226,18 @@ input[type=number] {
     background-color: var(--grey);
 }
 
-.character:hover .character__cell:not(:last-child) {
-    border-right: 2px solid var(--dark-grey);
+@media screen and (min-width: 981px) {
+    .character__cell:not(:last-child) {
+        border-right: 2px solid var(--grey);
+    }
+
+    .character:hover .character__cell:not(:last-child) {
+        border-right: 2px solid var(--dark-grey);
+    }
+
+    .character:hover .character__cell:not(:last-child) .raid {
+        border-right: 1px solid var(--dark-grey);
+    }
 }
 
 .character__cell {
@@ -250,14 +260,6 @@ input[type=number] {
     cursor: grab;
 }
 
-.character__cell:not(:last-child) {
-    border-right: 2px solid var(--grey);
-}
-
-.character__cell:not(:last-child):hover .raid {
-    border-right: 1px solid var(--dark-grey);
-}
-
 .character__icons,
 .character__info {
     flex-direction: column;
@@ -274,7 +276,7 @@ input[type=number] {
 }
 
 .raid {
-    width: min-content;
+    width: max-content;
     border-right: 1px solid var(--grey);
 }
 
@@ -396,10 +398,11 @@ input[type=number] {
 .character-table__row {
     display: flex;
     align-items: center;
-    width: 100%;
+    width: fit-content;
     border-bottom: 1px solid var(--grey);
     border-left: 1px solid var(--grey);
     border-right: 1px solid var(--grey);
+    margin: auto;
 }
 
 .character-table__row:first-child {
@@ -461,7 +464,6 @@ input[type=number] {
 
 .tooltip {
     position: relative;
-    display: inline-block;
     cursor: pointer;
 }
 
@@ -508,4 +510,118 @@ input[type=number] {
 /* При наведении на ползунок */
 ::-webkit-scrollbar-thumb:hover {
     background: var(--light-grey);
+}
+
+@media screen and (max-width: 980px) {
+    .character-list {
+        display: grid;
+        grid-template-areas: "a b c";
+    }
+
+    .character.view-mode {
+        display: grid;
+        grid-template-areas: "grab icons info"
+                             "raid1 raid2 raid3"
+                             "plus plus plus ";
+        gap: 0;
+        margin-bottom: 0;
+    }
+
+    .character__raids {
+        display: grid;
+        grid-template-areas: "a b";
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        grid-column: 1 / -1;
+        gap: 0;
+        border-top: 1px solid var(--grey);
+        border-bottom: 1px solid var(--grey);
+        padding: 0;
+    }
+
+    .raid__header {
+        min-width: initial;
+        width: auto;
+    }
+
+    .character__drag {
+        border-left: 1px solid var(--grey);
+        justify-content: center;
+        width: -webkit-fill-available;
+        padding: 0 5px;
+    }
+
+    .character__info {
+        border-right: 1px solid var(--grey);
+        grid-area: info;
+    }
+
+    .character__icons {
+        flex-wrap: wrap;
+        height: -webkit-fill-available;
+        border-right: 1px solid var(--grey);
+        border-left: 1px solid var(--grey);
+        grid-area: icons;
+    }
+
+    .character__actions {
+        grid-area: plus;
+    }
+
+    .add-raid {
+        border-radius: 0;
+        width: -webkit-fill-available;
+        grid-column: 1 / -1;
+        justify-content: center;
+    }
+
+    .raid {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        align-items: center;
+        border-right: 1px solid var(--grey);
+        border-bottom: 1px solid var(--grey);
+    }
+
+    .raid:nth-child(odd) {
+        border-left: 1px solid var(--grey);
+    }
+
+    .character:hover .character__info,
+    .character:hover .character__icons,
+    .character:hover .raid {
+        border-right: 1px solid var(--dark-grey);
+    }
+
+    .character:hover .character__drag,
+    .character:hover .raid:nth-child(odd),
+    .character:hover .character__icons {
+        border-left: 1px solid var(--dark-grey);
+    }
+
+    .character:hover .character__raids {
+        border-top: 1px solid var(--dark-grey);
+    }
+
+    .character:hover .raid,
+    .character:hover .character__raids {
+        border-bottom: 1px solid var(--dark-grey);
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .character-list {
+        grid-template-areas: "a b";
+    }
+
+    .character__raids {
+        grid-template-areas: "a b";
+    }
+}
+
+@media screen and (max-width: 530px) {
+    .character-list {
+        grid-template-areas: "a";
+    }
 }
