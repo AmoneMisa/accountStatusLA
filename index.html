@@ -42,44 +42,35 @@
         </div>
         <div id="settings-tab" class="tab-content">
             <div id="settings-table" class="settings-table">
-                <div class="settings-table__row">
                     <div class="settings-table__cell">Название настройки</div>
                     <div class="settings-table__cell">Значение</div>
-                </div>
-                <div class="settings-table__row">
                     <div class="settings-table__cell">Изменить путь сохранения настроек</div>
-                    <div class="settings-table__cell"><input type="text" id="savePath" readonly>
+                    <div class="settings-table__cell"><input type="text" id="savePath" class="choose-folder-input" readonly>
                         <button id="choose-folder" class="button">Выбрать</button></div>
-                </div>
-                <div class="settings-table__row">
                     <div class="settings-table__cell">Выбрать тему</div>
                     <div class="settings-table__cell"><select id="theme">
-                        <option value="light">Светлая</option>
                         <option value="dark">Тёмная</option>
+                        <option value="light">Светлая</option>
+                        <option value="blue">Синяя</option>
+                        <option value="red">Красная</option>
+                        <option value="yellow">Жёлтая</option>
+                        <option value="green">Зелёная</option>
                     </select></div>
-                </div>
-                <div class="settings-table__row">
                     <div class="settings-table__cell">Сворачивать приложение при нажатии на крестик</div>
                     <div class="settings-table__cell"><input type="checkbox" id="minimizeOnClose"></div>
-                </div>
-                <div class="settings-table__row">
                     <div class="settings-table__cell">Запоминать размер окна при закрытии</div>
                     <div class="settings-table__cell"><input type="checkbox" id="rememberWindowSize"></div>
-                </div>
-                <div class="settings-table__row">
                     <div class="settings-table__cell">Запоминать расположение окна при закрытии</div>
                     <div class="settings-table__cell"><input type="checkbox" id="rememberWindowPosition"></div>
-                </div>
-                <div class="settings-table__row">
-                    <div class="settings-table__cell">Проверить обновления приложения</div>
-                    <div class="settings-table__cell"><button id="update-app" class="button">Обновить приложение</button></div>
-                </div>
+<!--                    <div class="settings-table__cell">Проверить обновления приложения</div>-->
+<!--                    <div class="settings-table__cell"><button id="update-app" class="button">Обновить приложение</button></div>-->
             </div>
             <button id="save-settings" class="settings-table__button button">Сохранить</button>
         </div>
     </div>
     <button id="save-button" class="button save-button">Сохранить</button>
-    <div id="error"></div>
+    <div id="message" class="message"></div>
+    <div id="error" class="error"></div>
     <div id="loader" class="loader"></div>
 </div>
 <script type="module" src="./renderer.js"></script>

@@ -145,6 +145,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             button.classList.add('active');
             document.getElementById(`${tabId}-tab`).classList.add('active');
 
+            document.getElementById("message").innerText = "";
+            document.getElementById("error").innerText = "";
+
             if (tabId === 'table') {
                 renderCharacterTable();
             }
@@ -163,7 +166,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const minimizeOnCloseCheckbox = document.getElementById("minimizeOnClose");
     const rememberWindowSizeCheckbox = document.getElementById("rememberWindowSize");
     const rememberWindowPositionCheckbox = document.getElementById("rememberWindowPosition");
-    const updateAppButton = document.getElementById("update-app");
     const saveSettingsButton = document.getElementById("save-settings");
 
     // Загрузка текущих настроек из `main.js`
@@ -190,9 +192,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Выбор пути сохранения
     chooseFolderButton.addEventListener("click", async () => {
-        const folderPath = await window.electron.ipcRenderer.invoke("choose-folder");
-        if (folderPath) {
-            savePathInput.value = folderPath;
+        const { filePaths } = await window.electron.ipcRenderer.chooseFolder();
+
+        if (filePaths && filePaths.length > 0) {
+            const newPath = filePaths[0];
+            document.getElementById('savePath').value = await window.electron.ipcRenderer.invoke('change-settings-path', newPath);
         }
     });
 
@@ -206,12 +210,29 @@ document.addEventListener('DOMContentLoaded', async () => {
             rememberWindowPosition: rememberWindowPositionCheckbox.checked,
         };
 
-        console.log(newSettings)
         window.electron.ipcRenderer.send("save-settings", newSettings);
+        document.getElementById("message").innerText = "Настройки сохранены";
     });
 
-    // Обновление приложения
-    updateAppButton.addEventListener("click", () => {
-        window.electron.ipcRenderer.send("update-app");
-    });
+    // document.getElementById('update-app').addEventListener('click', async () => {
+    //     document.getElementById('message').innerText = "Проверка обновлений...";
+    //     document.getElementById('error').innerText = "";
+    //
+    //     await window.electron.ipcRenderer.invoke('check-for-updates');
+    // });
+    //
+    // window.electron.ipcRenderer.on('update-available', async (_, { latestVersion, downloadUrl }) => {
+    //     document.getElementById('message').innerText = `Доступно обновление ${latestVersion}. Открываем страницу загрузки...`;
+    //
+    //     await window.electron.ipcRenderer.openExternal(downloadUrl);
+    // });
+    //
+    // window.electron.ipcRenderer.on('update-not-found', () => {
+    //     document.getElementById('message').innerText = "Обновлений нет.";
+    // });
+    //
+    // window.electron.ipcRenderer.on('update-error', (_, errorMessage) => {
+    //     console.error(_, errorMessage)
+    //     document.getElementById('error').innerText = `Ошибка обновления: ${errorMessage?.message || "Неизвестная ошибка"}`;
+    // });
 });

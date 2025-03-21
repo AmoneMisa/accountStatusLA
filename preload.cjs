@@ -8,6 +8,9 @@ contextBridge.exposeInMainWorld('electron', {
         setNickname: (event, nickname) => ipcRenderer.invoke('set-nickname', event, nickname),
         removeNickname: (event, nickname) => ipcRenderer.invoke('remove-nickname', event, nickname),
         send: (channel, data) => ipcRenderer.send(channel, data),
-        on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args))
+        on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
+        checkUpdates: () => ipcRenderer.invoke('check-for-updates'),
+        openExternal: (url) => ipcRenderer.invoke('open-external', url),
+        chooseFolder: () => ipcRenderer.invoke('choose-folder'),
     }
 });

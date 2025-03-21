@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { app } from 'electron';
 
-const dataPath = path.join(app.getPath('userData'), 'config.json');
+let dataPath = path.join(app.getPath('userData'), 'config.json');
 
 // Функция чтения данных
 export function loadSettings() {
@@ -15,4 +15,17 @@ export function loadSettings() {
 // Функция записи данных
 export function saveSettings(settings) {
     fs.writeFileSync(dataPath, JSON.stringify(settings, null, 2), 'utf-8');
+}
+
+export function changeSettingsPath(newPath) {
+    const newDataPath = path.join(newPath, 'config.json');
+
+    // Если старые настройки существуют — копируем их в новую папку
+    if (fs.existsSync(dataPath)) {
+        fs.copyFileSync(dataPath, newDataPath);
+    }
+
+    // Обновляем глобальный путь
+    dataPath = newDataPath;
+    return newDataPath;
 }

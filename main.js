@@ -1,8 +1,8 @@
-import {app, BrowserWindow, ipcMain, Menu, Tray, dialog} from 'electron';
+import {app, BrowserWindow, dialog, ipcMain, Menu, Tray, shell, net} from 'electron';
 import path, {dirname, join} from 'path';
 import {parseLostArkProfile} from "./parser.js";
 import {fileURLToPath} from 'url';
-import {loadSettings, saveSettings} from "./storage.js";
+import {changeSettingsPath, loadSettings, saveSettings} from "./storage.js";
 import fs from "fs";
 import cron from "node-cron";
 
@@ -32,7 +32,6 @@ async function createWindow() {
 await app.on('ready', async () => {
     await createWindow();
     const settings = loadSettings();
-    console.log(settings)
     applySettings(settings);
 
     tray = new Tray(path.join(app.getAppPath(), 'assets', 'icon.png'));
@@ -195,7 +194,6 @@ ipcMain.on("window:close", () => {
     mainWindow = null;
 });
 
-// Запоминание размера и позиции окна
 ipcMain.on("save-window-state", () => {
     if (!mainWindow) return;
 
@@ -208,7 +206,6 @@ ipcMain.on("save-window-state", () => {
     saveSettings(settings);
 });
 
-// Восстановление размера и позиции окна при старте
 ipcMain.on("restore-window-state", () => {
     const settings = loadSettings();
 
@@ -226,10 +223,17 @@ ipcMain.on("restore-window-state", () => {
     }
 });
 
-// Обновление приложения (загрузка нового `.exe`)
 ipcMain.on("update-app", async () => {
     const repoUrl = "https://github.com/AmoneMisa/accountStatusLA/releases/latest";
     await shell.openExternal(repoUrl);
+});
+
+ipcMain.handle('open-external', async (event, url) => {
+    await shell.openExternal(url);
+});
+
+ipcMain.handle('change-settings-path', async (event, newPath) => {
+    return changeSettingsPath(newPath);
 });
 
 function applySettings(settings) {
@@ -258,6 +262,42 @@ function applySettings(settings) {
         }
     });
 }
+
+ipcMain.handle('check-for-updates', async (event) => {
+    try {
+        const request = net.request('https://api.github.com/repos/AmoneMisa/accountStatusLA/releases/latest');
+
+        request.on('response', (response) => {
+            let rawData = '';
+            console.log("response", response)
+            response.on('data', (chunk) => { rawData += chunk; });
+            response.on('end', async () => {
+                try {
+                    const releaseData = JSON.parse(rawData);
+                    const latestVersion = releaseData.tag_name;
+                    const assets = releaseData.assets;
+                    console.log("response", releaseData)
+
+                    // Ищем .exe в релизе
+                    const exeAsset = assets.find(asset => asset.name.endsWith('.exe'));
+
+                    if (exeAsset) {
+                        const downloadUrl = exeAsset.browser_download_url;
+                        event.sender.send('update-available', { latestVersion, downloadUrl });
+                    } else {
+                        event.sender.send('update-not-found');
+                    }
+                } catch (error) {
+                    event.sender.send('update-error', error);
+                }
+            });
+        });
+
+        request.end();
+    } catch (error) {
+        event.sender.send('update-error', error.message);
+    }
+});
 
 // Сбрасываем Chaos и Guard в 06:00 каждый день
 cron.schedule('0 6 * * *', () => {
