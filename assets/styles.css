@@ -13,6 +13,109 @@
     --support: #5cffff;
     --dd: #ea91ff;
     --gs: #eab00f;
+    --shadow: 0px 4px 10px rgba(129, 106, 0, 0.3);
+}
+
+[data-theme="light"] {
+    --dark-grey: #e0e0e0;
+    --middle-grey: #f0f0f0;
+    --grey: #d6d6d6;
+    --light-grey: #c0c0c0;
+    --black: #ffffff; /* Фон */
+    --white: #222222; /* Текст */
+    --error: #d32f2f;
+    --gold: #67a1ff; /* Активные кнопки */
+    --loader-border: #777777;
+    --loader-top: #FFD700;
+    --support: #00a4a4; /* Подсветка саппортов */
+    --dd: #ad00ad; /* Подсветка ДД */
+    --gs: #c69c6d;
+    --shadow: 0px 4px 10px rgba(107, 107, 107, 0.3);
+}
+
+[data-theme="red"] {
+    --dark-grey: #4d0000;
+    --middle-grey: #660000;
+    --grey: #800000;
+    --light-grey: #990000;
+    --black: #210000; /* Фон */
+    --white: #ffcccc; /* Текст */
+    --error: #ff4444;
+    --gold: #cb5400; /* Активные кнопки */
+    --loader-border: #ff6666;
+    --loader-top: #ffcc00;
+    --support: #ffa9a9; /* Подсветка саппортов */
+    --dd: #ff0037; /* Подсветка ДД */
+    --gs: #ff8c00;
+    --shadow: 0px 4px 10px rgba(255, 89, 0, 0.3);
+}
+
+[data-theme="blue"] {
+    --dark-grey: #001a33;
+    --middle-grey: #00264d;
+    --grey: #003366;
+    --light-grey: #004080;
+    --black: #001122; /* Фон */
+    --white: #cceeff; /* Текст */
+    --error: #ff3333;
+    --gold: #00bbc9; /* Активные кнопки */
+    --loader-border: #6699ff;
+    --loader-top: #ffcc00;
+    --support: #66ccff; /* Подсветка саппортов */
+    --dd: #3399ff; /* Подсветка ДД */
+    --gs: #ffa500;
+    --shadow: 0px 4px 10px rgba(77, 202, 255, 0.3);
+}
+
+[data-theme="green"] {
+    --dark-grey: #003300;
+    --middle-grey: #004d00;
+    --grey: #006600;
+    --light-grey: #008000;
+    --black: #002200; /* Фон */
+    --white: #ccffcc; /* Текст */
+    --error: #ff4444;
+    --gold: #21c900; /* Активные кнопки */
+    --loader-border: #66ff66;
+    --loader-top: #ffcc00;
+    --support: #3fff80; /* Подсветка саппортов */
+    --dd: #00ad3a; /* Подсветка ДД */
+    --gs: #eab00f;
+    --shadow: 0px 4px 10px rgba(0, 255, 21, 0.3);
+}
+
+[data-theme="yellow"] {
+    --dark-grey: #665500;
+    --middle-grey: #806600;
+    --grey: #997700;
+    --light-grey: #b38900;
+    --black: #332200; /* Фон */
+    --white: #fff5cc; /* Текст */
+    --error: #cc0000;
+    --gold: #e0c100; /* Активные кнопки */
+    --loader-border: #ffcc00;
+    --loader-top: #ffdd00;
+    --support: #ffea80; /* Подсветка саппортов */
+    --dd: #ffbb33; /* Подсветка ДД */
+    --gs: #ffd700;
+    --shadow: 0px 4px 10px rgba(255, 215, 0, 0.3);
+}
+
+[data-theme="gradient-dark"] {
+    --dark-grey: #1a1a2e;  /* Глубокий тёмно-серый */
+    --middle-grey: #16213e; /* Тёмно-синий */
+    --grey: #0f3460; /* Насыщенный синий */
+    --light-grey: #533483; /* Фиолетовый */
+    --black: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* Градиент фона */
+    --white: #eaeaea; /* Светлый текст */
+    --error: #ff3860; /* Яркий алый */
+    --gold: #c0a304; /* Золотистый для кнопок */
+    --loader-border: #a29bfe; /* Светло-фиолетовый */
+    --loader-top: #f4d03f; /* Тёплый золотистый */
+    --support: #8b78e6; /* Светло-фиолетовая подсветка саппортов */
+    --dd: #6a89cc; /* Голубовато-синий для ДД */
+    --gs: #f4c542; /* Золотой акцент */
+    --shadow: 0px 4px 10px rgba(255, 215, 0, 0.3);
 }
 
 @font-face {
@@ -61,7 +164,8 @@ select {
 
 option {
     padding: 5px;
-    color: var(--grey);
+    color: var(--white);
+    background-color: var(--grey);
 }
 
 input {
@@ -137,6 +241,7 @@ input[type=number] {
     top: 0;
     background: var(--black);
     z-index: 1;
+    box-shadow: var(--shadow);
 }
 
 .title-bar__title {
@@ -204,6 +309,7 @@ input[type=number] {
     cursor: pointer;
     padding: 16px;
     max-width: -webkit-fill-available;
+    box-shadow: var(--shadow);
 }
 
 .character.view-mode {
@@ -410,6 +516,7 @@ input[type=number] {
     border-left: 1px solid var(--grey);
     border-right: 1px solid var(--grey);
     margin: auto;
+    box-shadow: var(--shadow);
 }
 
 .character-table__row:first-child {
@@ -420,7 +527,6 @@ input[type=number] {
 .character-table__row:nth-child(even) .character-table__cell {
     background-color: var(--middle-grey);
 }
-
 
 .character-table__cell {
     display: flex;
@@ -477,6 +583,7 @@ input[type=number] {
     border-radius: 5px 5px 0 0;
     margin-bottom: 10px;
     grid-template-areas: "a b";
+    box-shadow: var(--shadow);
 }
 
 .settings-table__cell {

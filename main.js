@@ -168,7 +168,6 @@ ipcMain.handle("choose-folder", async () => {
     return null;
 });
 
-// Закрытие или сворачивание при нажатии на крестик
 ipcMain.on("window:close", () => {
     const settings = loadSettings();
 
@@ -177,7 +176,6 @@ ipcMain.on("window:close", () => {
         settings.windowPosition = { x: bounds.x, y: bounds.y };
     }
 
-    // Если включено запоминание размера окна
     if (settings.rememberWindowSize) {
         const bounds = mainWindow.getBounds();
         settings.windowSize = { width: bounds.width, height: bounds.height };
@@ -261,6 +259,10 @@ function applySettings(settings) {
             app.quit();
         }
     });
+
+    if (settings.theme) {
+        mainWindow.webContents.send('apply-theme', settings.theme);
+    }
 }
 
 ipcMain.handle('check-for-updates', async (event) => {

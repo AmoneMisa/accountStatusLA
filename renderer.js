@@ -175,8 +175,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (settings.theme) {
+        document.documentElement.setAttribute("data-theme", settings.theme);
         themeSelect.value = settings.theme;
+
     }
+
+    themeSelect.addEventListener("change", () => {
+        const selectedTheme = themeSelect.value;
+
+        document.documentElement.setAttribute("data-theme", selectedTheme);
+        window.electron.ipcRenderer.send("save-settings", { theme: selectedTheme });
+
+        document.getElementById("message").innerText = "Тема изменена";
+    });
+
+    window.electron.ipcRenderer.on('apply-theme', (theme) => {
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme").value = theme;
+    });
 
     if (settings.minimizeOnClose) {
         minimizeOnCloseCheckbox.checked = settings.minimizeOnClose;
