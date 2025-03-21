@@ -6,28 +6,43 @@ let dataPath = path.join(app.getPath('userData'), 'config.json');
 
 // Функция чтения данных
 export function loadSettings() {
+    let settings = {};
+
     if (fs.existsSync(dataPath)) {
-        return JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+        settings = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
     }
-    return {};
+
+    const settingsPath = settings.savePath
+        ? path.join(settings.savePath, 'config.json')
+        : dataPath;
+
+    if (fs.existsSync(settingsPath)) {
+        settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
+    }
+
+    return settings;
 }
 
 // Функция записи данных
 export function saveSettings(settings) {
-    fs.writeFileSync(dataPath, JSON.stringify(settings, null, 2), 'utf-8');
+    const settingsPath = settings.savePath
+        ? path.join(settings.savePath, 'config.json')
+        : dataPath;
+
+    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2), 'utf-8');
 }
 
 export function changeSettingsPath(newPath) {
-    const newDataPath = path.join(newPath, 'config.json');
+    const oldSettings = loadSettings();
 
     // Если старые настройки существуют — копируем их в новую папку
-    if (fs.existsSync(dataPath)) {
-        fs.copyFileSync(dataPath, newDataPath);
+    if (!fs.existsSync(newPath)) {
+        fs.mkdirSync(newPath, { recursive: true });
     }
 
-    // Обновляем глобальный путь
-    dataPath = newDataPath;
-    return newDataPath;
+    oldSettings.savePath = newPath;
+    saveSettings(oldSettings);
+    return newPath;
 }
 
 export function getLastReset() {
