@@ -18,6 +18,7 @@
 <div class="tabs">
     <button class="tab-button active" data-tab="main">Активности</button>
     <button class="tab-button" data-tab="table">Кубы</button>
+    <button class="tab-button" data-tab="check-list">Чек-лист</button>
     <button class="tab-button" data-tab="settings">Настройки</button>
 </div>
 <div class="wrapper">
@@ -26,7 +27,8 @@
             <div class="header">
                 <div class="nickname-block">
                     <div id="nickname" class="nickname-block__nickname">Загрузка ника...</div>
-                    <button type="button" id="edit-nickname" class="button button_icon nickname-block__button">✏️</button>
+                    <button type="button" id="edit-nickname" class="button button_icon nickname-block__button">✏️
+                    </button>
                     <button id="save-nickname" class="button button_icon" style="display:none">💾</button>
                 </div>
                 <div id="controls" class="controls">
@@ -40,34 +42,43 @@
         <div id="table-tab" class="tab-content">
             <div id="character-table"></div>
         </div>
+        <div id="check-list-tab" class="tab-content">
+            <div id="check-list-table" class="check-list-table"></div>
+            <button type="button" class="check-list-table__button-add button">
+                Добавить задачу
+            </button>
+        </div>
         <div id="settings-tab" class="tab-content">
             <div id="settings-table" class="settings-table">
-                    <div class="settings-table__cell">Название настройки</div>
-                    <div class="settings-table__cell">Значение</div>
-                    <div class="settings-table__cell">Изменить путь сохранения настроек</div>
-                    <div class="settings-table__cell"><input type="text" id="savePath" class="choose-folder-input" readonly>
-                        <button id="choose-folder" class="button">Выбрать</button></div>
-                    <div class="settings-table__cell">Выбрать тему</div>
-                    <div class="settings-table__cell"><select id="theme">
-                        <option value="dark">Тёмная</option>
-                        <option value="light">Светлая</option>
-                        <option value="blue">Синяя</option>
-                        <option value="red">Красная</option>
-                        <option value="green">Зелёная</option>
-                        <option value="yellow">Жёлтая</option>
-                        <option value="gradient-dark">Тёмный градиент</option>
-                        <option value="rose">Розовая</option>
-                        <option value="light-blue">Нежно-голубая</option>
-                        <option value="mint">Мятная</option>
-                    </select></div>
-                    <div class="settings-table__cell">Сворачивать приложение при нажатии на крестик</div>
-                    <div class="settings-table__cell"><input type="checkbox" id="minimizeOnClose"></div>
-                    <div class="settings-table__cell">Запоминать размер окна при закрытии</div>
-                    <div class="settings-table__cell"><input type="checkbox" id="rememberWindowSize"></div>
-                    <div class="settings-table__cell">Запоминать расположение окна при закрытии</div>
-                    <div class="settings-table__cell"><input type="checkbox" id="rememberWindowPosition"></div>
-                    <div class="settings-table__cell">Проверить обновления приложения</div>
-                    <div class="settings-table__cell"><button id="update-app" class="button">Обновить приложение</button></div>
+                <div class="settings-table__cell">Название настройки</div>
+                <div class="settings-table__cell">Значение</div>
+                <div class="settings-table__cell">Изменить путь сохранения настроек</div>
+                <div class="settings-table__cell"><input type="text" id="savePath" class="choose-folder-input" readonly>
+                    <button id="choose-folder" class="button">Выбрать</button>
+                </div>
+                <div class="settings-table__cell">Выбрать тему</div>
+                <div class="settings-table__cell"><select id="theme">
+                    <option value="dark">Тёмная</option>
+                    <option value="light">Светлая</option>
+                    <option value="blue">Синяя</option>
+                    <option value="red">Красная</option>
+                    <option value="green">Зелёная</option>
+                    <option value="yellow">Жёлтая</option>
+                    <option value="gradient-dark">Тёмный градиент</option>
+                    <option value="rose">Розовая</option>
+                    <option value="light-blue">Нежно-голубая</option>
+                    <option value="mint">Мятная</option>
+                </select></div>
+                <div class="settings-table__cell">Сворачивать приложение при нажатии на крестик</div>
+                <div class="settings-table__cell"><input type="checkbox" id="minimizeOnClose"></div>
+                <div class="settings-table__cell">Запоминать размер окна при закрытии</div>
+                <div class="settings-table__cell"><input type="checkbox" id="rememberWindowSize"></div>
+                <div class="settings-table__cell">Запоминать расположение окна при закрытии</div>
+                <div class="settings-table__cell"><input type="checkbox" id="rememberWindowPosition"></div>
+                <div class="settings-table__cell">Проверить обновления приложения</div>
+                <div class="settings-table__cell">
+                    <button id="update-app" class="button">Обновить приложение</button>
+                </div>
             </div>
             <button id="save-settings" class="settings-table__button button">Сохранить</button>
         </div>

@@ -1,3 +1,5 @@
+import {saveSettings} from "../../utils.js";
+
 export function renderCharacterTable() {
     const tableContainer = document.getElementById('character-table');
     tableContainer.innerHTML = '';
@@ -96,5 +98,5 @@ export function saveTableData(charName, column, value) {
     }
 
     tableData[charName][column] = value;
-    window.settings.tableData = JSON.stringify(tableData);
+    saveSettings({tableData: tableData});
 }

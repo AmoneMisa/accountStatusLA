@@ -1,4 +1,4 @@
-import {saveSettings} from "./utils.js";
+import {saveSettings} from "../../utils.js";
 
 function handleIconClick(characterObj, type, element) {
     if (type === 'legate') {
@@ -333,7 +333,7 @@ function removeRaidFromCharacter(characterName, raidName) {
     renderCharacters(false);
 }
 
-import Sortable from "./node_modules/sortablejs/modular/sortable.core.esm.js";
+import Sortable from "../../node_modules/sortablejs/modular/sortable.core.esm.js";
 
 function enableDragAndDrop() {
     const characterList = document.getElementById('character-list');
