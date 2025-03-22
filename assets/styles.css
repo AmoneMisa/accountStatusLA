@@ -22,14 +22,14 @@
     --middle-grey: #f0f0f0;
     --grey: #d6d6d6;
     --light-grey: #c0c0c0;
-    --black: #ffffff; /* Фон */
-    --white: #222222; /* Текст */
+    --black: #ffffff;
+    --white: #222222;
     --error: #d32f2f;
-    --gold: #67a1ff; /* Активные кнопки */
+    --gold: #67a1ff;
     --loader-border: #777777;
     --loader-top: #FFD700;
-    --support: #00a4a4; /* Подсветка саппортов */
-    --dd: #ad00ad; /* Подсветка ДД */
+    --support: #00a4a4;
+    --dd: #ad00ad;
     --gs: #c69c6d;
     --shadow: 0px 4px 10px rgba(107, 107, 107, 0.3);
     --inner-shadow: inset 0 0 10px #a8a8a8;
@@ -40,14 +40,14 @@
     --middle-grey: #660000;
     --grey: #800000;
     --light-grey: #990000;
-    --black: #210000; /* Фон */
-    --white: #ffcccc; /* Текст */
+    --black: #210000;
+    --white: #ffcccc;
     --error: #ff4444;
-    --gold: #cb5400; /* Активные кнопки */
+    --gold: #cb5400;
     --loader-border: #ff6666;
     --loader-top: #ffcc00;
-    --support: #ffa9a9; /* Подсветка саппортов */
-    --dd: #ff0037; /* Подсветка ДД */
+    --support: #ffa9a9;
+    --dd: #ff0037;
     --gs: #ff8c00;
     --shadow: 0px 4px 10px rgba(255, 89, 0, 0.3);
     --inner-shadow: inset 0 0 10px rgba(110, 11, 11, 0.59);
@@ -58,14 +58,14 @@
     --middle-grey: #00264d;
     --grey: #003366;
     --light-grey: #004080;
-    --black: #001122; /* Фон */
-    --white: #cceeff; /* Текст */
+    --black: #001122;
+    --white: #cceeff;
     --error: #ff3333;
-    --gold: #00bbc9; /* Активные кнопки */
+    --gold: #00bbc9;
     --loader-border: #6699ff;
     --loader-top: #ffcc00;
-    --support: #66ccff; /* Подсветка саппортов */
-    --dd: #3399ff; /* Подсветка ДД */
+    --support: #66ccff;
+    --dd: #3399ff;
     --gs: #ffa500;
     --shadow: 0px 4px 10px rgba(77, 202, 255, 0.3);
     --inner-shadow: inset 0 0 10px rgba(67, 104, 194, 0.63);
@@ -76,14 +76,14 @@
     --middle-grey: #004d00;
     --grey: #006600;
     --light-grey: #008000;
-    --black: #002200; /* Фон */
-    --white: #ccffcc; /* Текст */
+    --black: #002200;
+    --white: #ccffcc;
     --error: #ff4444;
-    --gold: #21c900; /* Активные кнопки */
+    --gold: #21c900;
     --loader-border: #66ff66;
     --loader-top: #ffcc00;
-    --support: #3fff80; /* Подсветка саппортов */
-    --dd: #00ad3a; /* Подсветка ДД */
+    --support: #3fff80;
+    --dd: #00ad3a;
     --gs: #eab00f;
     --shadow: 0px 4px 10px rgba(0, 255, 21, 0.3);
     --inner-shadow: inset 0 0 10px rgba(0, 161, 78, 0.63);
@@ -94,36 +94,92 @@
     --middle-grey: #806600;
     --grey: #997700;
     --light-grey: #b38900;
-    --black: #332200; /* Фон */
-    --white: #fff5cc; /* Текст */
+    --black: #332200;
+    --white: #fff5cc;
     --error: #cc0000;
-    --gold: #e0c100; /* Активные кнопки */
+    --gold: #e0c100;
     --loader-border: #ffcc00;
     --loader-top: #ffdd00;
-    --support: #ffea80; /* Подсветка саппортов */
-    --dd: #ffbb33; /* Подсветка ДД */
+    --support: #ffea80;
+    --dd: #ffbb33;
     --gs: #ffd700;
     --shadow: 0px 4px 10px rgba(255, 215, 0, 0.3);
     --inner-shadow: inset 0 0 10px rgba(182, 176, 121, 0.48);
 }
 
 [data-theme="gradient-dark"] {
-    --dark-grey: #1a1a2e;  /* Глубокий тёмно-серый */
-    --middle-grey: #16213e; /* Тёмно-синий */
-    --grey: #0f3460; /* Насыщенный синий */
-    --light-grey: #533483; /* Фиолетовый */
-    --black: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* Градиент фона */
-    --white: #eaeaea; /* Светлый текст */
-    --error: #ff3860; /* Яркий алый */
-    --gold: #c0a304; /* Золотистый для кнопок */
-    --loader-border: #a29bfe; /* Светло-фиолетовый */
-    --loader-top: #f4d03f; /* Тёплый золотистый */
-    --support: #8b78e6; /* Светло-фиолетовая подсветка саппортов */
-    --dd: #6a89cc; /* Голубовато-синий для ДД */
-    --gs: #f4c542; /* Золотой акцент */
+    --dark-grey: #1a1a2e;
+    --middle-grey: #16213e;
+    --grey: #0f3460;
+    --light-grey: #533483;
+    --black: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    --white: #eaeaea;
+    --error: #ff3860;
+    --gold: #c0a304;
+    --loader-border: #a29bfe;
+    --loader-top: #f4d03f;
+    --support: #8b78e6;
+    --dd: #6a89cc;
+    --gs: #f4c542;
     --shadow: 0px 4px 10px rgba(255, 215, 0, 0.3);
     --inner-shadow: inset 0 0 10px rgba(182, 176, 121, 0.48);
 }
+
+[data-theme="rose"] {
+    --dark-grey: #f8e8e9;
+    --middle-grey: #f3d9df;
+    --grey: #eec1cb;
+    --light-grey: #e8b4bc;
+    --black: linear-gradient(135deg, #fff5f7, #ffe0e8);
+    --white: #5c374c;
+    --error: #ff6b81;
+    --gold: #ffb6b9;
+    --loader-border: #fddde6;
+    --loader-top: #ffc2d1;
+    --support: #b185a7;
+    --dd: #f78fb3;
+    --gs: #ffcad4;
+    --shadow: 0px 4px 10px rgba(255, 182, 193, 0.3);
+    --inner-shadow: inset 0 0 10px rgba(255, 192, 203, 0.4);
+}
+
+[data-theme="light-blue"] {
+    --dark-grey: #e6f7ff;
+    --middle-grey: #d0ecff;
+    --grey: #b6e0fe;
+    --light-grey: #a0d2f0;
+    --black: #f5fcff;
+    --white: #324a5f;
+    --error: #ff6f6f;
+    --gold: #9fd3f8;
+    --loader-border: #e0f4ff;
+    --loader-top: #bde0fe;
+    --support: #6fa8dc;
+    --dd: #92c9f9;
+    --gs: #bee3f8;
+    --shadow: 0px 4px 10px rgba(159, 211, 248, 0.3);
+    --inner-shadow: inset 0 0 10px rgba(189, 224, 254, 0.4);
+}
+
+[data-theme="mint"] {
+    --dark-grey: #e2fdf7;
+    --middle-grey: #c7f6ec;
+    --grey: #a6e9d9;
+    --light-grey: #8cded1;
+    --black: #f2fefb;
+    --white: #325c52;
+    --error: #ff7b7b;
+    --gold: #8de0c5;
+    --loader-border: #dafdf5;
+    --loader-top: #a3f4d2;
+    --support: #67bfa9;
+    --dd: #7fe3c2;
+    --gs: #78c9ad;
+    --shadow: 0px 4px 10px rgba(141, 224, 197, 0.3);
+    --inner-shadow: inset 0 0 10px rgba(141, 224, 197, 0.4);
+}
+
+
 
 @font-face {
     font-family: 'Caveat';
