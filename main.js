@@ -2,9 +2,10 @@ import {app, BrowserWindow, dialog, ipcMain, Menu, Tray, shell, net} from 'elect
 import path, {dirname, join} from 'path';
 import {parseLostArkProfile} from "./parser.js";
 import {fileURLToPath} from 'url';
-import {changeSettingsPath, getLastReset, loadSettings, saveSettings, setLastReset} from "./storage.js";
+import {changeSettingsPath, getLastResetWeekly, loadSettings, saveSettings, setLastResetWeekly} from "./storage.js";
 import fs from "fs";
 import cron from "node-cron";
+import {DateTime} from "luxon";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -59,6 +60,11 @@ await app.on('ready', async () => {
 
     tray.on('click', () => {
         mainWindow.show();
+    });
+
+    checkResetOnStartup();
+    cron.schedule('0 3 * * *', () => {
+        resetRaids();
     });
 });
 
@@ -286,7 +292,8 @@ ipcMain.handle('check-for-updates', async (event) => {
 
 function resetRaids() {
     let settings = loadSettings();
-    const now = new Date();
+    console.log("settings",settings)
+    const now = DateTime.now();
     const utcHour = now.getUTCHours();
     const utcDay = now.getUTCDay();
 
@@ -311,29 +318,31 @@ function resetRaids() {
             console.log("Сброс недельных рейдов (по средам)");
         }
 
-        // Каждый день сбрасываем **только "Эфонка", "Хранитель", "Хаос"**
-        Object.keys(settings).forEach(charName => {
-            if (settings[charName]?.raids) {
-                settings[charName].raids.forEach(raid => {
-                    if (["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
-                        settings[charName].raidStatus[raid] = false;
-                    }
-                });
-            }
-        });
-        console.log("Сброс ежедневных активностей");
-
         saveSettings(settings);
-        setLastReset(now.toISOString());
+        setLastResetWeekly(now.toISOString());
     }
 }
 
-// 🔄 Проверяем при старте, нужно ли сбрасывать активности
+function resetDailyActivities() {
+    let settings = loadSettings();
+
+    Object.keys(settings).forEach(charName => {
+        if (settings[charName]?.raids) {
+            settings[charName].raids.forEach(raid => {
+                if (["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
+                    settings[charName].raidStatus[raid] = false;
+                }
+            });
+        }
+    });
+
+    saveSettings(settings);
+}
+
 function checkResetOnStartup() {
-    const lastReset = getLastReset();
+    const lastReset = getLastResetWeekly();
     const now = new Date();
 
-    // Переводим дату в UTC+3
     const lastResetDate = lastReset ? new Date(lastReset) : null;
     const nowMSK = new Date(now.getTime() + 3 * 60 * 60 * 1000);
 
@@ -344,10 +353,3 @@ function checkResetOnStartup() {
         console.log("Сброс рейдов не требуется.");
     }
 }
-
-checkResetOnStartup();
-
-// **Запуск по расписанию (каждый день в 06:00 МСК)**
-cron.schedule('0 3 * * *', () => {  // 06:00 МСК = 03:00 UTC
-    resetRaids();
-});

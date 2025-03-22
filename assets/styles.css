@@ -172,7 +172,7 @@ select {
 option {
     padding: 5px;
     color: var(--white);
-    background-color: var(--grey);
+    background-color: var(--dark-grey);
 }
 
 input {

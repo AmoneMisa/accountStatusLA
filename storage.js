@@ -45,13 +45,23 @@ export function changeSettingsPath(newPath) {
     return newPath;
 }
 
-export function getLastReset() {
+export function getLastResetWeekly() {
     const settings = loadSettings();
-    return settings.lastReset || null;
+    return settings.lastResetWeekly || null;
 }
 
-export function setLastReset(date) {
+export function getLastResetDaily() {
     const settings = loadSettings();
-    settings.lastReset = date;
+    return settings.lastResetDaily || null;
+}
+
+export function setLastResetWeekly(date) {
+    const settings = loadSettings();
+    settings.lastResetWeekly = date;
+    saveSettings(settings);
+}
+export function setLastResetDaily(date) {
+    const settings = loadSettings();
+    settings.lastResetDaily = date;
     saveSettings(settings);
 }
