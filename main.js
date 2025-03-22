@@ -9,7 +9,7 @@ import {
     loadSettings,
     setCharactersSettings,
     setLastResetDaily,
-    setLastResetWeekly
+    setLastResetWeekly, getLastResetWeekly
 } from "./storage.js";
 import fs from "fs";
 import cron from "node-cron";
@@ -291,10 +291,29 @@ ipcMain.handle('check-for-updates', async (event) => {
 });
 
 function resetRaids() {
-    let settings = loadSettings();
+    let lastResetWeekly = getLastResetWeekly();
     const now = DateTime.now();
 
-    Object.keys(settings).forEach(charName => {
+    if (lastResetWeekly) {
+        let date = DateTime.fromISO(lastResetWeekly).plus({days: 7}).set({weekday: 3, hours: 6, minutes: 0, seconds: 0, milliseconds: 0});
+
+        if (now < date) {
+            return;
+        }
+
+        setLastResetWeekly(date.toISO());
+    } else {
+        let date = now.set({hours: 6, minutes: 0, seconds: 0, milliseconds: 0});
+
+        if (now < date) {
+            date = date.minus({days: 1});
+        }
+
+        setLastResetWeekly(date.toISO());
+    }
+
+    let charSettings = getCharactersSettings();
+    Object.keys(charSettings).forEach(charName => {
         if (settings[charName]?.raids) {
             settings[charName].raids.forEach(raid => {
                 if (!["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
@@ -305,7 +324,6 @@ function resetRaids() {
     });
 
     saveSettings(settings);
-    setLastResetWeekly(now);
 }
 
 function resetDailyActivities() {
