@@ -1,3 +1,5 @@
+import {saveSettings} from "./utils.js";
+
 function handleIconClick(characterObj, type, element) {
     if (type === 'legate') {
         handleLegateClick(characterObj, element);
@@ -65,19 +67,19 @@ function handleDeleteClick(characterObj, element) {
 
 // Сохранение настроек персонажей
 export function saveCharacterSetting(character, type, state) {
-    let settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
+    let settings = window.settings.characterSettings || {};
 
     if (!settings[character]) {
         settings[character] = {};
     }
 
     settings[character][type] = state;
-    localStorage.setItem('characterSettings', JSON.stringify(settings));
+    saveSettings({characterSettings: settings});
 }
 
 // Загрузка и применение настроек персонажей
 export function loadCharacterSettings() {
-    const settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
+    const settings = window.settings.characterSettings || {};
     document.querySelectorAll('.character').forEach(charDiv => {
         const charName = charDiv.dataset.name;
         const charSettings = settings[charName];
@@ -98,7 +100,7 @@ export function loadCharacterSettings() {
 export function sortCharacters() {
     const container = document.getElementById('character-list');
     const chars = Array.from(container.children);
-    const settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
+    const settings = window.settings.characterSettings || {};
 
     chars.sort((a, b) => {
         const aSet = settings[a.dataset.name] || {};
@@ -129,7 +131,7 @@ export function setEditable(state) {
 export async function loadCharacters(nickname) {
     const container = document.getElementById('character-list');
     container.innerHTML = 'Загрузка...';
-    const charactersList = JSON.parse(localStorage.getItem('charactersList') || '[]');
+    const charactersList = window.settings.characterList || [];
     const result = await window.electron.ipcRenderer.fetchCharacters(nickname);
 
     if (result.error) {
@@ -152,7 +154,7 @@ export async function loadCharacters(nickname) {
         }
     });
 
-    localStorage.setItem('charactersList', JSON.stringify(Array.from(filteredCharacters.values())));
+    saveSettings({characterList: Array.from(filteredCharacters.values())});
     renderCharacters(true);
     loadCharacterSettings();
     sortCharacters();
@@ -161,8 +163,8 @@ export async function loadCharacters(nickname) {
 export function renderCharacters(editMode = false) {
     const container = document.getElementById('character-list');
     container.innerHTML = '';
-    const settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
-    const charactersList = JSON.parse(localStorage.getItem('charactersList') || '[]');
+    const settings = window.settings.characterSettings || {};
+    const charactersList = window.settings.characterList || [];
 
     charactersList.forEach(char => {
         const charSettings = settings[char.name] || {};
@@ -251,7 +253,7 @@ export function renderCharacters(editMode = false) {
 }
 
 function toggleRaidStatus(characterName, raid, element) {
-    let settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
+    let settings = window.settings.characterSettings || {};
     if (!settings[characterName]) {
         settings[characterName] = {};
     }
@@ -260,12 +262,12 @@ function toggleRaidStatus(characterName, raid, element) {
     settings[characterName].raidStatus[raid] = !settings[characterName].raidStatus[raid];
 
     element.innerHTML = settings[characterName].raidStatus[raid] ? '✅' : '❌';
-    localStorage.setItem('characterSettings', JSON.stringify(settings));
+    saveSettings({characterSettings: settings});
 }
 
 function showRaidSelector(characterName) {
     const raids = ["Камен 2.0 (гер)", "Камен 2.0 (об)", "Аврель (гер)", "Аврель (об)", "Эгир (гер)", "Эгир (об)", "Ехидна", "Бехемос", "Камен (гер)", "Хаос", "Хранитель", "Эфонка"];
-    let settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
+    let settings = window.settings.characterSettings || {};
     let selectContainer = document.createElement("div");
     let selectLabel = document.createElement("label");
     let select = document.createElement('select');
@@ -306,7 +308,7 @@ function showRaidSelector(characterName) {
 
 function applyRaidSelection(characterName, select) {
     let selectedRaids = Array.from(select.selectedOptions).map(opt => opt.value);
-    let settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
+    let settings = window.settings.characterSettings || {};
 
     if (!settings[characterName]) {
         settings[characterName] = {};
@@ -314,20 +316,20 @@ function applyRaidSelection(characterName, select) {
 
     settings[characterName].raids = selectedRaids;
 
-    localStorage.setItem('characterSettings', JSON.stringify(settings));
+    saveSettings({characterSettings: settings});
     document.querySelector('.raid-selector').remove();
     renderCharacters(false);
 }
 
 function removeRaidFromCharacter(characterName, raidName) {
-    let settings = JSON.parse(localStorage.getItem('characterSettings') || '{}');
+    let settings = window.settings.characterSettings || {};
 
     if (settings[characterName]?.raids) {
         settings[characterName].raids = settings[characterName].raids.filter(r => r !== raidName);
         delete settings[characterName].raidStatus?.[raidName]; // Удаляем статус рейда тоже
     }
 
-    localStorage.setItem('characterSettings', JSON.stringify(settings));
+    saveSettings({characterSettings: settings});
     renderCharacters(false);
 }
 
@@ -358,8 +360,8 @@ function updateCharacterOrder() {
         newOrder.push(charDiv.dataset.name);
     });
 
-    let characters = JSON.parse(localStorage.getItem('charactersList') || '[]');
+    let characters = window.settings.characterList || [];
 
     characters.sort((a, b) => newOrder.indexOf(a.name) - newOrder.indexOf(b.name));
-    localStorage.setItem('charactersList', JSON.stringify(characters));
+    saveSettings({characterList: characters});
 }

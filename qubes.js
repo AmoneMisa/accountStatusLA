@@ -2,9 +2,9 @@ export function renderCharacterTable() {
     const tableContainer = document.getElementById('character-table');
     tableContainer.innerHTML = '';
 
-    const charactersList = JSON.parse(localStorage.getItem('charactersList') || '[]');
-    const characterSettings= JSON.parse(localStorage.getItem('characterSettings') || '[]');
-    const tableData = JSON.parse(localStorage.getItem('tableData') || '{}');
+    const charactersList = window.settings.characterList || [];
+    let characterSettings = window.settings.characterSettings || {};
+    const tableData = window.settings.tableData || {};
     const columnNames = ['3.1', '3.2', '3.3', '3.4', '3.5', '4.1', '4.2'];
 
     const table = document.createElement('div');
@@ -89,12 +89,12 @@ export function renderCharacterTable() {
 }
 
 export function saveTableData(charName, column, value) {
-    let tableData = JSON.parse(localStorage.getItem('tableData') || '{}');
+    let tableData = window.settings.tableData || {};
 
     if (!tableData[charName]) {
         tableData[charName] = {};
     }
 
     tableData[charName][column] = value;
-    localStorage.setItem('tableData', JSON.stringify(tableData));
+    window.settings.tableData = JSON.stringify(tableData);
 }

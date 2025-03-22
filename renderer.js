@@ -1,49 +1,54 @@
 import {loadCharacters, renderCharacters, setEditable, sortCharacters,} from "./characters.js";
 import {renderCharacterTable} from "./qubes.js";
+import {saveSettings} from "./utils.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const nicknameElement = document.getElementById('nickname');
     const editNicknameButton = document.getElementById('edit-nickname');
     const saveNicknameButton = document.getElementById('save-nickname');
 
-    let nickname = localStorage.getItem('nickname') || '';
+    window.electron.ipcRenderer.on('init-settings', async (settings) => {
+        window.settings = settings;
+        migration();
 
-    if (!nickname) {
-        nicknameElement.innerHTML = `<input type="text" id="nickname-input" placeholder="Введите ник" autofocus />`;
-        editNicknameButton.style.display = 'none';
-        saveNicknameButton.style.display = 'inline-block';
-    } else {
-        nicknameElement.innerText = `Ваш ник: ${nickname}`;
-    }
+        let nickname = window.settings.nickname;
 
-    try {
         if (!nickname) {
-            nickname = await window.electron.ipcRenderer.getNickname();
-            nicknameElement.innerText = `Ваш ник: ${nickname}`;
-            localStorage.setItem('nickname', nickname);
-        }
-
-        const allNickCharacters = JSON.parse(localStorage.getItem('allNickCharacters') || '{}');
-
-        if (!allNickCharacters[nickname]) {
-            const characters = await window.electron.ipcRenderer.fetchCharacters(nickname);
-            if (characters && !characters?.error) {
-                allNickCharacters[nickname] = characters;
-                localStorage.setItem('allNickCharacters', JSON.stringify(allNickCharacters));
-            }
-        }
-
-        if (localStorage.getItem('charactersList')) {
-            renderCharacters(false);
+            nicknameElement.innerHTML = `<input type="text" id="nickname-input" placeholder="Введите ник" autofocus />`;
+            editNicknameButton.style.display = 'none';
+            saveNicknameButton.style.display = 'inline-block';
         } else {
-            await loadCharacters(nickname);
+            nicknameElement.innerText = `Ваш ник: ${nickname}`;
         }
-    } catch (error) {
-        console.error("Ошибка загрузки ника:", error);
-        nicknameElement.innerText = "Ошибка загрузки ника";
-        editNicknameButton.style.display = 'block';
-        saveNicknameButton.style.display = 'none';
-    }
+
+        try {
+            const allNickCharacters = window.settings.allNickCharacters || {};
+
+            if (!allNickCharacters[nickname]) {
+                const characters = await window.electron.ipcRenderer.fetchCharacters(nickname);
+                if (characters && !characters?.error) {
+                    allNickCharacters[nickname] = characters;
+                    saveSettings({allNickCharacters: allNickCharacters});
+                }
+            }
+
+            if (window.settings.characterList) {
+                renderCharacters(false);
+            } else {
+                await loadCharacters(nickname);
+            }
+        } catch (error) {
+            console.error("Ошибка загрузки ника:", error);
+            nicknameElement.innerText = "Ошибка загрузки ника";
+            editNicknameButton.style.display = 'block';
+            saveNicknameButton.style.display = 'none';
+        }
+    });
+
+    window.electron.ipcRenderer.on('update-settings', (settings) => {
+        window.settings = settings;
+        renderCharacters(false);
+    });
 
     document.getElementById('minimize').addEventListener('click', () => {
         window.electron.ipcRenderer.send('window:close');
@@ -66,7 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.getElementById('refresh-characters').addEventListener('click', async () => {
-        const nickname = await window.electron.ipcRenderer.getNickname();
+        const nickname = window.settings.nickname;
         if (nickname) {
             await loadCharacters(nickname);
             document.getElementById('save-button').style.display = 'block';
@@ -80,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     document.getElementById('edit-nickname').addEventListener('click', () => {
-        const currentNickname = localStorage.getItem('nickname');
+        const currentNickname = window.settings.nickname;
 
         nicknameElement.innerHTML = `<input type="text" id="nickname-input" value="${currentNickname}" />`;
 
@@ -96,14 +101,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        await window.electron.ipcRenderer.setNickname(newNickname);
-        localStorage.setItem('nickname', newNickname);
+        saveSettings({nickname: newNickname});
 
         document.getElementById('nickname').innerText = `Ваш ник: ${newNickname}`;
         document.getElementById('save-nickname').style.display = 'none';
         document.getElementById('edit-nickname').style.display = 'inline-block';
 
-        if (JSON.parse(localStorage.getItem('charactersList'))[newNickname]) {
+        if (window.settings.characterList[newNickname]) {
             renderCharacters(true);
         } else {
             await loadCharacters(newNickname);
@@ -113,25 +117,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (document.getElementById('apply-raids')) {
         document.getElementById('apply-raids').addEventListener('click', () => {
             const selectedOptions = Array.from(document.getElementById('raid-select').selectedOptions).map(option => option.value);
-            localStorage.setItem('selectedRaids', JSON.stringify(selectedOptions));
+            saveSettings({selectedRaids: selectedOptions});
             renderCharacters(false); // Перерисовываем список с новыми рейдами
         });
     }
 
     window.electron.ipcRenderer.on('clear-character-settings', () => {
-        localStorage.removeItem('characterSettings');
+        saveSettings({characterSettings: undefined});
         console.log('Настройки персонажей сброшены.');
         renderCharacters(false);
     });
 
     window.electron.ipcRenderer.on('clear-characters-list', () => {
-        localStorage.removeItem('charactersList');
+        saveSettings({characterList: undefined});
         console.log('Список персонажей сброшен.');
         renderCharacters(false);
     });
 
     window.electron.ipcRenderer.on('clear-characters-qubes', () => {
-        localStorage.removeItem('tableData');
+        saveSettings({tableData: undefined});
         console.log('Настройки кубов сброшены.');
         renderCharacters(false);
     });
@@ -155,8 +159,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     window.electron.ipcRenderer.on('clear-nickname', async () => {
-        localStorage.removeItem('nickname');
-        await window.electron.ipcRenderer.removeNickname(nickname);
+        saveSettings({nickname: undefined});
+
         document.getElementById('nickname').innerText = "Ник не установлен";
     });
 
@@ -177,15 +181,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (settings.theme) {
         document.documentElement.setAttribute("data-theme", settings.theme);
         themeSelect.value = settings.theme;
-
     }
 
     themeSelect.addEventListener("change", () => {
         const selectedTheme = themeSelect.value;
 
         document.documentElement.setAttribute("data-theme", selectedTheme);
-        window.electron.ipcRenderer.send("save-settings", { theme: selectedTheme });
-
+        saveSettings({theme: selectedTheme});
         document.getElementById("message").innerText = "Тема изменена";
     });
 
@@ -208,25 +210,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Выбор пути сохранения
     chooseFolderButton.addEventListener("click", async () => {
-        const { filePaths } = await window.electron.ipcRenderer.chooseFolder();
+        const filePath = await window.electron.ipcRenderer.chooseFolder();
 
-        if (filePaths && filePaths.length > 0) {
-            const newPath = filePaths[0];
-            document.getElementById('savePath').value = await window.electron.ipcRenderer.invoke('change-settings-path', newPath);
+        if (filePath) {
+            document.getElementById('savePath').value = await window.electron.ipcRenderer.invoke('change-settings-path', filePath);
         }
     });
 
     // Сохранение настроек
     saveSettingsButton.addEventListener("click", () => {
-        const newSettings = {
+        saveSettings({
             savePath: savePathInput.value,
             theme: themeSelect.value,
             minimizeOnClose: minimizeOnCloseCheckbox.checked,
             rememberWindowSize: rememberWindowSizeCheckbox.checked,
             rememberWindowPosition: rememberWindowPositionCheckbox.checked,
-        };
-
-        window.electron.ipcRenderer.send("save-settings", newSettings);
+        });
         document.getElementById("message").innerText = "Настройки сохранены";
     });
 
@@ -237,7 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await window.electron.ipcRenderer.invoke('check-for-updates');
     });
 
-    window.electron.ipcRenderer.on('update-available', async ({ latestVersion, downloadUrl }) => {
+    window.electron.ipcRenderer.on('update-available', async ({latestVersion, downloadUrl}) => {
         document.getElementById('message').innerText = `Доступно обновление ${latestVersion}. Открываем страницу загрузки...`;
 
         await window.electron.ipcRenderer.openExternal(downloadUrl);
@@ -252,3 +251,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('error').innerText = `Ошибка обновления: ${errorMessage?.message || "Неизвестная ошибка"}`;
     });
 });
+
+
+function migration() {
+    if (!window.settings.characterSettings) {
+        window.settings.characterSettings = JSON.parse(localStorage.getItem('characterSettings'));
+    }
+
+    if (!window.settings.characterList) {
+        window.settings.characterList = JSON.parse(localStorage.getItem('charactersList'));
+    }
+
+    if (!window.settings.nickname) {
+        window.settings.nickname = localStorage.getItem('nickname');
+    }
+
+    if (!window.settings.allNickCharacters) {
+        window.settings.allNickCharacters = JSON.parse(localStorage.getItem('allNickCharacters'));
+    }
+
+    if (!window.settings.selectedRaids) {
+        window.settings.selectedRaids = JSON.parse(localStorage.getItem('selectedRaids'));
+    }
+
+    if (!window.settings.tableData) {
+        window.settings.tableData = JSON.parse(localStorage.getItem('tableData'));
+    }
+
+    saveSettings(window.settings);
+}

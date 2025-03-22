@@ -1,59 +1,53 @@
-import {app, BrowserWindow, dialog, ipcMain, Menu, Tray, shell, net} from 'electron';
-import path, {dirname, join} from 'path';
+import {app, dialog, ipcMain, Menu, net, shell, Tray} from 'electron';
+import path from 'path';
 import {parseLostArkProfile} from "./parser.js";
-import {fileURLToPath} from 'url';
-import {changeSettingsPath, getLastResetWeekly, loadSettings, saveSettings, setLastResetWeekly} from "./storage.js";
+import {
+    saveSettings,
+    changeSettingsPath,
+    getCharactersSettings,
+    getLastResetDaily,
+    loadSettings,
+    setCharactersSettings,
+    setLastResetDaily,
+    setLastResetWeekly
+} from "./storage.js";
 import fs from "fs";
 import cron from "node-cron";
 import {DateTime} from "luxon";
+import {createWindow, setMainWindow} from "./mainWindow.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-let mainWindow;
 let tray;
-
-async function createWindow() {
-    mainWindow = new BrowserWindow({
-        width: 1200,
-        height: 800,
-        frame: false,
-        icon: path.join(app.getAppPath(), 'assets', 'icon.png'),
-        webPreferences: {
-            preload: join(__dirname, 'preload.cjs'), // Указываем путь к `preload.cjs`
-            contextIsolation: true, // Должно быть `true`
-            enableRemoteModule: false,
-            nodeIntegration: false // Должно быть `false`!
-        }
-    });
-
-    await mainWindow.loadFile('index.html');
-}
+let mainWindow = null;
 
 await app.on('ready', async () => {
-    await createWindow();
-    const settings = loadSettings();
-    applySettings(settings);
+    mainWindow = await createWindow();
+    setMainWindow(mainWindow);
 
     tray = new Tray(path.join(app.getAppPath(), 'assets', 'icon.png'));
     const contextMenu = Menu.buildFromTemplate([
-        { label: 'Открыть', click: () => mainWindow.show() },
-        { type: 'separator' },
-        { label: 'Сбросить настройки персонажей', click: () => {
+        {label: 'Открыть', click: () => mainWindow.show()},
+        {type: 'separator'},
+        {
+            label: 'Сбросить настройки персонажей', click: () => {
                 mainWindow.webContents.send('clear-character-settings');
-            }},
-        { label: 'Сбросить список персонажей', click: () => {
+            }
+        },
+        {
+            label: 'Сбросить список персонажей', click: () => {
                 mainWindow.webContents.send('clear-characters-list');
-            }},
-        { label: 'Сбросить настройки кубов', click: () => {
+            }
+        },
+        {
+            label: 'Сбросить настройки кубов', click: () => {
                 mainWindow.webContents.send('clear-characters-qubes');
-            }},
+            }
+        },
         {
             label: 'Очистить ник',
             click: () => mainWindow.webContents.send('clear-nickname')
         },
-        { type: 'separator' },
-        { label: 'Выход', click: () => app.quit() }
+        {type: 'separator'},
+        {label: 'Выход', click: () => app.quit()}
     ]);
     tray.setContextMenu(contextMenu);
     tray.setToolTip('Lost Ark Character Manager');
@@ -62,10 +56,18 @@ await app.on('ready', async () => {
         mainWindow.show();
     });
 
-    checkResetOnStartup();
+    resetDailyActivities();
     cron.schedule('0 3 * * *', () => {
         resetRaids();
+        resetDailyActivities();
     });
+
+    cron.schedule('* * * * *', () => {
+        resetDailyActivities();
+    });
+
+    const settings = loadSettings();
+    applySettings(settings);
 });
 
 ipcMain.handle('clear-character-settings', () => {
@@ -99,17 +101,12 @@ ipcMain.on('window:quit', () => {
     app.quit();
 });
 
-ipcMain.handle('get-nickname', () => {
-    const settings = loadSettings();
-    return settings.nickname || 'Неизвестный';
-});
-
 ipcMain.handle('set-nickname', (event, nickname) => {
-    saveSettings({ nickname });
+    saveSettings({nickname});
 });
 
 ipcMain.handle('remove-nickname', (event, nickname) => {
-    saveSettings({ nickname });
+    saveSettings({nickname});
 });
 
 ipcMain.handle('fetch-characters', async (_, nickname) => {
@@ -131,7 +128,7 @@ ipcMain.handle('fetch-characters', async (_, nickname) => {
 
         return characters;
     } catch (error) {
-        return { error: error.message };
+        return {error: error.message};
     }
 });
 
@@ -141,7 +138,7 @@ ipcMain.handle("load-settings", () => {
 
 ipcMain.on("save-settings", (event, newSettings) => {
     const currentSettings = loadSettings();
-    const updatedSettings = { ...currentSettings, ...newSettings };
+    const updatedSettings = {...currentSettings, ...newSettings};
     saveSettings(updatedSettings);
 });
 
@@ -162,12 +159,12 @@ ipcMain.on("window:close", () => {
 
     if (settings.rememberWindowPosition) {
         const bounds = mainWindow.getBounds();
-        settings.windowPosition = { x: bounds.x, y: bounds.y };
+        settings.windowPosition = {x: bounds.x, y: bounds.y};
     }
 
     if (settings.rememberWindowSize) {
         const bounds = mainWindow.getBounds();
-        settings.windowSize = { width: bounds.width, height: bounds.height };
+        settings.windowSize = {width: bounds.width, height: bounds.height};
     }
 
     saveSettings(settings);
@@ -176,9 +173,8 @@ ipcMain.on("window:close", () => {
         mainWindow.hide();
     } else {
         app.quit();
+        mainWindow = null;
     }
-
-    mainWindow = null;
 });
 
 ipcMain.on("save-window-state", () => {
@@ -187,8 +183,8 @@ ipcMain.on("save-window-state", () => {
     const settings = loadSettings();
     const bounds = mainWindow.getBounds();
 
-    settings.windowSize = { width: bounds.width, height: bounds.height };
-    settings.windowPosition = { x: bounds.x, y: bounds.y };
+    settings.windowSize = {width: bounds.width, height: bounds.height};
+    settings.windowPosition = {x: bounds.x, y: bounds.y};
 
     saveSettings(settings);
 });
@@ -252,6 +248,8 @@ function applySettings(settings) {
     if (settings.theme) {
         mainWindow.webContents.send('apply-theme', settings.theme);
     }
+
+    mainWindow.webContents.send('init-settings', settings);
 }
 
 ipcMain.handle('check-for-updates', async (event) => {
@@ -260,21 +258,23 @@ ipcMain.handle('check-for-updates', async (event) => {
 
         request.on('response', (response) => {
             let rawData = '';
-            console.log("response", response)
-            response.on('data', (chunk) => { rawData += chunk; });
+
+            response.on('data', (chunk) => {
+                rawData += chunk;
+            });
+
             response.on('end', async () => {
                 try {
                     const releaseData = JSON.parse(rawData);
                     const latestVersion = releaseData.tag_name;
                     const assets = releaseData.assets;
-                    console.log("response", releaseData)
 
                     // Ищем .exe в релизе
                     const exeAsset = assets.find(asset => asset.name.endsWith('.exe'));
 
                     if (exeAsset) {
                         const downloadUrl = exeAsset.browser_download_url;
-                        event.sender.send('update-available', { latestVersion, downloadUrl });
+                        event.sender.send('update-available', {latestVersion, downloadUrl});
                     } else {
                         event.sender.send('update-not-found');
                     }
@@ -292,44 +292,12 @@ ipcMain.handle('check-for-updates', async (event) => {
 
 function resetRaids() {
     let settings = loadSettings();
-    console.log("settings",settings)
     const now = DateTime.now();
-    const utcHour = now.getUTCHours();
-    const utcDay = now.getUTCDay();
-
-    // Переводим время в МСК (UTC+3)
-    const mskHour = (utcHour + 3) % 24;
-
-    // Если сейчас **6 утра по МСК**, проверяем сброс
-    if (mskHour === 6) {
-        console.log(`Проверяем сброс рейдов (UTC: ${utcHour}, МСК: ${mskHour})`);
-
-        // Если среда (UTC: 3), сбрасываем **всё, кроме "Эфонка", "Хранитель", "Хаос"**
-        if (utcDay === 3) {
-            Object.keys(settings).forEach(charName => {
-                if (settings[charName]?.raids) {
-                    settings[charName].raids.forEach(raid => {
-                        if (!["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
-                            settings[charName].raidStatus[raid] = false;
-                        }
-                    });
-                }
-            });
-            console.log("Сброс недельных рейдов (по средам)");
-        }
-
-        saveSettings(settings);
-        setLastResetWeekly(now.toISOString());
-    }
-}
-
-function resetDailyActivities() {
-    let settings = loadSettings();
 
     Object.keys(settings).forEach(charName => {
         if (settings[charName]?.raids) {
             settings[charName].raids.forEach(raid => {
-                if (["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
+                if (!["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
                     settings[charName].raidStatus[raid] = false;
                 }
             });
@@ -337,19 +305,41 @@ function resetDailyActivities() {
     });
 
     saveSettings(settings);
+    setLastResetWeekly(now);
 }
 
-function checkResetOnStartup() {
-    const lastReset = getLastResetWeekly();
-    const now = new Date();
+function resetDailyActivities() {
+    let lastResetDaily = getLastResetDaily();
+    const now = DateTime.now();
 
-    const lastResetDate = lastReset ? new Date(lastReset) : null;
-    const nowMSK = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+    if (lastResetDaily) {
+        let date = DateTime.fromISO(lastResetDaily).plus({days: 1}).set({hours: 6, minutes: 0, seconds: 0, milliseconds: 0});
 
-    if (!lastResetDate || lastResetDate.getUTCDate() !== nowMSK.getUTCDate()) {
-        console.log("Прошлый сброс не найден или устарел. Выполняем сброс рейдов.");
-        resetRaids();
+        if (now < date) {
+            return;
+        }
+
+        setLastResetDaily(date.toISO());
     } else {
-        console.log("Сброс рейдов не требуется.");
+        let date = now.set({hours: 6, minutes: 0, seconds: 0, milliseconds: 0});
+
+        if (now < date) {
+            date = date.minus({days: 1});
+        }
+
+        setLastResetDaily(date.toISO());
     }
+
+    let charSettings = getCharactersSettings();
+    Object.keys(charSettings).forEach(charName => {
+        if (charSettings[charName]?.raids) {
+            charSettings[charName].raids.forEach(raid => {
+                if (["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
+                    charSettings[charName].raidStatus[raid] = false;
+                }
+            });
+        }
+    });
+
+    setCharactersSettings(charSettings);
 }
