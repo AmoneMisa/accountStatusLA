@@ -1,9 +1,9 @@
-import {renderCharacters,} from "../tabs/characters/characters.js";
 import charactersListeners from "../tabs/characters/charactersListeners.js";
 import init from "../tabs/common/init.js";
 import controls from "../tabs/common/controls.js";
 import settingsDOM from "../tabs/settings/settingsDOM.js";
 import migration from "../tabs/common/migration.js";
+import calcBet from "../tabs/services/calcBet.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const nicknameElement = document.getElementById('nickname');
@@ -21,9 +21,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     window.electron.ipcRenderer.on('update-settings', (settings) => {
         window.settings = settings;
-        renderCharacters(false);
     });
 
    controls();
     await settingsDOM();
+
+    calcBet();
 });

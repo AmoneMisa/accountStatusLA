@@ -6,7 +6,11 @@ export default function () {
     initListeners();
 
     document.querySelector(".check-list-table__button-add").addEventListener("click", () => {
-        createInputPopup("check-list-table__popup", "Введите текст задачи:");
+        if (document.querySelector('.check-list-table__popup')) {
+            document.querySelector('.check-list-table__popup').classList.add("active");
+        } else {
+            createInputPopup("check-list-table__popup", "Введите текст задачи:");
+        }
     });
 }
 
@@ -77,7 +81,13 @@ export function initListeners() {
 
 export function addItem(text) {
     const todoContainer = document.getElementById("check-list-table");
-    const prevElem = todoContainer.lastChild.querySelector(".check-list-table__item-delete");
+
+    let prevElem;
+
+    if (todoContainer.lastChild) {
+        prevElem = todoContainer.lastChild.querySelector(".check-list-table__item-delete");
+    }
+
     let index = prevElem?.dataset?.index + 1 || 0;
 
     const item = document.createElement("div");

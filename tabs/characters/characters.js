@@ -162,6 +162,9 @@ export async function loadCharacters(nickname) {
 
 export function renderCharacters(editMode = false) {
     const container = document.getElementById('character-list');
+
+    container.classList.toggle('edit-mode', editMode);
+
     container.innerHTML = '';
     const settings = window.settings.characterSettings || {};
     const charactersList = window.settings.characterList || [];
@@ -216,7 +219,7 @@ export function renderCharacters(editMode = false) {
             `;
         } else {
             charDiv.innerHTML = `
-                ${char.name} (${char.className}, GS: ${char.gearScore}) ${icons}
+                ${char.name} (${char.className}, GS: ${char.gearScore}) <div class="character__icons">${icons}</div>
             `;
         }
 
@@ -276,7 +279,7 @@ function showRaidSelector(characterName) {
     cross.innerText = "✖"
 
     cross.addEventListener("click", () => {
-       selectContainer.remove();
+        selectContainer.remove();
     });
 
     select.multiple = true;

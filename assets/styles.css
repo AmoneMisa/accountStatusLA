@@ -191,6 +191,7 @@ body {
     color: var(--white);
     -webkit-app-region: drag; /* Позволяет перемещать окно */
     box-sizing: border-box;
+    margin: 0;
 }
 
 .wrapper {
@@ -244,6 +245,12 @@ input {
 
 input[type=number] {
     cursor: pointer;
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .button {
@@ -366,6 +373,14 @@ input[type=number] {
     -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
 }
 
+.character-list.edit-mode {
+    flex-direction: row;
+}
+
+.character-list.edit-mode .character {
+   flex: 25%;
+}
+
 .character {
     border-radius: 10px;
     background-color: var(--dark-grey);
@@ -376,6 +391,11 @@ input[type=number] {
     padding: 16px;
     max-width: -webkit-fill-available;
     box-shadow: var(--shadow);
+}
+
+.character:not(.view-mode) .character__icons {
+    display: flex;
+    flex-direction: row;
 }
 
 .character.view-mode {
@@ -628,12 +648,6 @@ input[type=number] {
     margin-bottom: 5px;
 }
 
-.character-table__input::-webkit-outer-spin-button,
-.character-table__input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
 .character-table__controls {
     display: flex;
     gap: 5px;
@@ -756,20 +770,18 @@ input[type=number] {
     display: none;
     border: 1px solid var(--grey);
     z-index: 1;
+    box-shadow: var(--shadow);
 }
 
 .popup::after {
     background: var(--black);
     opacity: 0.6;
-    position: absolute;
+    position: fixed;
     content: "";
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
 }
 
 .popup.active {
@@ -795,6 +807,42 @@ input[type=number] {
     top: -15px;
     right: -15px;
     cursor: pointer;
+}
+
+.tools-container {
+    -webkit-app-region: no-drag;
+    gap: 20px;
+}
+
+.tools-container__item {
+    border: 1px solid var(--grey);
+    box-shadow: var(--shadow);
+    padding: 10px;
+    border-radius: 5px;
+    gap: 10px;
+}
+
+.tools-container__item-name {
+    margin: 0 auto 10px auto;
+    text-align: center;
+    font-size: 18px;
+}
+
+.tools-container__item-label {
+    display: flex;
+    flex-direction: column;
+}
+
+.tools-container__item-input {
+    max-width: 250px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.tools-container__item-message {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
 }
 
 ::-webkit-scrollbar {

@@ -51,7 +51,26 @@
             </button>
         </div>
         <div id="tools-tab" class="tab-content">
-            <div id="tools-container"></div>
+            <div id="tools-container" class="tools-container">
+                <div class="tools-container__item calc-bet">
+                    <div class="tools-container__item-name tooltip" data-tooltip="Стоимость рассчитывается, беря за основу 15% прибыли от продажи предмета на ауке, с вычетом комиссии">Рассчитать оптимальную ставку для аукциона</div>
+                    <div class="tools-container__item-content">
+                        <label class="tools-container__item-label">
+                            Стоимость на аукционе
+                            <input min="1" type="number" required class="tools-container__item-input calc-bet__auction-price">
+                        </label>
+                        <div class="tools-container__item-message">
+                            <div class="calc-bet__optimal"></div>
+                            <div class="calc-bet__max"></div>
+                        </div>
+                    </div>
+                    <button type="button" class="button calc-bet__button">Рассчитать</button>
+                </div>
+                <div class="tools-container__item"></div>
+                <div class="tools-container__item"></div>
+                <div class="tools-container__item"></div>
+                <div class="tools-container__item"></div>
+            </div>
         </div>
         <div id="settings-tab" class="tab-content">
             <div id="settings-table" class="settings-table">

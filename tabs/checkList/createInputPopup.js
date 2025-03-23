@@ -30,7 +30,8 @@ export default function (className, text) {
     popup.classList.add("active");
 
     cross.addEventListener("click", () => {
-        popup.remove();
+        popup.classList.remove("active");
+        input.value = "";
     });
 
     button.addEventListener("click", () => {
@@ -41,8 +42,9 @@ export default function (className, text) {
         let settings = window.settings.todos;
         settings.push({text: input.value, complete: false});
         saveSettings({todos: settings});
-        addItem(input.value)
+        addItem(input.value);
         initListeners();
-        popup.remove();
+        popup.classList.remove("active");
+        input.value = "";
     })
 }
