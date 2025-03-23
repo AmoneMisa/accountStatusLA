@@ -6,7 +6,6 @@ contextBridge.exposeInMainWorld('electron', {
         fetchCharacters: (nickname) => ipcRenderer.invoke('fetch-characters', nickname),
         send: (channel, data) => ipcRenderer.send(channel, data),
         on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
-        checkUpdates: () => ipcRenderer.invoke('check-for-updates'),
         openExternal: (url) => ipcRenderer.invoke('open-external', url),
         chooseFolder: () => ipcRenderer.invoke('choose-folder'),
     }
