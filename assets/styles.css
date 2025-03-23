@@ -216,6 +216,7 @@ body {
     position: relative;
     -webkit-app-region: no-drag;
     flex: auto;
+    min-height: 100vh;
 }
 
 .footer {
