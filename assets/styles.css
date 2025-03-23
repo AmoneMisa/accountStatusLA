@@ -198,6 +198,9 @@ body {
 
 .header {
     flex: none;
+    position: sticky;
+    top: 0;
+    z-index: 99;
 }
 
 .main-header {
@@ -374,10 +377,7 @@ input[type=number]::-webkit-inner-spin-button {
     align-items: center;
     justify-content: space-between;
     border-radius: 5px;
-    position: sticky;
-    top: 0;
     background: var(--black);
-    z-index: 1;
     box-shadow: var(--shadow);
     margin-bottom: 10px;
 }
@@ -620,7 +620,7 @@ input[type=number]::-webkit-inner-spin-button {
 }
 
 .tab-button {
-    padding: 10px;
+    padding: 8px;
     cursor: pointer;
     border: 1px solid var(--black);
     background: var(--grey);
@@ -629,7 +629,7 @@ input[type=number]::-webkit-inner-spin-button {
     color: var(--white);
     border-radius: 5px;
     transition: .2s ease;
-    font-size: 18px;
+    font-size: 16px;
     box-shadow: var(--inner-shadow);
 }
 
@@ -882,6 +882,10 @@ input[type=number]::-webkit-inner-spin-button {
     border-radius: 5px;
     gap: 10px;
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .tools-container__item-name {

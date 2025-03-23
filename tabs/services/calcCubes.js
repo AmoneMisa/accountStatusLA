@@ -15,8 +15,8 @@ export default function () {
 
     function calculate() {
         const targetLevel = parseInt(needLevelInput.value);
-        if (isNaN(targetLevel) || targetLevel < 2 || targetLevel > 9) {
-            resultEl.innerHTML = "Введите уровень от 2 до 9";
+        if (isNaN(targetLevel) || targetLevel < 2 || targetLevel > 10) {
+            resultEl.innerHTML = "Введите уровень от 2 до 10";
             return;
         }
 
