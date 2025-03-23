@@ -1,4 +1,4 @@
-import {app, dialog, ipcMain, Menu, net, shell, Tray} from 'electron';
+import {app, dialog, ipcMain, Menu, net, shell, Tray, Notification} from 'electron';
 import path from 'path';
 import {parseLostArkProfile} from "./tabs/characters/parser.js";
 import {
@@ -9,12 +9,15 @@ import {
     loadSettings,
     setCharactersSettings,
     setLastResetDaily,
-    setLastResetWeekly, getLastResetWeekly
+    setLastResetWeekly, getLastResetWeekly, getToolsInfo
 } from "./utils/storage.js";
 import fs from "fs";
 import cron from "node-cron";
 import {DateTime} from "luxon";
 import {createWindow, setMainWindow} from "./mainProcess/mainWindow.js";
+import {capitalize} from "./utils/utils.js";
+import applySettings from "./mainProcess/applySettings.js";
+import {resetDailyActivities, resetWeeklyActivities} from "./mainProcess/resetActivities.js";
 
 let tray;
 let mainWindow = null;
@@ -56,18 +59,20 @@ await app.on('ready', async () => {
         mainWindow.show();
     });
 
-    resetDailyActivities();
+    resetDailyActivities(DateTime);
     cron.schedule('0 3 * * *', () => {
-        resetRaids();
-        resetDailyActivities();
+        resetWeeklyActivities(DateTime);
+        resetDailyActivities(DateTime);
     });
 
     cron.schedule('* * * * *', () => {
-        resetDailyActivities();
+        resetDailyActivities(DateTime);
     });
 
     const settings = loadSettings();
     applySettings(settings);
+    scheduleReminders();
+
 });
 
 ipcMain.handle('clear-character-settings', () => {
@@ -178,7 +183,9 @@ ipcMain.on("window:close", () => {
 });
 
 ipcMain.on("save-window-state", () => {
-    if (!mainWindow) return;
+    if (!mainWindow) {
+        return;
+    }
 
     const settings = loadSettings();
     const bounds = mainWindow.getBounds();
@@ -219,39 +226,6 @@ ipcMain.handle('change-settings-path', async (event, newPath) => {
     return changeSettingsPath(newPath);
 });
 
-function applySettings(settings) {
-    // 📌 Запоминать размер окна
-    if (settings.rememberWindowSize && settings.windowSize) {
-        mainWindow.setSize(settings.windowSize.width, settings.windowSize.height);
-    }
-
-    // 📌 Запоминать расположение окна
-    if (settings.rememberWindowPosition && settings.windowPosition) {
-        mainWindow.setBounds({
-            x: settings.windowPosition.x,
-            y: settings.windowPosition.y,
-            width: settings.windowSize ? settings.windowSize.width : 1200,  // fallback
-            height: settings.windowSize ? settings.windowSize.height : 800  // fallback
-        });
-    }
-
-    // 📌 Обрабатывать поведение кнопки закрытия
-    mainWindow.on('close', (event) => {
-        if (settings.minimizeOnClose) {
-            event.preventDefault();
-            mainWindow.hide();
-        } else {
-            app.quit();
-        }
-    });
-
-    if (settings.theme) {
-        mainWindow.webContents.send('apply-theme', settings.theme);
-    }
-
-    mainWindow.webContents.send('init-settings', settings);
-}
-
 ipcMain.handle('check-for-updates', async (event) => {
     try {
         const request = net.request('https://api.github.com/repos/AmoneMisa/accountStatusLA/releases/latest');
@@ -290,74 +264,41 @@ ipcMain.handle('check-for-updates', async (event) => {
     }
 });
 
-function resetRaids() {
-    let lastResetWeekly = getLastResetWeekly();
-    const now = DateTime.now();
-
-    if (lastResetWeekly) {
-        let date = DateTime.fromISO(lastResetWeekly).plus({days: 7}).set({weekday: 3, hours: 6, minutes: 0, seconds: 0, milliseconds: 0});
-
-        if (now < date) {
-            return;
-        }
-
-        setLastResetWeekly(date.toISO());
-    } else {
-        let date = now.set({hours: 6, minutes: 0, seconds: 0, milliseconds: 0});
-
-        if (now < date) {
-            date = date.minus({days: 1});
-        }
-
-        setLastResetWeekly(date.toISO());
-    }
-
-    let charSettings = getCharactersSettings();
-    Object.keys(charSettings).forEach(charName => {
-        if (settings[charName]?.raids) {
-            settings[charName].raids.forEach(raid => {
-                if (!["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
-                    settings[charName].raidStatus[raid] = false;
-                }
-            });
-        }
-    });
-
-    saveSettings(settings);
+function shouldNotifyToday(type, settings) {
+    const today = DateTime.local().toFormat('yyyy-MM-dd');
+    return !settings[`disable${capitalize(type)}ReminderToday`] || settings.lastDisabledReminderDate !== today;
 }
 
-function resetDailyActivities() {
-    let lastResetDaily = getLastResetDaily();
-    const now = DateTime.now();
+function scheduleReminders() {
+    const settings = loadSettings();
+    const now = DateTime.local().setZone('Europe/Moscow');
+    const weekday = now.weekday;
+    const toolsInfo = getToolsInfo();
 
-    if (lastResetDaily) {
-        let date = DateTime.fromISO(lastResetDaily).plus({days: 1}).set({hours: 6, minutes: 0, seconds: 0, milliseconds: 0});
+    ['boss', 'chaos'].forEach(type => {
+        const info = toolsInfo[type];
 
-        if (now < date) {
+        if (!info || !info.weekdays.includes(weekday)) {
             return;
         }
 
-        setLastResetDaily(date.toISO());
-    } else {
-        let date = now.set({hours: 6, minutes: 0, seconds: 0, milliseconds: 0});
-
-        if (now < date) {
-            date = date.minus({days: 1});
+        if (!shouldNotifyToday(type, settings)) {
+            return;
         }
 
-        setLastResetDaily(date.toISO());
-    }
+        info.hours.forEach(hour => {
+            const [h, m] = hour.split(':');
+            const notifyTime = DateTime.local().setZone('Europe/Moscow').set({ hour: +h, minute: +m }).minus({ minutes: 5 });
 
-    let charSettings = getCharactersSettings();
-    Object.keys(charSettings).forEach(charName => {
-        if (charSettings[charName]?.raids) {
-            charSettings[charName].raids.forEach(raid => {
-                if (["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
-                    charSettings[charName].raidStatus[raid] = false;
+            cron.schedule(`${notifyTime.minute} ${notifyTime.hour} * * *`, () => {
+                const now = DateTime.local().setZone('Europe/Moscow');
+                if (now.weekday === weekday) {
+                    new Notification({
+                        title: 'Напоминание',
+                        body: `${type === 'boss' ? 'Полевой босс' : 'Разлом хаоса'} начнётся через 5 минут!`,
+                    }).show();
                 }
             });
-        }
+        });
     });
-
-    setCharactersSettings(charSettings);
 }

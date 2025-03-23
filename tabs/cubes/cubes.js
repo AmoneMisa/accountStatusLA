@@ -7,15 +7,33 @@ export function renderCharacterTable() {
     const charactersList = window.settings.characterList || [];
     let characterSettings = window.settings.characterSettings || {};
     const tableData = window.settings.tableData || {};
+    const cubesSettings = window.settings.cubesSettings || {};
+
     const columnNames = ['3.1', '3.2', '3.3', '3.4', '3.5', '4.1', '4.2'];
 
+    const columnSettings = document.createElement("div");
     const table = document.createElement('div');
+
     table.classList.add('character-table');
 
     let headerRow = '<div class="character-table__row"><div class="character-table__cell character-table__cell_name">Персонаж</div>';
     columnNames.forEach(name => {
-        headerRow += `<div class="character-table__cell">${name}</div>`;
+        headerRow += `<div class="character-table__cell ${(cubesSettings.hasOwnProperty(name) && !cubesSettings[name]) ? 'hidden' : ''}" data-cube="${name}">${name}</div>`;
+
+        const columnSetting = document.createElement("input");
+        columnSetting.type = "checkbox";
+        columnSetting.checked = cubesSettings.hasOwnProperty(name) ? cubesSettings[name] : true;
+        columnSetting.dataset.name = name;
+        const columnLabel = document.createElement("label");
+        columnLabel.innerText = `Вкл. ${name}`;
+        columnLabel.appendChild(columnSetting);
+        columnLabel.classList.add("character-table__settings-item");
+        columnSettings.appendChild(columnLabel);
+        columnSettings.classList.add("character-table__settings");
+        columnSetting.classList.add("character-table__settings-input");
     });
+
+    tableContainer.insertBefore(columnSettings, tableContainer.firstChild);
     headerRow += '</div>';
     table.innerHTML = headerRow;
 
@@ -31,7 +49,7 @@ export function renderCharacterTable() {
             let value = tableData[char.name]?.[col] || 0;
 
             row += `
-                <div class="character-table__cell">
+                <div class="character-table__cell ${(cubesSettings.hasOwnProperty(col) && !cubesSettings[col]) ? 'hidden' : ''}" data-cube="${col}">
                     <input class="character-table__input" type="number" value="${value}" data-char="${char.name}" data-col="${col}" min="0">
                     <div class="character-table__controls">
                         <button class="button button_control btn-minus" data-char="${char.name}" data-col="${col}">-</button>
@@ -88,6 +106,20 @@ export function renderCharacterTable() {
             }
         });
     });
+
+    document.querySelectorAll('.character-table__settings-input').forEach(input => {
+        input.addEventListener('change', () => {
+            let name = input.dataset.name;
+            let inputCells = document.querySelectorAll(`.character-table__cell[data-cube="${name}"]`);
+            cubesSettings[name] = input.checked;
+
+            inputCells.forEach((inputCell) => {
+                inputCell.classList.toggle('hidden', !input.checked);
+            });
+
+            saveSettings({cubesSettings: cubesSettings});
+        });
+    })
 }
 
 export function saveTableData(charName, column, value) {

@@ -1,9 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import { app } from 'electron';
+import {app} from 'electron';
 import {getMainWindow} from "../mainProcess/mainWindow.js";
 
 let dataPath = path.join(app.getPath('userData'), 'config.json');
+
 // Функция чтения данных
 export function loadSettings() {
     let settings = loadAppDataSettings();
@@ -16,6 +17,13 @@ export function loadSettings() {
     }
 
     return settings;
+}
+
+export function getToolsInfo() {
+    const settingsPath = path.join(app.getAppPath(), "assets", 'toolsInfo.json');
+    if (fs.existsSync(settingsPath)) {
+        return JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
+    }
 }
 
 function loadAppDataSettings() {
@@ -32,26 +40,14 @@ function saveAppDataSettings(settings) {
     fs.writeFileSync(dataPath, JSON.stringify(settings, null, 2), 'utf-8');
 }
 
-export function getCharactersSettings () {
+export function getCharactersSettings() {
     let settings = loadSettings();
     return settings.characterSettings || {};
 }
 
-export function setCharactersSettings (characterSettings) {
+export function setCharactersSettings(characterSettings) {
     let settings = loadSettings();
     settings.characterSettings = characterSettings;
-    saveSettings(settings);
-}
-
-export function getCharacterSettings (character) {
-    let settings = loadSettings();
-
-    return settings.characterSettings[character] || {};
-}
-
-export function setCharacterSettings (character, characterSettings) {
-    let settings = loadSettings();
-    settings.characterSettings[character] = characterSettings;
     saveSettings(settings);
 }
 
@@ -75,7 +71,7 @@ export function changeSettingsPath(newPath) {
 
     // Если старые настройки существуют — копируем их в новую папку
     if (!fs.existsSync(newPath)) {
-        fs.mkdirSync(newPath, { recursive: true });
+        fs.mkdirSync(newPath, {recursive: true});
     }
 
     oldSettings.savePath = newPath;

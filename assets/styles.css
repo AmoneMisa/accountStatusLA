@@ -208,8 +208,8 @@ body {
     margin: 10px 0;
 }
 
-input, button, select, textarea, a {
-    -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
+input, button, select, textarea, a, .popup, .button {
+    -webkit-app-region: no-drag;
 }
 
 select {
@@ -370,7 +370,7 @@ input[type=number]::-webkit-inner-spin-button {
     gap: 10px;
     flex-direction: column;
     width: 100%;
-    -webkit-app-region: no-drag; /* Исключает кнопки из области перетаскивания */
+    -webkit-app-region: no-drag;
 }
 
 .character-list.edit-mode {
@@ -598,6 +598,16 @@ input[type=number]::-webkit-inner-spin-button {
     flex-direction: column;
     justify-content: space-between;
     -webkit-app-region: no-drag;
+}
+
+.character-table__settings {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 14px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
 }
 
 .character-table__row {
@@ -983,4 +993,8 @@ input[type=number]::-webkit-inner-spin-button {
     .character-list {
         grid-template-areas: "a";
     }
+}
+
+.hidden {
+    display: none;
 }
