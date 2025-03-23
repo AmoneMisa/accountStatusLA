@@ -38,11 +38,11 @@ export default function (className, text) {
             return;
         }
 
-        popup.classList.remove("active");
         let settings = window.settings.todos;
         settings.push({text: input.value, complete: false});
         saveSettings({todos: settings});
         addItem(input.value)
         initListeners();
+        popup.remove();
     })
 }

@@ -6,7 +6,8 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win portable"
+    "dist": "electron-builder --win portable",
+    "watch:scss": "sass --watch ./src/styles.scss:./dist/styles.css"
   },
   "private": true,
   "dependencies": {
@@ -18,7 +19,8 @@
   },
   "devDependencies": {
     "electron": "^35.0.2",
-    "electron-builder": "^25.1.8"
+    "electron-builder": "^25.1.8",
+    "sass": "^1.86.0"
   },
   "build": {
     "appId": "com.example.yourapp",

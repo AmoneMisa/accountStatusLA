@@ -78,6 +78,7 @@ export function initListeners() {
 export function addItem(text) {
     const todoContainer = document.getElementById("check-list-table");
     const prevElem = todoContainer.lastChild.querySelector(".check-list-table__item-delete");
+    let index = prevElem?.dataset?.index + 1 || 0;
 
     const item = document.createElement("div");
     item.className = "check-list-table__item";
@@ -86,7 +87,7 @@ export function addItem(text) {
     checkbox.className = "check-list-table__checkbox";
     checkbox.type = "checkbox";
     checkbox.checked = false;
-    checkbox.dataset.index = prevElem.dataset.index + 1;
+    checkbox.dataset.index = index;
 
     const textElem = document.createElement("span");
     textElem.className = "check-list-table__item-text";
@@ -96,7 +97,7 @@ export function addItem(text) {
     deleteBtn.className = "check-list-table__item-delete button button_icon";
     deleteBtn.innerText = "🗑";
     deleteBtn.title = "Удалить";
-    deleteBtn.dataset.index = prevElem.dataset.index + 1;
+    deleteBtn.dataset.index = index;
 
     item.appendChild(checkbox);
     item.appendChild(textElem);

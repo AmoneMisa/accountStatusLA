@@ -19,6 +19,7 @@
     <button class="tab-button active" data-tab="main">Активности</button>
     <button class="tab-button" data-tab="table">Кубы</button>
     <button class="tab-button" data-tab="check-list">Чек-лист</button>
+    <button class="tab-button" data-tab="tools">Инструменты</button>
     <button class="tab-button" data-tab="settings">Настройки</button>
 </div>
 <div class="wrapper">
@@ -49,10 +50,14 @@
                 Добавить задачу
             </button>
         </div>
+        <div id="tools-tab" class="tab-content">
+            <div id="tools-container"></div>
+        </div>
         <div id="settings-tab" class="tab-content">
             <div id="settings-table" class="settings-table">
                 <div class="settings-table__cell">Название настройки</div>
                 <div class="settings-table__cell">Значение</div>
+
                 <div class="settings-table__cell">Изменить путь сохранения настроек</div>
                 <div class="settings-table__cell"><input type="text" id="savePath" class="choose-folder-input" readonly>
                     <button id="choose-folder" class="button">Выбрать</button>
@@ -70,12 +75,19 @@
                     <option value="light-blue">Нежно-голубая</option>
                     <option value="mint">Мятная</option>
                 </select></div>
+
+                <div class="settings-table__cell">Отображать бар с информацией о боссе и разломе</div>
+                <div class="settings-table__cell"><input type="checkbox" id="boss-info"></div>
+
                 <div class="settings-table__cell">Сворачивать приложение при нажатии на крестик</div>
                 <div class="settings-table__cell"><input type="checkbox" id="minimizeOnClose"></div>
+
                 <div class="settings-table__cell">Запоминать размер окна при закрытии</div>
                 <div class="settings-table__cell"><input type="checkbox" id="rememberWindowSize"></div>
+
                 <div class="settings-table__cell">Запоминать расположение окна при закрытии</div>
                 <div class="settings-table__cell"><input type="checkbox" id="rememberWindowPosition"></div>
+
                 <div class="settings-table__cell">Проверить обновления приложения</div>
                 <div class="settings-table__cell">
                     <button id="update-app" class="button">Обновить приложение</button>
