@@ -1,4 +1,4 @@
-import {saveSettings} from "../../utils.js";
+import {saveSettings} from "../../utils/utils.js";
 
 export default async function () {
     const savePathInput = document.getElementById("savePath");

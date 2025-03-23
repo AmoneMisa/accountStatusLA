@@ -1,4 +1,4 @@
-import {saveSettings} from "../../utils.js";
+import {saveSettings} from "../../utils/utils.js";
 
 export function renderCharacterTable() {
     const tableContainer = document.getElementById('character-table');

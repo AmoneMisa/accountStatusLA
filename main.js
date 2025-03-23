@@ -1,6 +1,6 @@
 import {app, dialog, ipcMain, Menu, net, shell, Tray} from 'electron';
 import path from 'path';
-import {parseLostArkProfile} from "./parser.js";
+import {parseLostArkProfile} from "./tabs/characters/parser.js";
 import {
     saveSettings,
     changeSettingsPath,
@@ -10,11 +10,11 @@ import {
     setCharactersSettings,
     setLastResetDaily,
     setLastResetWeekly, getLastResetWeekly
-} from "./storage.js";
+} from "./utils/storage.js";
 import fs from "fs";
 import cron from "node-cron";
 import {DateTime} from "luxon";
-import {createWindow, setMainWindow} from "./mainWindow.js";
+import {createWindow, setMainWindow} from "./mainProcess/mainWindow.js";
 
 let tray;
 let mainWindow = null;

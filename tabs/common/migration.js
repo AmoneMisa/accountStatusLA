@@ -1,4 +1,4 @@
-import {saveSettings} from "../../utils.js";
+import {saveSettings} from "../../utils/utils.js";
 
 export default function () {
     if (!window.settings.characterSettings) {
@@ -23,6 +23,10 @@ export default function () {
 
     if (!window.settings.tableData) {
         window.settings.tableData = JSON.parse(localStorage.getItem('tableData'));
+    }
+
+    if (!window.settings.todos) {
+        window.settings.todos = [];
     }
 
     saveSettings(window.settings);

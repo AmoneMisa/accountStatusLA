@@ -1,9 +1,9 @@
-import {renderCharacters,} from "./tabs/characters/characters.js";
-import charactersListeners from "./tabs/characters/charactersListeners.js";
-import init from "./tabs/common/init.js";
-import controls from "./tabs/common/controls.js";
-import settingsDOM from "./tabs/settings/settingsDOM.js";
-import migration from "./tabs/common/migration.js";
+import {renderCharacters,} from "../tabs/characters/characters.js";
+import charactersListeners from "../tabs/characters/charactersListeners.js";
+import init from "../tabs/common/init.js";
+import controls from "../tabs/common/controls.js";
+import settingsDOM from "../tabs/settings/settingsDOM.js";
+import migration from "../tabs/common/migration.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const nicknameElement = document.getElementById('nickname');

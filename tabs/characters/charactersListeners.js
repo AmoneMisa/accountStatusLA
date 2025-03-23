@@ -1,5 +1,5 @@
 import {loadCharacters, renderCharacters, setEditable, sortCharacters} from "./characters.js";
-import {saveSettings} from "../../utils.js";
+import {saveSettings} from "../../utils/utils.js";
 
 export default function (nicknameElement, editNicknameButton, saveNicknameButton) {
     document.getElementById('refresh-characters').addEventListener('click', async () => {

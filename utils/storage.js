@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { app } from 'electron';
-import {getMainWindow} from "./mainWindow.js";
+import {getMainWindow} from "../mainProcess/mainWindow.js";
 
 let dataPath = path.join(app.getPath('userData'), 'config.json');
 // Функция чтения данных

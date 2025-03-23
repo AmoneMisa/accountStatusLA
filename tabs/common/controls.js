@@ -1,4 +1,4 @@
-import {saveSettings} from "../../utils.js";
+import {saveSettings} from "../../utils/utils.js";
 import {renderCharacters} from "../characters/characters.js";
 import {renderCharacterTable} from "../cubes/cubes.js";
 import checkList from "../checkList/checkList.js";

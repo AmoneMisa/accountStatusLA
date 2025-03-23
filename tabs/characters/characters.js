@@ -1,4 +1,4 @@
-import {saveSettings} from "../../utils.js";
+import {saveSettings} from "../../utils/utils.js";
 
 function handleIconClick(characterObj, type, element) {
     if (type === 'legate') {
@@ -271,6 +271,14 @@ function showRaidSelector(characterName) {
     let selectContainer = document.createElement("div");
     let selectLabel = document.createElement("label");
     let select = document.createElement('select');
+    let cross = document.createElement('button');
+    cross.className = "cross button button_icon";
+    cross.innerText = "✖"
+
+    cross.addEventListener("click", () => {
+       selectContainer.remove();
+    });
+
     select.multiple = true;
 
     selectLabel.innerHTML = `Выбери активность для персонажа: <i>${characterName}</i>.<br>Для мульти-выбора: нажми <i>Cntrl</i> и выбирай необходимые пункты`;
@@ -289,9 +297,10 @@ function showRaidSelector(characterName) {
 
     if (settings[characterName] && settings[characterName].raids && settings[characterName].raids.length > 0) {
         Array.from(select.options).forEach(option => {
-
+            console.log(settings[characterName].raids)
             if (settings[characterName].raids.includes(option.value)) {
                 option.selected = true;
+                console.log("option.selected", option.selected)
             }
         });
     }
@@ -302,6 +311,7 @@ function showRaidSelector(characterName) {
     applyButton.innerText = "Применить";
     applyButton.addEventListener('click', () => applyRaidSelection(characterName, select));
 
+    selectContainer.appendChild(cross);
     selectContainer.appendChild(applyButton);
     document.body.appendChild(selectContainer);
 }

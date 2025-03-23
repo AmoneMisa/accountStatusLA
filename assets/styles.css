@@ -180,7 +180,6 @@
 }
 
 
-
 @font-face {
     font-family: 'Caveat';
     src: url('./fonts/Caveat-VariableFont_wght.ttf') format('truetype');
@@ -229,6 +228,10 @@ option {
     padding: 5px;
     color: var(--white);
     background-color: var(--dark-grey);
+}
+
+option:checked {
+    background-color: var(--light-grey);
 }
 
 input {
@@ -514,6 +517,11 @@ input[type=number] {
     margin: auto;
 }
 
+.raid-selector .cross {
+    top: 0;
+    right: 0;
+}
+
 .raid-selector__label {
     font-size: 12px;
 }
@@ -699,7 +707,7 @@ input[type=number] {
     opacity: 1;
 }
 
-.check-list-table{
+.check-list-table {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -735,7 +743,7 @@ input[type=number] {
 .popup {
     border-radius: 5px;
     width: 300px;
-    height: 350px;
+    height: 150px;
     position: fixed;
     top: 0;
     right: 0;
@@ -745,6 +753,48 @@ input[type=number] {
     color: var(--white);
     padding: 20px;
     margin: auto;
+    display: none;
+    border: 1px solid var(--grey);
+    z-index: 1;
+}
+
+.popup::after {
+    background: var(--black);
+    opacity: 0.6;
+    position: absolute;
+    content: "";
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.popup.active {
+    display: block;
+}
+
+.popup__content {
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    display: flex;
+    gap: 15px;
+    z-index: 2;
+}
+
+.popup__input {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.cross {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    cursor: pointer;
 }
 
 ::-webkit-scrollbar {

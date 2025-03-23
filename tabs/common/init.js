@@ -1,4 +1,4 @@
-import {saveSettings} from "../../utils.js";
+import {saveSettings} from "../../utils/utils.js";
 import {loadCharacters, renderCharacters} from "../characters/characters.js";
 
 export default async function (nicknameElement, editNicknameButton, saveNicknameButton) {
