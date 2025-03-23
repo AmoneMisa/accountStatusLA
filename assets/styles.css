@@ -192,11 +192,37 @@ body {
     -webkit-app-region: drag; /* Позволяет перемещать окно */
     box-sizing: border-box;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    flex: none;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    padding-top: 20px;
 }
 
 .wrapper {
     padding: 15px;
     position: relative;
+    -webkit-app-region: no-drag;
+    flex: auto;
+}
+
+.footer {
+    flex: none;
+    height: 25px;
+    font-size: 12px;
+    color: var(--gold);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .error {
@@ -208,7 +234,7 @@ body {
     margin: 10px 0;
 }
 
-input, button, select, textarea, a, .popup, .button {
+input, button, select, textarea, a, .popup, .button, label {
     -webkit-app-region: no-drag;
 }
 
@@ -245,6 +271,44 @@ input {
 
 input[type=number] {
     cursor: text;
+}
+
+.custom-label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.custom-label input[type="checkbox"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--gold);
+    border-radius: 4px;
+    margin-right: 6px;
+    background-color: transparent;
+    transition: all 0.2s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+.custom-label input[type="checkbox"]:checked {
+    background-color: var(--gold);
+}
+
+.custom-label input[type="checkbox"]::after {
+    content: "✔";
+    position: absolute;
+    top: -3px;
+    left: 2px;
+    color: var(--black);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.custom-label input[type="checkbox"]:checked::after {
+    opacity: 1;
 }
 
 input[type=number]::-webkit-outer-spin-button,
@@ -315,6 +379,7 @@ input[type=number]::-webkit-inner-spin-button {
     background: var(--black);
     z-index: 1;
     box-shadow: var(--shadow);
+    margin-bottom: 10px;
 }
 
 .title-bar__title {
@@ -370,7 +435,6 @@ input[type=number]::-webkit-inner-spin-button {
     gap: 10px;
     flex-direction: column;
     width: 100%;
-    -webkit-app-region: no-drag;
 }
 
 .character-list.edit-mode {
@@ -514,14 +578,6 @@ input[type=number]::-webkit-inner-spin-button {
     justify-content: space-between;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 100%;
-    padding-top: 20px;
-}
-
 .raid-selector {
     border-radius: 5px;
     width: 300px;
@@ -597,7 +653,6 @@ input[type=number]::-webkit-inner-spin-button {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    -webkit-app-region: no-drag;
 }
 
 .character-table__settings {
@@ -818,10 +873,6 @@ input[type=number]::-webkit-inner-spin-button {
     top: -15px;
     right: -15px;
     cursor: pointer;
-}
-
-.tools-container {
-    -webkit-app-region: no-drag;
 }
 
 .tools-container__item {

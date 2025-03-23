@@ -7,25 +7,27 @@
     <link rel="stylesheet" href="./assets/styles.css">
 </head>
 <body>
-<div id="title-bar" class="title-bar">
-    <div id="title" class="title-bar__title">Lost Ark Character Manager by WhitesLove v. 0.6-alpha</div>
-    <div id="window-controls" class="window-controls">
-        <button id="minimize" class="window-controls__button button button_control">—</button>
-        <button id="maximize" class="window-controls__button button button_control">⬜</button>
-        <button id="close" class="window-controls__button button button_control">✖</button>
+<div class="header">
+    <div id="title-bar" class="title-bar">
+        <div id="title" class="title-bar__title">Lost Ark Character Manager by WhitesLove v. 0.6-alpha</div>
+        <div id="window-controls" class="window-controls">
+            <button id="minimize" class="window-controls__button button button_control">—</button>
+            <button id="maximize" class="window-controls__button button button_control">⬜</button>
+            <button id="close" class="window-controls__button button button_control">✖</button>
+        </div>
     </div>
 </div>
-<div class="tabs">
-    <button class="tab-button active" data-tab="main">Активности</button>
-    <button class="tab-button" data-tab="table">Кубы</button>
-    <button class="tab-button" data-tab="check-list">Чек-лист</button>
-    <button class="tab-button" data-tab="tools">Инструменты</button>
-    <button class="tab-button" data-tab="settings">Настройки</button>
-</div>
 <div class="wrapper">
+    <div class="tabs">
+        <button class="tab-button active" data-tab="main">Активности</button>
+        <button class="tab-button" data-tab="table">Кубы</button>
+        <button class="tab-button" data-tab="check-list">Чек-лист</button>
+        <button class="tab-button" data-tab="tools">Инструменты</button>
+        <button class="tab-button" data-tab="settings">Настройки</button>
+    </div>
     <div class="main">
         <div id="main-tab" class="tab-content active">
-            <div class="header">
+            <div class="main-header">
                 <div class="nickname-block">
                     <div id="nickname" class="nickname-block__nickname">Загрузка ника...</div>
                     <button type="button" id="edit-nickname" class="button button_icon nickname-block__button">✏️
@@ -117,16 +119,21 @@
 
                 <div class="settings-table__cell">Скрыть напоминание о полевом боссе сегодня</div>
                 <div class="settings-table__cell">
-                    <input type="checkbox" id="disableBossReminderToday"/>
+                    <label class="custom-label">
+                        <input type="checkbox" id="disableBossReminderToday"/>
+                    </label>
                 </div>
 
                 <div class="settings-table__cell">Скрыть напоминание о разломе сегодня</div>
                 <div class="settings-table__cell">
-                    <input type="checkbox" id="disableChaosReminderToday"/>
+                    <label class="custom-label">
+                        <input type="checkbox" id="disableChaosReminderToday"/>
+                    </label>
                 </div>
 
                 <div class="settings-table__cell">Изменить путь сохранения настроек</div>
-                <div class="settings-table__cell"><input type="text" id="savePath" class="choose-folder-input" readonly>
+                <div class="settings-table__cell">
+                    <input type="text" id="savePath" class="choose-folder-input" readonly>
                     <button id="choose-folder" class="button">Выбрать</button>
                 </div>
 
@@ -145,16 +152,20 @@
                 </select></div>
 
                 <div class="settings-table__cell">Отображать бар с информацией о боссе и разломе</div>
-                <div class="settings-table__cell"><input type="checkbox" id="boss-info"></div>
+                <div class="settings-table__cell"><label class="custom-label">
+                    <input type="checkbox" id="boss-info"></label></div>
 
                 <div class="settings-table__cell">Сворачивать приложение при нажатии на крестик</div>
-                <div class="settings-table__cell"><input type="checkbox" id="minimizeOnClose"></div>
+                <div class="settings-table__cell"><label class="custom-label">
+                    <input type="checkbox" id="minimizeOnClose"></label></div>
 
                 <div class="settings-table__cell">Запоминать размер окна при закрытии</div>
-                <div class="settings-table__cell"><input type="checkbox" id="rememberWindowSize"></div>
+                <div class="settings-table__cell"><label class="custom-label">
+                    <input type="checkbox" id="rememberWindowSize"></label></div>
 
                 <div class="settings-table__cell">Запоминать расположение окна при закрытии</div>
-                <div class="settings-table__cell"><input type="checkbox" id="rememberWindowPosition"></div>
+                <div class="settings-table__cell"><label class="custom-label">
+                    <input type="checkbox" id="rememberWindowPosition"></label></div>
 
                 <div class="settings-table__cell">Проверить обновления приложения</div>
                 <div class="settings-table__cell">
@@ -169,6 +180,7 @@
     <div id="error" class="error"></div>
     <div id="loader" class="loader"></div>
 </div>
+<div class="footer">2025 ©</div>
 <script type="module" src="mainProcess/renderer.js"></script>
 </body>
 </html>

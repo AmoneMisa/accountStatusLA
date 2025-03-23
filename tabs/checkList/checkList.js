@@ -29,6 +29,10 @@ export function renderTodoList() {
         checkbox.checked = todo.complete;
         checkbox.dataset.index = index;
 
+        const checkboxLabel = document.createElement("label");
+        checkboxLabel.className = "check-list-table__label custom-label";
+        checkboxLabel.appendChild(checkbox);
+
         const text = document.createElement("span");
         text.className = "check-list-table__item-text";
         text.innerText = todo.text;
@@ -39,7 +43,7 @@ export function renderTodoList() {
         deleteBtn.title = "Удалить";
         deleteBtn.dataset.index = index;
 
-        item.appendChild(checkbox);
+        item.appendChild(checkboxLabel);
         item.appendChild(text);
         item.appendChild(deleteBtn);
         todoContainer.appendChild(item);

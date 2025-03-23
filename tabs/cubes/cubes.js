@@ -28,6 +28,7 @@ export function renderCharacterTable() {
         columnLabel.innerText = `Вкл. ${name}`;
         columnLabel.appendChild(columnSetting);
         columnLabel.classList.add("character-table__settings-item");
+        columnLabel.classList.add("custom-label");
         columnSettings.appendChild(columnLabel);
         columnSettings.classList.add("character-table__settings");
         columnSetting.classList.add("character-table__settings-input");
