@@ -4,6 +4,7 @@ import controls from "../tabs/common/controls.js";
 import settingsDOM from "../tabs/settings/settingsDOM.js";
 import migration from "../tabs/common/migration.js";
 import calcBet from "../tabs/services/calcBet.js";
+import calcCubes from "../tabs/services/calcCubes.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const nicknameElement = document.getElementById('nickname');
@@ -23,8 +24,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.settings = settings;
     });
 
-   controls();
+    controls();
     await settingsDOM();
 
     calcBet();
+    calcCubes();
 });

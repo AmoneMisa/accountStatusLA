@@ -1,5 +1,5 @@
 export default function () {
-    document.querySelector(".calc-bet__button").addEventListener("click", () => {
+    document.querySelector(".calc-bet__auction-price").addEventListener("input", () => {
         const auctionPriceInput = document.querySelector(".calc-bet__auction-price");
 
         if (auctionPriceInput.value <= 0) {

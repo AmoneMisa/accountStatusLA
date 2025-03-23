@@ -64,12 +64,33 @@
                             <div class="calc-bet__max"></div>
                         </div>
                     </div>
-                    <button type="button" class="button calc-bet__button">Рассчитать</button>
                 </div>
-                <div class="tools-container__item"></div>
-                <div class="tools-container__item"></div>
-                <div class="tools-container__item"></div>
-                <div class="tools-container__item"></div>
+                <div class="tools-container__item calc-cubes">
+                    <div class="tools-container__item-name tooltip" data-tooltip="Количество кубов рассчитывается без учёта возможных бонусных комнат">Рассчитать количество кубов</div>
+                    <div class="tools-container__item-content">
+                        <label class="tools-container__item-label">
+                            Нужный уровень камня
+                            <input min="2" type="number" required class="tools-container__item-input calc-cubes__need-level-input">
+                        </label>
+                        <label class="tools-container__item-label">
+                            Количество камней в наличии
+                            <input min="0" type="number" placeholder="Ур. 1 т.4" class="tools-container__item-input calc-cubes__input" name="1">
+                            <input min="0" type="number" placeholder="Ур. 2 т.4" class="tools-container__item-input calc-cubes__input" name="2">
+                            <input min="0" type="number" placeholder="Ур. 3 т.4" class="tools-container__item-input calc-cubes__input" name="3">
+                            <input min="0" type="number" placeholder="Ур. 4 т.4" class="tools-container__item-input calc-cubes__input" name="4">
+                            <input min="0" type="number" placeholder="Ур. 5 т.4" class="tools-container__item-input calc-cubes__input" name="5">
+                            <input min="0" type="number" placeholder="Ур. 6 т.4" class="tools-container__item-input calc-cubes__input" name="6">
+                            <input min="0" type="number" placeholder="Ур. 7 т.4" class="tools-container__item-input calc-cubes__input" name="7">
+                            <input min="0" type="number" placeholder="Ур. 8 т.4" class="tools-container__item-input calc-cubes__input" name="8">
+                            <input min="0" type="number" placeholder="Ур. 9 т.4" class="tools-container__item-input calc-cubes__input" name="9">
+                        </label>
+                        <div class="tools-container__item-message">
+                            <div class="calc-cubes__all"></div>
+                            <div class="calc-cubes__clear"></div>
+                        </div>
+                        <button class="button calc-cubes__clean">Очистить всё</button>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="settings-tab" class="tab-content">

@@ -244,7 +244,7 @@ input {
 }
 
 input[type=number] {
-    cursor: pointer;
+    cursor: text;
 }
 
 input[type=number]::-webkit-outer-spin-button,
@@ -701,6 +701,7 @@ input[type=number]::-webkit-inner-spin-button {
 
 .tooltip::after {
     content: attr(data-tooltip); /* Берем текст из data-tooltip */
+    font-family: Arial, sans-serif;
     position: absolute;
     bottom: 120%; /* Поднимаем выше элемента */
     left: 50%;
@@ -811,7 +812,6 @@ input[type=number]::-webkit-inner-spin-button {
 
 .tools-container {
     -webkit-app-region: no-drag;
-    gap: 20px;
 }
 
 .tools-container__item {
@@ -820,12 +820,15 @@ input[type=number]::-webkit-inner-spin-button {
     padding: 10px;
     border-radius: 5px;
     gap: 10px;
+    margin-bottom: 20px;
 }
 
 .tools-container__item-name {
     margin: 0 auto 10px auto;
     text-align: center;
-    font-size: 18px;
+    font-size: 22px;
+    font-family: Caveat, serif;
+    color: var(--light-grey);
 }
 
 .tools-container__item-label {
