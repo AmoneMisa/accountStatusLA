@@ -973,6 +973,12 @@ input[type=number]::-webkit-inner-spin-button {
     margin-top: 5px;
 }
 
+.tools-container__item-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .tools-container__item-message {
     margin-top: 10px;
     margin-bottom: 10px;

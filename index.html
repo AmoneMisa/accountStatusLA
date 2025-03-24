@@ -61,6 +61,7 @@
                         <div class="tools-container__anchor-item"><a href="#calc-cubes">Кубы</a></div>
                         <div class="tools-container__anchor-item"><a href="#calc-cards">Карты</a></div>
                         <div class="tools-container__anchor-item"><a href="#calc-auction-sum">Выгода со ставки</a></div>
+                        <div class="tools-container__anchor-item"><a href="#calc-commission">Рассчитать комиссию</a></div>
                     </nav>
                 </div>
                 <div class="tools-container__main">
@@ -187,6 +188,17 @@
                         </label>
                         <button class="button profit-calc__submit">Рассчитать</button>
                         <div class="tools-container__item-message profit-calc__result"></div>
+                    </div>
+                    <div class="tools-container__item" id="calc-commission">
+                        <div class="tools-container__item-name tooltip" data-tooltip="Расчёт суммы для перевода с учётом комиссии 5%">Калькулятор комиссии перевода</div>
+                        <div class="tools-container__item-content">
+                            <label class="tools-container__item-label">
+                                Сумма, которую должен получить получатель:
+                                <input type="number" min="1" class="tools-container__item-input" id="desired-amount" placeholder="Введите сумму (например, 210000)">
+                            </label>
+                            <div class="tools-container__item-message" id="transfer-result"></div>
+                            <button class="button" id="calc-transfer">Рассчитать</button>
+                        </div>
                     </div>
                 </div>
             </div>

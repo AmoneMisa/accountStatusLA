@@ -7,6 +7,7 @@ import calcBet from "../tabs/services/calcBet.js";
 import calcCubes from "../tabs/services/calcCubes.js";
 import calcCards from "../tabs/services/calcCards.js";
 import calcSumFromBet from "../tabs/services/calcSumFromBet.js";
+import calcCommission from "../tabs/services/calcCommission.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const nicknameElement = document.getElementById('nickname');
@@ -33,4 +34,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     calcCubes();
     calcCards();
     calcSumFromBet();
+    calcCommission();
 });
