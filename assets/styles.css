@@ -201,6 +201,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 99;
+    -webkit-app-region: drag;
 }
 
 .main-header {
@@ -403,12 +404,13 @@ input[type=number]::-webkit-inner-spin-button {
     align-items: center;
 }
 
-#window-controls {
+.window-controls {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     width: 90px;
     padding: 0 5px;
+    -webkit-app-region: no-drag;
 }
 
 .loader {
@@ -912,7 +914,6 @@ input[type=number]::-webkit-inner-spin-button {
 
 .tools-container__item-input {
     max-width: 250px;
-    width: 100%;
     margin-bottom: 10px;
     margin-top: 5px;
 }
@@ -936,7 +937,7 @@ input[type=number]::-webkit-inner-spin-button {
 }
 
 .calc-cards__item {
-    flex: 33%;
+    flex: 25%;
 }
 
 .calc-cards__select {

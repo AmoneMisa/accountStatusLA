@@ -47,13 +47,11 @@ export default function () {
             const haveTotal = used + plus;
             const missing = Math.max(0, maxCards - haveTotal);
             totalNeeded += missing;
-
-            const currentTotal = upgradeCost[level] + plus; // сколько уже есть
-            const progressPercent = Math.min((currentTotal / totalNeeded) * 100, 100);
+            const progressPercent = Math.min((missing / maxCards ) * 100, 100);
 
             resultText += `Карта ${i + 1}: не хватает ${missing} карт
 <div class="calc-cards__card-progress-container">
-<div class="calc-cards__card-progress-bar" style="width: ${progressPercent}%;"></div>
+<div class="calc-cards__card-progress-bar" style="width: ${100 - progressPercent}%;"></div>
 </div>`;
         }
 
