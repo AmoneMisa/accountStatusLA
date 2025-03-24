@@ -387,6 +387,7 @@ input[type=number]::-webkit-inner-spin-button {
     margin-left: 5px;
     font-family: Caveat, serif;
     font-size: 18px;
+    -webkit-app-region: drag;
 }
 
 .nickname-block {
@@ -911,6 +912,7 @@ input[type=number]::-webkit-inner-spin-button {
 
 .tools-container__item-input {
     max-width: 250px;
+    width: 100%;
     margin-bottom: 10px;
     margin-top: 5px;
 }
@@ -919,6 +921,28 @@ input[type=number]::-webkit-inner-spin-button {
     margin-top: 10px;
     margin-bottom: 10px;
     font-size: 14px;
+}
+
+.calc-cards__example {
+    font-size: 12px;
+    color: var(--gold);
+}
+
+.calc-cards__list {
+    width: 100%;
+    gap: 20px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.calc-cards__item {
+    flex: 33%;
+}
+
+.calc-cards__select {
+    height: 40px;
+    margin-top: 5px;
+    margin-right: 0;
 }
 
 ::-webkit-scrollbar {

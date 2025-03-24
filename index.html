@@ -137,6 +137,21 @@
                         <button class="button calc-cubes__clean">Очистить всё</button>
                     </div>
                 </div>
+                <div class="tools-container__item calc-cards">
+                    <div class="tools-container__item-name">Расчёт недостающих карт в колоде</div>
+                    <label class="tools-container__item-label">
+                        Количество карт в колоде (от 2 до 6)
+                        <input type="number" id="card-count" min="2" max="6" class="tools-container__item-input" />
+                    </label>
+                    <div class="calc-cards__example">*Подсказка для заполнения карт, после ввода количества карт в колоде.<br>Для карты 1+1: выбери в селекте уровень 1, в поле ввода введи цифру 1.</div>
+                    <div id="card-inputs" class="calc-cards__list"></div>
+
+                    <button class="button" id="calculate-cards">Рассчитать</button>
+
+                    <div class="tools-container__item-message">
+                        <div id="calc-cards__result"></div>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="settings-tab" class="tab-content">
