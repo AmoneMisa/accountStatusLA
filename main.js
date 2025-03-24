@@ -9,6 +9,7 @@ import {createWindow, setMainWindow} from "./mainProcess/mainWindow.js";
 import {capitalize} from "./utils/utils.js";
 import applySettings from "./mainProcess/applySettings.js";
 import {resetDailyActivities, resetWeeklyActivities} from "./mainProcess/resetActivities.js";
+import { parse } from 'semver';
 
 let tray;
 let mainWindow = null;
@@ -254,6 +255,10 @@ ipcMain.handle('check-for-updates', async (event) => {
     } catch (error) {
         event.sender.send('update-error', error.message);
     }
+});
+
+ipcMain.handle('is-newer-version', async (_, current, latest) => {
+    return parse(latest) > parse(current);
 });
 
 function shouldNotifyToday(type, settings) {

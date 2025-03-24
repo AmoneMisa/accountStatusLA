@@ -74,9 +74,15 @@ export default async function () {
     });
 
     window.electron.ipcRenderer.on('update-available', async ({latestVersion, downloadUrl}) => {
-        document.getElementById('message').innerText = `Доступно обновление ${latestVersion}. Открываем страницу загрузки...`;
+        const currentVersion = document.getElementById('update-app').dataset.currentVersion;
+        const isNewer = await window.electron.ipcRenderer.invoke('is-newer-version', currentVersion, latestVersion);
 
+        if (isNewer) {
+        document.getElementById('message').innerText = `Доступно обновление ${latestVersion}. Открываем страницу загрузки...`;
         await window.electron.ipcRenderer.openExternal(downloadUrl);
+    } else {
+            document.getElementById('message').innerText = "У вас актуальная версия.";
+        }
     });
 
     window.electron.ipcRenderer.on('update-not-found', () => {
