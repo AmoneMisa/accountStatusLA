@@ -9,7 +9,7 @@
 <body>
 <div class="header">
     <div id="title-bar" class="title-bar">
-        <div id="title" class="title-bar__title">Lost Ark Character Manager by WhitesLove v. 0.6-alpha</div>
+        <div id="title" class="title-bar__title">Lost Ark Character Manager by WhitesLove v. 0.7-alpha</div>
         <div id="window-controls" class="window-controls">
             <button id="minimize" class="window-controls__button button button_control">—</button>
             <button id="maximize" class="window-controls__button button button_control">⬜</button>
@@ -54,102 +54,139 @@
         </div>
         <div id="tools-tab" class="tab-content">
             <div id="tools-container" class="tools-container">
-                <div class="tools-container__item calc-bet">
-                    <div class="tools-container__item-name tooltip"
-                         data-tooltip="Стоимость рассчитывается, беря за основу 15% прибыли от продажи предмета на ауке, с вычетом комиссии">
-                        Рассчитать оптимальную ставку для аукциона
+                <div class="tools-container__sidebar">
+                    <div class="tools-container__anchor-menu-title">Быстрая навигация</div>
+                    <nav class="tools-container__anchor-menu">
+                        <div class="tools-container__anchor-item"><a href="#calc-bet">Ставка</a></div>
+                        <div class="tools-container__anchor-item"><a href="#calc-cubes">Кубы</a></div>
+                        <div class="tools-container__anchor-item"><a href="#calc-cards">Карты</a></div>
+                        <div class="tools-container__anchor-item"><a href="#calc-auction-sum">Выгода со ставки</a></div>
+                    </nav>
+                </div>
+                <div class="tools-container__main">
+                    <div class="tools-container__item calc-bet" id="calc-bet">
+                        <div class="tools-container__item-name tooltip"
+                             data-tooltip="Стоимость рассчитывается, беря за основу 15% прибыли от продажи предмета на ауке, с вычетом комиссии">
+                            Рассчитать оптимальную ставку для аукциона
+                        </div>
+                        <div class="tools-container__item-content">
+                            <label class="tools-container__item-label">
+                                Стоимость на аукционе
+                                <input min="1" type="number" required
+                                       class="tools-container__item-input calc-bet__auction-price">
+                            </label>
+                            <div class="tools-container__item-message">
+                                <div class="calc-bet__optimal"></div>
+                                <div class="calc-bet__max"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="tools-container__item-content">
+                    <div class="tools-container__item calc-cubes" id="calc-cubes">
+                        <div class="tools-container__item-name tooltip"
+                             data-tooltip="Количество кубов рассчитывается без учёта возможных бонусных комнат">
+                            Рассчитать количество кубов
+                        </div>
+                        <div class="tools-container__item-content">
+                            <div>
+                                <label class="tools-container__item-label">
+                                    Нужный уровень камня
+                                    <input min="2" max="10" type="number" required
+                                           class="tools-container__item-input calc-cubes__need-level-input"
+                                           placeholder="10">
+                                </label>
+                                <div class="tools-container__item-text">Количество камней в наличии</div>
+                                <div class="calc-cubes__inputs">
+                                    <label class="tools-container__item-label">
+                                        Ур. 1 т.4
+                                        <input min="0" type="number" placeholder="Ур. 1 т.4"
+                                               class="tools-container__item-input calc-cubes__input" name="1">
+                                    </label>
+                                    <label class="tools-container__item-label">
+                                        Ур. 2 т.4
+                                        <input min="0" type="number" placeholder="Ур. 2 т.4"
+                                               class="tools-container__item-input calc-cubes__input" name="2">
+                                    </label>
+                                    <label class="tools-container__item-label">
+                                        Ур. 3 т.4
+                                        <input min="0" type="number" placeholder="Ур. 3 т.4"
+                                               class="tools-container__item-input calc-cubes__input" name="3">
+                                    </label>
+                                    <label class="tools-container__item-label">
+                                        Ур. 4 т.4
+                                        <input min="0" type="number" placeholder="Ур. 4 т.4"
+                                               class="tools-container__item-input calc-cubes__input" name="4">
+                                    </label>
+                                    <label class="tools-container__item-label">
+                                        Ур. 5 т.4
+                                        <input min="0" type="number" placeholder="Ур. 5 т.4"
+                                               class="tools-container__item-input calc-cubes__input" name="5">
+                                    </label>
+                                    <label class="tools-container__item-label">
+                                        Ур. 6 т.4
+                                        <input min="0" type="number" placeholder="Ур. 6 т.4"
+                                               class="tools-container__item-input calc-cubes__input" name="6">
+                                    </label>
+                                    <label class="tools-container__item-label">
+                                        Ур. 7 т.4
+                                        <input min="0" type="number" placeholder="Ур. 7 т.4"
+                                               class="tools-container__item-input calc-cubes__input" name="7">
+                                    </label>
+                                    <label class="tools-container__item-label">
+                                        Ур. 8 т.4
+                                        <input min="0" type="number" placeholder="Ур. 8 т.4"
+                                               class="tools-container__item-input calc-cubes__input" name="8">
+                                    </label>
+                                    <label class="tools-container__item-label">
+                                        Ур. 9 т.4
+                                        <input min="0" type="number" placeholder="Ур. 9 т.4"
+                                               class="tools-container__item-input calc-cubes__input" name="9">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="tools-container__item-message">
+                                <div class="calc-cubes__all"></div>
+                                <div class="calc-cubes__clear"></div>
+                            </div>
+                            <button class="button calc-cubes__clean">Очистить всё</button>
+                        </div>
+                    </div>
+                    <div class="tools-container__item calc-cards"  id="calc-cards">
+                        <div class="tools-container__item-name tooltip"
+                             data-tooltip="Подсчёт количества карт, которые необходимо дособирать для получения 30-й колоды">
+                            Расчёт недостающих карт в колоде
+                        </div>
                         <label class="tools-container__item-label">
-                            Стоимость на аукционе
-                            <input min="1" type="number" required
-                                   class="tools-container__item-input calc-bet__auction-price">
+                            Количество карт в колоде (от 2 до 6)
+                            <input type="number" id="card-count" min="2" max="6" class="tools-container__item-input"/>
                         </label>
-                        <div class="tools-container__item-message">
-                            <div class="calc-bet__optimal"></div>
-                            <div class="calc-bet__max"></div>
+                        <div class="calc-cards__example">*Подсказка для заполнения карт, после ввода количества карт в
+                            колоде.<br>Для карты 1+1: выбери в селекте уровень 1, в поле ввода введи цифру 1.
                         </div>
-                    </div>
-                </div>
-                <div class="tools-container__item calc-cubes">
-                    <div class="tools-container__item-name tooltip"
-                         data-tooltip="Количество кубов рассчитывается без учёта возможных бонусных комнат">Рассчитать
-                        количество кубов
-                    </div>
-                    <div class="tools-container__item-content">
-                        <div>
-                            <label class="tools-container__item-label">
-                                Нужный уровень камня
-                                <input min="2" max="10" type="number" required
-                                       class="tools-container__item-input calc-cubes__need-level-input" placeholder="10">
-                            </label>
-                            <div class="tools-container__item-text">Количество камней в наличии</div>
-                            <label class="tools-container__item-label">
-                                Ур. 1 т.4
-                                <input min="0" type="number" placeholder="Ур. 1 т.4"
-                                       class="tools-container__item-input calc-cubes__input" name="1">
-                            </label>
-                            <label class="tools-container__item-label">
-                                Ур. 2 т.4
-                                <input min="0" type="number" placeholder="Ур. 2 т.4"
-                                       class="tools-container__item-input calc-cubes__input" name="2">
-                            </label>
-                            <label class="tools-container__item-label">
-                                Ур. 3 т.4
-                                <input min="0" type="number" placeholder="Ур. 3 т.4"
-                                       class="tools-container__item-input calc-cubes__input" name="3">
-                            </label>
-                            <label class="tools-container__item-label">
-                                Ур. 4 т.4
-                                <input min="0" type="number" placeholder="Ур. 4 т.4"
-                                       class="tools-container__item-input calc-cubes__input" name="4">
-                            </label>
-                            <label class="tools-container__item-label">
-                                Ур. 5 т.4
-                                <input min="0" type="number" placeholder="Ур. 5 т.4"
-                                       class="tools-container__item-input calc-cubes__input" name="5">
-                            </label>
-                            <label class="tools-container__item-label">
-                                Ур. 6 т.4
-                                <input min="0" type="number" placeholder="Ур. 6 т.4"
-                                       class="tools-container__item-input calc-cubes__input" name="6">
-                            </label>
-                            <label class="tools-container__item-label">
-                                Ур. 7 т.4
-                                <input min="0" type="number" placeholder="Ур. 7 т.4"
-                                       class="tools-container__item-input calc-cubes__input" name="7">
-                            </label>
-                            <label class="tools-container__item-label">
-                                Ур. 8 т.4
-                                <input min="0" type="number" placeholder="Ур. 8 т.4"
-                                       class="tools-container__item-input calc-cubes__input" name="8">
-                            </label>
-                            <label class="tools-container__item-label">
-                                Ур. 9 т.4
-                                <input min="0" type="number" placeholder="Ур. 9 т.4"
-                                       class="tools-container__item-input calc-cubes__input" name="9">
-                            </label>
-                        </div>
-                        <div class="tools-container__item-message">
-                            <div class="calc-cubes__all"></div>
-                            <div class="calc-cubes__clear"></div>
-                        </div>
-                        <button class="button calc-cubes__clean">Очистить всё</button>
-                    </div>
-                </div>
-                <div class="tools-container__item calc-cards">
-                    <div class="tools-container__item-name">Расчёт недостающих карт в колоде</div>
-                    <label class="tools-container__item-label">
-                        Количество карт в колоде (от 2 до 6)
-                        <input type="number" id="card-count" min="2" max="6" class="tools-container__item-input" />
-                    </label>
-                    <div class="calc-cards__example">*Подсказка для заполнения карт, после ввода количества карт в колоде.<br>Для карты 1+1: выбери в селекте уровень 1, в поле ввода введи цифру 1.</div>
-                    <div id="card-inputs" class="calc-cards__list"></div>
+                        <div id="card-inputs" class="calc-cards__list"></div>
 
-                    <button class="button" id="calculate-cards">Рассчитать</button>
+                        <button class="button" id="calculate-cards">Рассчитать</button>
 
-                    <div class="tools-container__item-message">
-                        <div id="calc-cards__result"></div>
+                        <div class="tools-container__item-message">
+                            <div id="calc-cards__result"></div>
+                        </div>
+                    </div>
+                    <div class="tools-container__item calc-auction-sum" id="calc-auction-sum">
+                        <div class="tools-container__item-name tooltip"
+                             data-tooltip="Подсчёт суммы, которую получит каждый член группы при чьей-то покупке на аукционе">
+                            Выгода на человека при покупке на аукционе
+                        </div>
+                        <label class="tools-container__item-label">
+                            Количество участников (без учёта себя)
+                            <input type="number" min="3" max="30"
+                                   class="profit-calc__players tools-container__item-input">
+                        </label>
+                        <label class="tools-container__item-label">
+                            Сумма ставки
+                            <input type="number" class="profit-calc__bid tools-container__item-input" min="0"
+                                   placeholder="Введите ставку"/>
+                        </label>
+                        <button class="button profit-calc__submit">Рассчитать</button>
+                        <div class="tools-container__item-message profit-calc__result"></div>
                     </div>
                 </div>
             </div>

@@ -1,19 +1,10 @@
-import {app, dialog, ipcMain, Menu, net, shell, Tray, Notification} from 'electron';
+import {app, dialog, ipcMain, Menu, net, Notification, shell, Tray} from 'electron';
 import path from 'path';
 import {parseLostArkProfile} from "./tabs/characters/parser.js";
-import {
-    saveSettings,
-    changeSettingsPath,
-    getCharactersSettings,
-    getLastResetDaily,
-    loadSettings,
-    setCharactersSettings,
-    setLastResetDaily,
-    setLastResetWeekly, getLastResetWeekly, getToolsInfo
-} from "./utils/storage.js";
+import {changeSettingsPath, getToolsInfo, loadSettings, saveSettings} from "./utils/storage.js";
 import fs from "fs";
 import cron from "node-cron";
-import {DateTime} from "luxon";
+import {DateTime, Settings} from "luxon";
 import {createWindow, setMainWindow} from "./mainProcess/mainWindow.js";
 import {capitalize} from "./utils/utils.js";
 import applySettings from "./mainProcess/applySettings.js";
@@ -59,6 +50,7 @@ await app.on('ready', async () => {
         mainWindow.show();
     });
 
+    Settings.defaultZone = "Russia/Moscow";
     resetDailyActivities(DateTime);
     cron.schedule('0 3 * * *', () => {
         resetWeeklyActivities(DateTime);
@@ -265,13 +257,15 @@ ipcMain.handle('check-for-updates', async (event) => {
 });
 
 function shouldNotifyToday(type, settings) {
-    const today = DateTime.local().toFormat('yyyy-MM-dd');
+    Settings.defaultZone = "Russia/Moscow";
+
+    const today = DateTime.now().toFormat('yyyy-MM-dd');
     return !settings[`disable${capitalize(type)}ReminderToday`] || settings.lastDisabledReminderDate !== today;
 }
 
 function scheduleReminders() {
     const settings = loadSettings();
-    const now = DateTime.local().setZone('Europe/Moscow');
+    const now = DateTime.now().setZone('Europe/Moscow');
     const weekday = now.weekday;
     const toolsInfo = getToolsInfo();
 

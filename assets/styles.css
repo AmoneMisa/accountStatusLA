@@ -243,6 +243,21 @@ input, button, select, textarea, a, .popup, .button, label {
     -webkit-app-region: no-drag;
 }
 
+a {
+    color: var(--white);
+    transition: color .2s ease;
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--gold);
+}
+
+a:visited,
+a:active {
+    color: var(--white);
+}
+
 select {
     background-color: transparent;
     border-radius: 5px;
@@ -381,7 +396,6 @@ input[type=number]::-webkit-inner-spin-button {
     border-radius: 5px;
     background: var(--black);
     box-shadow: var(--shadow);
-    margin-bottom: 10px;
 }
 
 .title-bar__title {
@@ -879,6 +893,37 @@ input[type=number]::-webkit-inner-spin-button {
     cursor: pointer;
 }
 
+.tools-container {
+    display: flex;
+    gap: 20px;
+}
+
+.tools-container__sidebar {
+    box-shadow: var(--shadow);
+    border: 1px solid var(--grey);
+    padding: 10px;
+    border-radius: 5px;
+    flex: 15%;
+    font-size: 14px;
+    max-height: 100vh;
+}
+
+.tools-container__anchor-menu {
+    position: sticky;
+    top: 0;
+}
+
+.tools-container__anchor-menu-title {
+    font-size: 18px;
+    font-family: Caveat, serif;
+    color: var(--gold);
+    margin-bottom: 25px;
+}
+
+.tools-container__anchor-item {
+    margin-bottom: 15px;
+}
+
 .tools-container__item {
     border: 1px solid var(--grey);
     box-shadow: var(--shadow);
@@ -890,6 +935,17 @@ input[type=number]::-webkit-inner-spin-button {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    flex: auto;
+}
+
+.calc-cubes__inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.calc-cubes__input {
+    flex: 33%;
 }
 
 .tools-container__item-name {
