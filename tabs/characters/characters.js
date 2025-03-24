@@ -300,10 +300,8 @@ function showRaidSelector(characterName) {
 
     if (settings[characterName] && settings[characterName].raids && settings[characterName].raids.length > 0) {
         Array.from(select.options).forEach(option => {
-            console.log(settings[characterName].raids)
             if (settings[characterName].raids.includes(option.value)) {
                 option.selected = true;
-                console.log("option.selected", option.selected)
             }
         });
     }
