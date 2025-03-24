@@ -71,8 +71,8 @@ await app.on('ready', async () => {
 
     const settings = loadSettings();
     applySettings(settings);
+    resetReminderSettingsIfNeeded();
     scheduleReminders();
-
 });
 
 ipcMain.handle('clear-character-settings', () => {
@@ -301,4 +301,26 @@ function scheduleReminders() {
             });
         });
     });
+}
+
+function resetReminderSettingsIfNeeded() {
+    const settings = loadSettings();
+    const today = DateTime.local().toFormat('yyyy-MM-dd');
+
+    let changed = false;
+
+    ['boss', 'chaos'].forEach(type => {
+        const key = `disable${capitalize(type)}ReminderToday`;
+        const lastDate = settings.lastDisabledReminderDate;
+
+        if (settings[key] && lastDate !== today) {
+            // ❌ Сбросить флаг, если он был установлен ранее, но не на сегодня
+            settings[key] = false;
+            changed = true;
+        }
+    });
+
+    if (changed) {
+        saveSettings(settings);
+    }
 }
