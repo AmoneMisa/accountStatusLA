@@ -196,6 +196,10 @@ body {
     flex-direction: column;
 }
 
+.title {
+    font-size: 22px;
+}
+
 .header {
     flex: none;
     position: sticky;
@@ -905,12 +909,7 @@ input[type=number]::-webkit-inner-spin-button {
     border-radius: 5px;
     flex: 15%;
     font-size: 14px;
-    max-height: 100vh;
-}
-
-.tools-container__anchor-menu {
-    position: sticky;
-    top: 0;
+    height: -webkit-fill-available;
 }
 
 .tools-container__anchor-menu-title {

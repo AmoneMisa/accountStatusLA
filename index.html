@@ -29,13 +29,13 @@
         <div id="main-tab" class="tab-content active">
             <div class="main-header">
                 <div class="nickname-block">
-                    <div id="nickname" class="nickname-block__nickname">Загрузка ника...</div>
-                    <button type="button" id="edit-nickname" class="button button_icon nickname-block__button">✏️
+                    <div id="nickname" class="nickname-block__nickname tooltip" data-tooltip="Ник необходим для загрузки твоих персонажей">Загрузка ника...</div>
+                    <button type="button" id="edit-nickname" class="button button_icon nickname-block__button tooltip" data-tooltip="Редактировать ник">✏️
                     </button>
-                    <button id="save-nickname" class="button button_icon" style="display:none">💾</button>
+                    <button id="save-nickname" class="button button_icon tooltip" data-tooltip="Сохранить ник" style="display:none">💾</button>
                 </div>
                 <div id="controls" class="controls">
-                    <button type="button" id="refresh-characters" class="button button_icon">🔄</button>
+                    <button type="button" id="refresh-characters" class="button button_icon tooltip" data-tooltip="Обновить персонажей">🔄</button>
                     <button type="button" id="edit-characters" class="button button_icon">✏️</button>
                 </div>
             </div>
