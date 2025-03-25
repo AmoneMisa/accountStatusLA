@@ -14,6 +14,8 @@ import { parse } from 'semver';
 let tray;
 let mainWindow = null;
 
+await parseLostArkProfile("Аморалочка");
+
 await app.on('ready', async () => {
     mainWindow = await createWindow();
     setMainWindow(mainWindow);
