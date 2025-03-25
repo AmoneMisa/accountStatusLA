@@ -173,21 +173,24 @@ function getElixirs(key, data) {
     const result = {};
     const lines = data.Element_010?.value?.Element_000?.contentStr?.Element_000?.contentStr.split(/<br>|<BR>/i);
 
-    for (const line of lines) {
-        const match = line.match(/([\w\sёЁА-Яа-я]+)\s*([+-]?\d+(?:[.,]\d+)?)/);
-        if (match) {
-            let key = match[1].trim();
-            result[key] = parseFloat(match[2].replace(',', '.'));
+    if (lines) {
+        for (const line of lines) {
+            const match = line.match(/([\w\sёЁА-Яа-я]+)\s*([+-]?\d+(?:[.,]\d+)?)/);
+            if (match) {
+                let key = match[1].trim();
+                result[key] = parseFloat(match[2].replace(',', '.'));
+            }
         }
     }
 
     const lines2 = data.Element_010?.value?.Element_000?.contentStr?.Element_001?.contentStr.split(/<br>|<BR>/i);
-
-    for (const line of lines2) {
-        const match = line.match(/([\w\sёЁА-Яа-я]+)\s*([+-]?\d+(?:[.,]\d+)?)/);
-        if (match) {
-            let key = match[1].trim();
-            result[key] = parseFloat(match[2].replace(',', '.'));
+    if (lines2) {
+        for (const line of lines2) {
+            const match = line.match(/([\w\sёЁА-Яа-я]+)\s*([+-]?\d+(?:[.,]\d+)?)/);
+            if (match) {
+                let key = match[1].trim();
+                result[key] = parseFloat(match[2].replace(',', '.'));
+            }
         }
     }
 
@@ -284,9 +287,23 @@ function parseEquipmentInfo(key, equipmentData) {
 
     // Высшая закалка
     const nameHtml = equipmentData?.Element_005?.value || "";
-    const mainRefineMatch = nameHtml.match(/Ур\.\s*<FONT[^>]*>(\d+)<\/FONT>/i);
-    if (mainRefineMatch) {
-        result.highRefineLevel = parseInt(mainRefineMatch[1], 10);
+
+    if (nameHtml && typeof nameHtml === "string") {
+        const mainRefineMatch = nameHtml.match(/Ур\.\s*<FONT[^>]*>(\d+)<\/FONT>/i);
+        if (mainRefineMatch) {
+            result.highRefineLevel = parseInt(mainRefineMatch[1], 10);
+        }
+    } else if (nameHtml && typeof nameHtml === "object") {
+        const result = Object.fromEntries(
+            nameHtml?.Element_001.split('<BR>').map(line => {
+                const [key, value] = line.split(' +');
+                return [key.trim(), parseInt(value.trim(), 10)];
+            })
+        );
+
+        if (result) {
+            result.baseEffects = result;
+        }
     }
 
     //Общий уровень предмета
@@ -357,15 +374,19 @@ function getAccessorize(key, data) {
     }
 
     let result = {};
-    result.quality = data.Element_001.value.qualityValue;
-    result.rarily = data.Element_001.value.leftStr0.match(/<FONT COLOR='[^']*'>([^<]+)<\/FONT>/)[1].trim();
-    result.effects = getAccessorizeEffects(data.Element_005.value.Element_001);
-    result.stats = getAccessorizesBaseStats(data.Element_004.value.Element_001);
+    result.quality = data?.Element_001?.value?.qualityValue;
+    result.rarily = data?.Element_001?.value?.leftStr0.match(/<FONT COLOR='[^']*'>([^<]+)<\/FONT>/)[1].trim();
+    result.effects = getAccessorizeEffects(data?.Element_005.value?.Element_001);
+    result.stats = getAccessorizesBaseStats(data?.Element_004.value?.Element_001);
 
     return result;
 }
 
 function getAccessorizesBaseStats(data) {
+    if (!data) {
+        return ;
+    }
+
     const result = {};
     const cleanStr = data.replace(/<[^>]+>/g, '');
     const lines = cleanStr.split(/<BR>|[\r\n]+/);
@@ -382,6 +403,9 @@ function getAccessorizesBaseStats(data) {
 }
 
 function getAccessorizeEffects(data) {
+    if (!data) {
+        return ;
+    }
     let result = {};
     const clean = data.replace(/<img[^>]*>/g, '');
     const lines = clean.split('<BR>');
