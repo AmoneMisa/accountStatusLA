@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {parse} from 'node-html-parser';
-import {stripHtml} from "../../utils/utils.js";
 
 export async function parseLostArkProfile(nickname) {
     try {
@@ -10,11 +9,6 @@ export async function parseLostArkProfile(nickname) {
 
         for (let name of charNameList) {
             if (characters.find(char => char.name === name)) {
-                continue;
-            }
-
-            // УБРАТЬ
-            if (name  !== nickname) {
                 continue;
             }
 
@@ -30,42 +24,44 @@ export async function parseLostArkProfile(nickname) {
             }
 
             let characteristics = getCharacteristics(_page);
-            if (!characteristics) {
-                continue;
-            }
-
             let engraves = getEngraves(_page);
-            if (!engraves) {
-                continue;
-            }
-
             let ark = getARK(_page);
-            if (!ark) {
-                continue;
-            }
-
             let attackPowerGems = getAttackPowerGems(_page);
 
             let equipmentScriptData = getEquipmentScriptData(_page);
             if (!equipmentScriptData) {
                 continue;
             }
-            console.log(JSON.parse(stripHtml(equipmentScriptData)).Equip);
 
-            const equipmentData = Object.entries(JSON.parse(stripHtml(equipmentScriptData)))
-                .filter(([key]) => key.startsWith('E'))
-                .map(([key, value]) => ({
-                    key,
-                    ...parseEquipmentInfo(value),
-                    baseEffect: getBaseEffect(value),
-                    polishEffect: getPolishEffect(value),
-                    gemBonuses: getGemBonuses(value),
-                    braceletEffects: getBraceletEffects(value),
-                    engravingEffect: getEngravingEffects(value),
-                    elixirs: getElixirs(value),
-                }));
+            // Добавить нормальный парсер для эквипа
+            const equipmentData = {
+                gemBonuses: {},
+                equip: {},
+                elixirs: {},
+                accessorizes: {},
+                stone: {},
+                bracelet: {}
+            };
 
-            console.log("equipmentData", equipmentData);
+            for (let [key, value] of Object.entries(equipmentScriptData.Equip)) {
+                let _key = shorterKey(key);
+
+                if (_key.includes("Gem")) {
+                    equipmentData["gemBonuses"][_key] = getGemBonuses(_key, value);
+                } else if (_key < "006") {
+                    equipmentData["equip"][_key] = (parseEquipmentInfo(_key, value));
+
+                    if (_key > "000") {
+                        equipmentData["elixirs"][_key] = (getElixirs(_key, value));
+                    }
+                } else if (_key > "005" && _key < "011") {
+                    equipmentData["accessorizes"][_key] = (getAccessorize(_key, value));
+                } else if (_key === "011") {
+                    equipmentData["stone"] = (getStone(_key, value));
+                } else if (_key === "026") {
+                    equipmentData["bracelet"] = (getBracelet(_key, value));
+                }
+            }
 
             if (!equipmentData) {
                 continue;
@@ -81,11 +77,11 @@ export async function parseLostArkProfile(nickname) {
                 engraves,
                 equipment: equipmentData
             });
+
             await new Promise(res => setTimeout(res, 1000));
         }
 
         characters.sort((a, b) => b.gearScore - a.gearScore);
-        console.log("characters", characters);
         return characters;
     } catch (err) {
         console.error('Ошибка парсинга:', err);
@@ -169,98 +165,155 @@ function getEngraves(page) {
     return engraves;
 }
 
-function getElixirs(data) {
-    const effects = data?.Element_009?.value?.Element_000?.contentStr || {};
-    return Object.values(effects)
-        .map(e => e.contentStr)
-        .filter(str => str?.includes("Эликсир")) || [];
-}
+function getElixirs(key, data) {
+    if (key < "001" || key > "005") {
+        return;
+    }
 
-function getBraceletEffects(data) {
-    const effects = [];
+    const result = {};
+    const lines = data.Element_010?.value?.Element_000?.contentStr?.Element_000?.contentStr.split(/<br>|<BR>/i);
 
-    // Пробуем стандартные поля
-    if (data?.Element_006?.value?.Element_001) effects.push(data.Element_006.value.Element_001);
-    if (data?.Element_007?.value?.Element_001) effects.push(data.Element_007.value.Element_001);
-
-    // Проверка на вложенные строки с доп. эффектами
-    const content = data?.Element_009?.value?.Element_000?.contentStr || {};
-    for (const item of Object.values(content)) {
-        if (item.contentStr?.includes("Браслет")) {
-            effects.push(item.contentStr);
+    for (const line of lines) {
+        const match = line.match(/([\w\sёЁА-Яа-я]+)\s*([+-]?\d+(?:[.,]\d+)?)/);
+        if (match) {
+            let key = match[1].trim();
+            result[key] = parseFloat(match[2].replace(',', '.'));
         }
     }
 
+    const lines2 = data.Element_010?.value?.Element_000?.contentStr?.Element_001?.contentStr.split(/<br>|<BR>/i);
+
+    for (const line of lines2) {
+        const match = line.match(/([\w\sёЁА-Яа-я]+)\s*([+-]?\d+(?:[.,]\d+)?)/);
+        if (match) {
+            let key = match[1].trim();
+            result[key] = parseFloat(match[2].replace(',', '.'));
+        }
+    }
+
+    return result;
+}
+
+function getBracelet(key, data) {
+    if (key !== "026") {
+        return;
+    }
+
+    const result = {};
+    result["rarity"] = data?.Element_001?.value?.leftStr0.match(/<FONT[^>]*>([^<]+)<\/FONT>/)[1];
+
+    const effects = data?.Element_004?.value?.Element_001 || {};
+    result["effects"] = (parseBraceletEffects(effects));
+
+    return result;
+}
+
+function parseBraceletEffects(data) {
+    const effects = {};
+    const regex = /<\/img>\s*([^<]+?)\s*\+([\d.]+)/g;
+    let match;
+    while ((match = regex.exec(data)) !== null) {
+        const key = match[1].trim();
+        effects[key] = parseFloat(match[2]);
+    }
     return effects;
 }
 
-function getEngravingEffects(engraveData) {
-    return engraveData?.Element_003?.value?.Element_001 || "";
+function getStone(key, data) {
+    const result = {
+        rarity: {},
+        base: {},
+        bonus: {},
+        effects: {}
+    };
+    result["rarity"] = data?.Element_001?.value?.leftStr0.match(/<FONT[^>]*>([^<]+)<\/FONT>/)[1];
+
+    let base = data?.Element_004.value?.Element_001.match(/^(.+?)\s*\+([\d.]+)$/);
+    result["base"][base[1]] = parseFloat(base[2]);
+
+    let bonus = data?.Element_005.value?.Element_001.match(/^(.+?)\s*\+([\d.]+)$/);
+    result["bonus"][bonus?.[1].trim()] = parseFloat(bonus?.[2]);
+
+    let effects = data?.Element_006.value?.Element_000?.contentStr;
+
+    let effect1 = effects?.Element_000?.contentStr.match(/\[?<FONT COLOR='[^']*'>([^<]+)<\/FONT>]?\s*.*?\(ур\. (\d+)\)/);
+    result["effects"][effect1[1]] = parseInt(effect1[2], 10);
+
+    let effect2 = effects?.Element_001?.contentStr.match(/\[?<FONT COLOR='[^']*'>([^<]+)<\/FONT>]?\s*.*?\(ур\. (\d+)\)/);
+    result["effects"][effect2[1]] = parseInt(effect2[2], 10);
+
+    let effect3 = effects?.Element_002?.contentStr.match(/\[?<FONT COLOR='[^']*'>([^<]+)<\/FONT>]?\s*.*?\(ур\. (\d+)\)/);
+    result["effects"][effect3[1]] = parseInt(effect3[2], 10);
+
+    return result;
 }
 
-function getPolishEffect(data) {
-    return data?.Element_007?.value?.Element_001 || "";
-}
-
-function getGemBonuses(data) {
-    const bonuses = [];
-    const content = data?.Element_009?.value?.Element_000?.contentStr || {};
-    for (const item of Object.values(content)) {
-        const text = item.contentStr;
-        if (/огранк|стигм|эффективн/i.test(text)) {
-            bonuses.push(text);
-        }
+function getGemBonuses(key, data) {
+    if (!key.includes("Gem")) {
+        return;
     }
-    return bonuses;
+
+    const result = data.Element_006.value.Element_001.match(/\d+(?:[.,]\d+)?/g);
+    return result ? parseFloat(result.at(-1).replace(',', '.')) : null;
 }
 
-function getBaseEffect(data) {
-    return data?.Element_006?.value?.Element_001 || "";
-}
+function parseEquipmentInfo(key, equipmentData) {
+    if (key.includes("Gem") || key > "005") {
+        return;
+    }
 
-function parseEquipmentInfo(equipmentData) {
     const result = {
         polishLevel: null,             // Качество (0–100)
-        refineLevel: null,            // Уровень закалки (в Element_005)
-        isHighRefine: false,          // Высшая закалка?
-        mainRefineLevel: null,        // Основной уровень (в Element_000)
+        refineLevel: null,            // Уровень закалки
+        highRefineLevel: null,        // Уровень высшей закалки (в названии)
         itemLevel: null,              // Уровень предмета
         transcendenceStage: null,     // Этап трансценденции
         transcendenceCount: null,     // Кол-во трансценденции
-        rarity: null,                 // Реликтовый / Древний и т.д.
+        rarity: null                 // Реликтовый / Древний и т.п.
     };
 
-    // 📌 Качество (как полировка)
-    result.polishLevel = equipmentData.Element_001?.value?.qualityValue ?? null;
+    // Полировка
+    result.polishLevel = equipmentData?.Element_001?.value?.qualityValue ?? null;
 
-    // 📌 Уровень закалки
-    const refineText = equipmentData.Element_005?.value || "";
-    const refineMatch = refineText.match(/Ур\.\s*<FONT COLOR='#FFD200'>(\d+)<\/FONT>/);
-    if (refineMatch) result.refineLevel = parseInt(refineMatch[1], 10);
-    result.isHighRefine = refineText.includes("Высшая закалка");
+    // Закалка
+    const refineHtml = equipmentData?.Element_000?.value || "";
+    const refineMatch = refineHtml.match(/Ур\.\s*(\d+)/i);
+    if (refineMatch) {
+        result.refineLevel = parseInt(refineMatch[1], 10);
+    }
 
-    // 📌 Уровень основной закалки из названия
-    const mainText = equipmentData.Element_000?.value || "";
-    const mainRefineMatch = mainText.match(/Ур\.\s*(\d+):/);
-    if (mainRefineMatch) result.mainRefineLevel = parseInt(mainRefineMatch[1], 10);
+    // Высшая закалка
+    const nameHtml = equipmentData?.Element_005?.value || "";
+    const mainRefineMatch = nameHtml.match(/Ур\.\s*<FONT[^>]*>(\d+)<\/FONT>/i);
+    if (mainRefineMatch) {
+        result.highRefineLevel = parseInt(mainRefineMatch[1], 10);
+    }
 
-    // 📌 Уровень предмета
-    const itemLevelText = equipmentData.Element_001?.value?.leftStr2 || "";
-    const itemLevelMatch = itemLevelText.match(/Ур\. предмета:\s*(\d+)/);
-    if (itemLevelMatch) result.itemLevel = parseInt(itemLevelMatch[1], 10);
+    //Общий уровень предмета
+    const levelStr = equipmentData?.Element_001?.value?.leftStr2 || "";
+    const itemLevelMatch = levelStr.match(/Ур\. предмета:\s*(\d+)/);
+    if (itemLevelMatch) {
+        result.itemLevel = parseInt(itemLevelMatch[1], 10);
+    }
 
-    // 📌 Трансценденция
-    const transStr = equipmentData.Element_009?.value?.Element_000?.topStr || "";
-    const stageMatch = transStr.match(/Этап\s*<FONT COLOR='#FFD200'>(\d+)<\/FONT>/);
-    const countMatch = transStr.match(/x(\d+)/);
+    // 📌 5. Трансценденция (в Element_009 → Element_000 → topStr)
+    const transText = equipmentData?.Element_009?.value?.Element_000?.topStr || "";
+    const transStageMatch = transText.match(/Этап\s*<FONT COLOR=['"][^'"]+['"]>(\d+)<\/FONT>/);
+    const transCountMatch = transText.match(/x(\d+)/);
+    if (transStageMatch) {
+        result.transcendenceStage = parseInt(transStageMatch[1], 10);
+    }
 
-    if (stageMatch) result.transcendenceStage = parseInt(stageMatch[1], 10);
-    if (countMatch) result.transcendenceCount = parseInt(countMatch[1], 10);
+    if (transCountMatch) {
+        result.transcendenceCount = parseInt(transCountMatch[1], 10);
+    }
 
-    // 📌 Качество предмета (Древний и т.п.)
-    const rarityText = equipmentData.Element_001?.value?.leftStr0 || "";
-    const rarityMatch = rarityText.match(/<FONT SIZE='12'><FONT COLOR='[^']+'>([^<]+)<\/FONT><\/FONT>/);
-    if (rarityMatch) result.rarity = rarityMatch[1];
+    // 📌 6. Редкость (в Element_001 → leftStr0)
+    const rarityStr = equipmentData?.Element_001?.value?.leftStr0 || "";
+    const rarityMatch = rarityStr.match(/<FONT SIZE=['"]12['"]><FONT COLOR=['"][^'"]+['"]>([^<]+)<\/FONT><\/FONT>/i);
+    if (rarityMatch) {
+        result.rarity = rarityMatch[1].trim();
+    }
 
     return result;
 }
@@ -273,7 +326,7 @@ function getCostumes(page) {
 function getAttackPowerGems(page) {
     let elem = page.querySelector('.default_power');
     let attackPowerRegexp = elem.innerText.match(/(\d+(?:\.\d+)?)%/);
-    return attackPowerRegexp ? attackPowerRegexp[1]: null;
+    return attackPowerRegexp ? attackPowerRegexp[1] : null;
 }
 
 function getARK(page) {
@@ -298,9 +351,64 @@ function getARK(page) {
     return ark;
 }
 
+function getAccessorize(key, data) {
+    if (key.includes("Gem") || key < "006" || key > "010") {
+        return;
+    }
+
+    let result = {};
+    result.quality = data.Element_001.value.qualityValue;
+    result.rarily = data.Element_001.value.leftStr0.match(/<FONT COLOR='[^']*'>([^<]+)<\/FONT>/)[1].trim();
+    result.effects = getAccessorizeEffects(data.Element_005.value.Element_001);
+    result.stats = getAccessorizesBaseStats(data.Element_004.value.Element_001);
+
+    return result;
+}
+
+function getAccessorizesBaseStats(data) {
+    const result = {};
+    const cleanStr = data.replace(/<[^>]+>/g, '');
+    const lines = cleanStr.split(/<BR>|[\r\n]+/);
+
+    for (const line of lines) {
+        const match = line.trim().match(/^(.+?)\s+\+([\d.]+)$/);
+        if (match) {
+            const key = match[1].trim();
+            result[key] = parseFloat(match[2]);
+        }
+    }
+
+    return result;
+}
+
+function getAccessorizeEffects(data) {
+    let result = {};
+    const clean = data.replace(/<img[^>]*>/g, '');
+    const lines = clean.split('<BR>');
+
+    for (const line of lines) {
+        const match = line.match(/(.+?)\s+([+-]?\d+(\.\d+)?%?)/);
+        if (match) {
+            const key = match[1].trim();
+            const valueRaw = match[2].trim();
+            result[key] = valueRaw.endsWith('%')
+                ? parseFloat(valueRaw) / 100
+                : parseFloat(valueRaw);
+        }
+    }
+
+    return result;
+}
+
 function getEquipmentScriptData(page) {
     let scriptHolder = page.querySelectorAll('script');
     let script = scriptHolder.find(script => script.innerHTML.includes('$.Profile'));
 
-    return script.innerHTML.replaceAll("\r", "").replaceAll("\n", "").replaceAll("\t", "").trim();
+    let result = "(function () {return " + script.innerText.replace("$.Profile =", "").trim() + "})()";
+
+    return eval(result);
+}
+
+function shorterKey(key) {
+    return key.substring(8).replace(/^_/, "");
 }
