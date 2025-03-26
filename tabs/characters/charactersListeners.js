@@ -39,11 +39,7 @@ export default function (nicknameElement, editNicknameButton, saveNicknameButton
         saveNicknameButton.style.display = 'none';
         editNicknameButton.style.display = 'inline-block';
 
-        if (window.settings.characterList[newNickname]) {
-            renderCharacters(true);
-        } else {
-            await loadCharacters(newNickname);
-        }
+        await loadCharacters(newNickname);
     });
 
     document.getElementById('save-button').addEventListener('click', () => {

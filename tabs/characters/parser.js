@@ -146,11 +146,10 @@ function getEngraves(page) {
         let engraveQualityElems = elem.querySelectorAll('em');
         let engraveName = engraveData[0].innerText;
         let engraveLevel = engraveData[1].innerText;
-        let engraveQuality = 0;
+        let engraveQuality;
 
         if (engraveQualityElems.length > 1) {
             engraveQuality = engraveQualityElems[1].classList.value[0].split("_");
-
         } else {
             engraveQuality = engraveQualityElems[0].classList.value[0].split("_");
         }
@@ -160,7 +159,6 @@ function getEngraves(page) {
         engrave[engraveName] = {level: engraveLevel, quality: quality};
         engraves.push(engrave);
     });
-
 
     return engraves;
 }
@@ -375,7 +373,7 @@ function getAccessorize(key, data) {
 
     let result = {};
     result.quality = data?.Element_001?.value?.qualityValue;
-    result.rarily = data?.Element_001?.value?.leftStr0.match(/<FONT COLOR='[^']*'>([^<]+)<\/FONT>/)[1].trim();
+    result.rarity = data?.Element_001?.value?.leftStr0.match(/<FONT COLOR='[^']*'>([^<]+)<\/FONT>/)[1].trim();
     result.effects = getAccessorizeEffects(data?.Element_005.value?.Element_001);
     result.stats = getAccessorizesBaseStats(data?.Element_004.value?.Element_001);
 
@@ -392,10 +390,17 @@ function getAccessorizesBaseStats(data) {
     const lines = cleanStr.split(/<BR>|[\r\n]+/);
 
     for (const line of lines) {
-        const match = line.trim().match(/^(.+?)\s+\+([\d.]+)$/);
-        if (match) {
-            const key = match[1].trim();
-            result[key] = parseFloat(match[2]);
+        const parts = line.trim().match(/([А-Яа-яёA-Za-z.() ]+)\s*\+([\d.]+)/g);
+        if (!parts) {
+            continue;
+        }
+
+        for (const part of parts) {
+            const match = part.match(/^(.+?)\s*\+([\d.]+)$/);
+            if (match) {
+                const key = match[1].trim();
+                result[key] = parseFloat(match[2]);
+            }
         }
     }
 

@@ -68,7 +68,6 @@ export function saveSettings(settings) {
 export function changeSettingsPath(newPath) {
     const oldSettings = loadAppDataSettings();
     const settings = loadSettings();
-
     // Если старые настройки существуют — копируем их в новую папку
     if (!fs.existsSync(newPath)) {
         fs.mkdirSync(newPath, {recursive: true});

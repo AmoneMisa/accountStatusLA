@@ -51,8 +51,9 @@ await app.on('ready', async () => {
         mainWindow.show();
     });
 
-    Settings.defaultZone = "Russia/Moscow";
+    Settings.defaultZone = "UTC+3";
     resetDailyActivities(DateTime);
+    resetWeeklyActivities(DateTime);
     cron.schedule('0 3 * * *', () => {
         resetWeeklyActivities(DateTime);
         resetDailyActivities(DateTime);
@@ -262,7 +263,7 @@ ipcMain.handle('is-newer-version', async (_, current, latest) => {
 });
 
 function shouldNotifyToday(type, settings) {
-    Settings.defaultZone = "Russia/Moscow";
+    Settings.defaultZone = "UTC+3";
 
     const today = DateTime.now().toFormat('yyyy-MM-dd');
     return !settings[`disable${capitalize(type)}ReminderToday`] || settings.lastDisabledReminderDate !== today;
