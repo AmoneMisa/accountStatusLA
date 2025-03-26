@@ -131,6 +131,7 @@ export function setEditable(state) {
 export async function loadCharacters(nickname) {
     const container = document.getElementById('character-list');
     container.innerHTML = 'Загрузка...';
+    document.querySelector("#loader").style.display = 'block';
     const charactersList = window.settings.characterList || [];
     const result = await window.electron.ipcRenderer.fetchCharacters(nickname);
 
@@ -155,6 +156,8 @@ export async function loadCharacters(nickname) {
     });
 
     saveSettings({characterList: Array.from(filteredCharacters.values())});
+    document.querySelector("#loader").style.display = 'none';
+
     renderCharacters(true);
     loadCharacterSettings();
     sortCharacters();
