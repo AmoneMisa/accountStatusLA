@@ -23,63 +23,63 @@ export async function parseLostArkProfile(nickname) {
                 continue;
             }
 
-            let characteristics = getCharacteristics(_page);
-            let engraves = getEngraves(_page);
-            let ark = getARK(_page);
-            let attackPowerGems = getAttackPowerGems(_page);
-
-            let equipmentScriptData = getEquipmentScriptData(_page);
-            if (!equipmentScriptData) {
-                continue;
-            }
-
-            // Добавить нормальный парсер для эквипа
-            const equipmentData = {
-                gemBonuses: {},
-                equip: {},
-                elixirs: {},
-                accessorizes: {},
-                stone: {},
-                bracelet: {}
-            };
-
-            for (let [key, value] of Object.entries(equipmentScriptData.Equip)) {
-                let _key = shorterKey(key);
-
-                if (_key.includes("Gem")) {
-                    equipmentData["gemBonuses"][_key] = getGemBonuses(_key, value);
-                } else if (_key < "006") {
-                    equipmentData["equip"][_key] = parseEquipmentInfo(_key, value);
-
-                    if (_key === "000" ){
-                        equipmentData["equip"][_key]["additionalDamage"] = getAdditionalDamage(_key, value);
-                    }
-
-                    if (_key > "000") {
-                        equipmentData["elixirs"][_key] = getElixirs(_key, value);
-                    }
-                } else if (_key > "005" && _key < "011") {
-                    equipmentData["accessorizes"][_key] = getAccessorize(_key, value);
-                } else if (_key === "011") {
-                    equipmentData["stone"] = getStone(_key, value);
-                } else if (_key === "026") {
-                    equipmentData["bracelet"] = getBracelet(_key, value);
-                }
-            }
-
-            if (!equipmentData) {
-                continue;
-            }
+            // let characteristics = getCharacteristics(_page);
+            // let engraves = getEngraves(_page);
+            // let ark = getARK(_page);
+            // let attackPowerGems = getAttackPowerGems(_page);
+            //
+            // let equipmentScriptData = getEquipmentScriptData(_page);
+            // if (!equipmentScriptData) {
+            //     continue;
+            // }
+            //
+            // // Добавить нормальный парсер для эквипа
+            // const equipmentData = {
+            //     gemBonuses: {},
+            //     equip: {},
+            //     elixirs: {},
+            //     accessorizes: {},
+            //     stone: {},
+            //     bracelet: {}
+            // };
+            //
+            // for (let [key, value] of Object.entries(equipmentScriptData.Equip)) {
+            //     let _key = shorterKey(key);
+            //
+            //     if (_key.includes("Gem")) {
+            //         equipmentData["gemBonuses"][_key] = getGemBonuses(_key, value);
+            //     } else if (_key < "006") {
+            //         equipmentData["equip"][_key] = parseEquipmentInfo(_key, value);
+            //
+            //         if (_key === "000" ){
+            //             equipmentData["equip"][_key]["additionalDamage"] = getAdditionalDamage(_key, value);
+            //         }
+            //
+            //         if (_key > "000") {
+            //             equipmentData["elixirs"][_key] = getElixirs(_key, value);
+            //         }
+            //     } else if (_key > "005" && _key < "011") {
+            //         equipmentData["accessorizes"][_key] = getAccessorize(_key, value);
+            //     } else if (_key === "011") {
+            //         equipmentData["stone"] = getStone(_key, value);
+            //     } else if (_key === "026") {
+            //         equipmentData["bracelet"] = getBracelet(_key, value);
+            //     }
+            // }
+            //
+            // if (!equipmentData) {
+            //     continue;
+            // }
 
             characters.push({
                 name,
                 gearScore,
                 className,
-                ark,
-                attackPowerGems,
-                characteristics,
-                engraves,
-                equipment: equipmentData
+                // ark,
+                // attackPowerGems,
+                // characteristics,
+                // engraves,
+                // equipment: equipmentData
             });
 
             await new Promise(res => setTimeout(res, 1000));
