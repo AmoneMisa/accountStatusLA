@@ -20,33 +20,7 @@ export function renderTodoList() {
 
     let todos = window.settings.todos || [];
     todos.forEach((todo, index) => {
-        const item = document.createElement("div");
-        item.className = "check-list-table__item";
-
-        const checkbox = document.createElement("input");
-        checkbox.className = "check-list-table__checkbox";
-        checkbox.type = "checkbox";
-        checkbox.checked = todo.complete;
-        checkbox.dataset.index = index;
-
-        const checkboxLabel = document.createElement("label");
-        checkboxLabel.className = "check-list-table__label custom-label";
-        checkboxLabel.appendChild(checkbox);
-
-        const text = document.createElement("span");
-        text.className = "check-list-table__item-text";
-        text.innerText = todo.text;
-
-        const deleteBtn = document.createElement("button");
-        deleteBtn.className = "check-list-table__item-delete button button_icon";
-        deleteBtn.innerText = "🗑";
-        deleteBtn.title = "Удалить";
-        deleteBtn.dataset.index = index;
-
-        item.appendChild(checkboxLabel);
-        item.appendChild(text);
-        item.appendChild(deleteBtn);
-        todoContainer.appendChild(item);
+        addItem(todo, index);
     });
 }
 
@@ -83,16 +57,13 @@ export function initListeners() {
     })
 }
 
-export function addItem(text) {
+export function addItem(todo, index) {
     const todoContainer = document.getElementById("check-list-table");
-
     let prevElem;
 
     if (todoContainer.lastChild) {
         prevElem = todoContainer.lastChild.querySelector(".check-list-table__item-delete");
     }
-
-    let index = prevElem?.dataset?.index + 1 || 0;
 
     const item = document.createElement("div");
     item.className = "check-list-table__item";
@@ -100,12 +71,12 @@ export function addItem(text) {
     const checkbox = document.createElement("input");
     checkbox.className = "check-list-table__checkbox";
     checkbox.type = "checkbox";
-    checkbox.checked = false;
-    checkbox.dataset.index = index;
+    checkbox.checked = todo?.complete ? todo.complete : false;
+    checkbox.dataset.index = index ? item : prevElem?.dataset?.index + 1 || 0;
 
     const textElem = document.createElement("span");
     textElem.className = "check-list-table__item-text";
-    textElem.innerText = text;
+    textElem.innerText = todo?.text ? todo.text : todo;
 
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "check-list-table__item-delete button button_icon";

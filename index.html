@@ -22,6 +22,7 @@
         <button class="tab-button active" data-tab="main">Активности</button>
         <button class="tab-button" data-tab="table">Кубы</button>
         <button class="tab-button" data-tab="check-list">Чек-лист</button>
+        <button class="tab-button" data-tab="notification">Уведомления</button>
         <button class="tab-button" data-tab="tools">Инструменты</button>
         <button class="tab-button" data-tab="settings">Настройки</button>
     </div>
@@ -29,13 +30,20 @@
         <div id="main-tab" class="tab-content active">
             <div class="main-header">
                 <div class="nickname-block">
-                    <div id="nickname" class="nickname-block__nickname tooltip" data-tooltip="Ник необходим для загрузки твоих персонажей">Загрузка ника...</div>
-                    <button type="button" id="edit-nickname" class="button button_icon nickname-block__button tooltip" data-tooltip="Редактировать ник">✏️
+                    <div id="nickname" class="nickname-block__nickname tooltip"
+                         data-tooltip="Ник необходим для загрузки твоих персонажей">Загрузка ника...
+                    </div>
+                    <button type="button" id="edit-nickname" class="button button_icon nickname-block__button tooltip"
+                            data-tooltip="Редактировать ник">✏️
                     </button>
-                    <button id="save-nickname" class="button button_icon tooltip" data-tooltip="Сохранить ник" style="display:none">💾</button>
+                    <button id="save-nickname" class="button button_icon tooltip" data-tooltip="Сохранить ник"
+                            style="display:none">💾
+                    </button>
                 </div>
                 <div id="controls" class="controls">
-                    <button type="button" id="refresh-characters" class="button button_icon tooltip" data-tooltip="Обновить персонажей">🔄</button>
+                    <button type="button" id="refresh-characters" class="button button_icon tooltip"
+                            data-tooltip="Обновить персонажей">🔄
+                    </button>
                     <button type="button" id="edit-characters" class="button button_icon">✏️</button>
                 </div>
             </div>
@@ -52,6 +60,52 @@
                 Добавить задачу
             </button>
         </div>
+        <div id="notification-tab" class="tab-content">
+            <h1 class="tooltip" data-tooltip="Напоминания приходят в центр уведомлений Windows">Список напоминаний</h1>
+            <div id="notification-table" class="notification-list"></div>
+            <button type="button" class="notification-table__button-add button">
+                Создать
+            </button>
+            <div class="popup notification-popup">
+                <div class="popup__content notification-popup__content">
+                    <button class="cross button button_icon notification-popup__cross">✖</button>
+                    <label class="popup__label">
+                        Название напоминания
+                        <input type="text" placeholder="Название напоминания" class="notification__create-title popup__input"/>
+                    </label>
+
+                    <label class="popup__label">
+                        Частота напоминаний
+                        <select class="notification__create-select-frequency">
+                            <option value="1">Каждую минуту</option>
+                            <option value="5">Каждые 5 минут</option>
+                            <option value="15">Каждые 15 минут</option>
+                            <option value="30">Каждые 30 минут</option>
+                            <option value="60">Каждый час</option>
+                            <option value="120">Каждые 2 часа</option>
+                        </select>
+                    </label>
+
+                    <div class="notification__create-days">
+                        <label class="popup__label">
+                            Дни для напоминаний.<br>
+                            Нажми <i>Cntrl</i> для мульти-выбора
+                            <select class="notification__create-select-days" multiple>
+                            <option value="1">Пн</option>
+                            <option value="2">Вт</option>
+                            <option value="3">Ср</option>
+                            <option value="4">Чт</option>
+                            <option value="5">Пт</option>
+                            <option value="6">Сб</option>
+                            <option value="7">Вс</option>
+                        </select>
+                        </label>
+                    </div>
+
+                    <button class="button notification__create-button">Сохранить</button>
+                </div>
+            </div>
+        </div>
         <div id="tools-tab" class="tab-content">
             <div id="tools-container" class="tools-container">
                 <div class="tools-container__sidebar">
@@ -61,8 +115,9 @@
                         <div class="tools-container__anchor-item"><a href="#calc-cubes">Кубы</a></div>
                         <div class="tools-container__anchor-item"><a href="#calc-cards">Карты</a></div>
                         <div class="tools-container__anchor-item"><a href="#calc-auction-sum">Выгода со ставки</a></div>
-                        <div class="tools-container__anchor-item"><a href="#calc-commission">Рассчитать комиссию</a></div>
-<!--                        <div class="tools-container__anchor-item"><a href="#calc-bracelet">Браслеты</a></div>-->
+                        <div class="tools-container__anchor-item"><a href="#calc-commission">Рассчитать комиссию</a>
+                        </div>
+                        <!--                        <div class="tools-container__anchor-item"><a href="#calc-bracelet">Браслеты</a></div>-->
                     </nav>
                 </div>
                 <div class="tools-container__main">
@@ -152,7 +207,7 @@
                             <button class="button calc-cubes__clean">Очистить всё</button>
                         </div>
                     </div>
-                    <div class="tools-container__item calc-cards"  id="calc-cards">
+                    <div class="tools-container__item calc-cards" id="calc-cards">
                         <div class="tools-container__item-name tooltip"
                              data-tooltip="Подсчёт количества карт, которые необходимо дособирать для получения 30-й колоды">
                             Расчёт недостающих карт в колоде
@@ -191,31 +246,34 @@
                         <div class="tools-container__item-message profit-calc__result"></div>
                     </div>
                     <div class="tools-container__item" id="calc-commission">
-                        <div class="tools-container__item-name tooltip" data-tooltip="Расчёт суммы для перевода с учётом комиссии 5%">Калькулятор комиссии перевода</div>
+                        <div class="tools-container__item-name tooltip"
+                             data-tooltip="Расчёт суммы для перевода с учётом комиссии 5%">Калькулятор комиссии перевода
+                        </div>
                         <div class="tools-container__item-content">
                             <label class="tools-container__item-label">
                                 Сумма, которую должен получить получатель:
-                                <input type="number" min="1" class="tools-container__item-input" id="desired-amount" placeholder="Введите сумму (например, 210000)">
+                                <input type="number" min="1" class="tools-container__item-input" id="desired-amount"
+                                       placeholder="Введите сумму (например, 210000)">
                             </label>
                             <div class="tools-container__item-message" id="transfer-result"></div>
                             <button class="button" id="calc-transfer">Рассчитать</button>
                         </div>
                     </div>
-<!--                    <div class="tools-container__item" id="calc-bracelet">-->
-<!--                        <div class="tools-container__item-name tooltip" data-tooltip="Расчёт приблизительного прироста урона от браслета">Калькулятор урона от браслета</div>-->
-<!--                        <div class="tools-container__item-content">-->
-<!--                            <label class="tools-container__item-label">-->
-<!--                                Ник персонажа для расчёта:-->
-<!--                                <input type="text" class="tools-container__item-input calc-bracelet__input-nickname" id="calc-bracelet-nickname" placeholder="Введите ник персонажа">-->
-<!--                            </label>-->
-<!--                            <div class="calc-bracelet__character">-->
-<!--                                <div class="calc-bracelet__character-nickname"></div>-->
-<!--                                <div class="calc-bracelet__character-stats"></div>-->
-<!--                            </div>-->
-<!--                            <div class="tools-container__item-message" id="calc-bracelet-result"></div>-->
-<!--                            <button class="button" id="calc-bracelet-button">Рассчитать</button>-->
-<!--                        </div>-->
-<!--                    </div>-->
+                    <!--                    <div class="tools-container__item" id="calc-bracelet">-->
+                    <!--                        <div class="tools-container__item-name tooltip" data-tooltip="Расчёт приблизительного прироста урона от браслета">Калькулятор урона от браслета</div>-->
+                    <!--                        <div class="tools-container__item-content">-->
+                    <!--                            <label class="tools-container__item-label">-->
+                    <!--                                Ник персонажа для расчёта:-->
+                    <!--                                <input type="text" class="tools-container__item-input calc-bracelet__input-nickname" id="calc-bracelet-nickname" placeholder="Введите ник персонажа">-->
+                    <!--                            </label>-->
+                    <!--                            <div class="calc-bracelet__character">-->
+                    <!--                                <div class="calc-bracelet__character-nickname"></div>-->
+                    <!--                                <div class="calc-bracelet__character-stats"></div>-->
+                    <!--                            </div>-->
+                    <!--                            <div class="tools-container__item-message" id="calc-bracelet-result"></div>-->
+                    <!--                            <button class="button" id="calc-bracelet-button">Рассчитать</button>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
                 </div>
             </div>
         </div>
@@ -280,7 +338,8 @@
 
                 <div class="settings-table__cell">Проверить обновления приложения</div>
                 <div class="settings-table__cell">
-                    <button id="update-app" class="button" data-current-version="v0.8-alpha">Обновить приложение</button>
+                    <button id="update-app" class="button" data-current-version="v0.8-alpha">Обновить приложение
+                    </button>
                 </div>
             </div>
             <button id="save-settings" class="settings-table__button button">Сохранить</button>

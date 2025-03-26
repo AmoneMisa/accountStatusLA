@@ -351,6 +351,7 @@ option {
     padding: 5px;
     color: var(--white);
     background-color: var(--dark-grey);
+    font-size: 13px;
 }
 
 option:checked {
@@ -536,7 +537,7 @@ input[type=number]::-webkit-inner-spin-button {
 }
 
 .character-list.edit-mode .character {
-   flex: 25%;
+    flex: 25%;
 }
 
 .character {
@@ -1086,7 +1087,7 @@ input[type=number]::-webkit-inner-spin-button {
     background-color: var(--middle-grey);
     border-radius: 5px;
     overflow: hidden;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.4);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4);
 }
 
 .calc-cards__card-progress-bar {
@@ -1094,6 +1095,53 @@ input[type=number]::-webkit-inner-spin-button {
     background-color: var(--gold);
     transition: width 0.3s ease;
     border-radius: 5px;
+}
+
+.notification-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.notification-item {
+    display: flex;
+    flex: 25%;
+    border: 1px solid var(--grey);
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+    height: 60px;
+    padding: 10px;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+.notification-item label {
+    font-size: 12px;
+}
+
+.notification-popup {
+    font-size: 14px;
+    height: 350px;
+}
+
+.notification-popup__content {
+    gap: 10px;
+}
+
+.notification__create-select-frequency {
+    max-height: 40px;
+    margin-top: 5px;
+}
+
+.notification__create-select-days {
+    height: 80px;
+    margin-top: 5px;
+}
+
+.notification-popup input {
+    margin-top: 5px;
 }
 
 ::-webkit-scrollbar {

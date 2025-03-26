@@ -2,7 +2,8 @@ import {
     getCharactersSettings,
     getLastResetDaily,
     getLastResetWeekly,
-    saveSettings, setCharactersSettings, setLastResetDaily,
+    setCharactersSettings,
+    setLastResetDaily,
     setLastResetWeekly
 } from "../utils/storage.js";
 

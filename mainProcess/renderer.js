@@ -8,6 +8,7 @@ import calcCubes from "../tabs/services/calcCubes.js";
 import calcCards from "../tabs/services/calcCards.js";
 import calcSumFromBet from "../tabs/services/calcSumFromBet.js";
 import calcCommission from "../tabs/services/calcCommission.js";
+import notifications from "../tabs/notifications/notifications.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
     const nicknameElement = document.getElementById('nickname');
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         migration();
 
         await init(nicknameElement, editNicknameButton, saveNicknameButton);
+        notifications();
     });
 
     charactersListeners(nicknameElement, editNicknameButton, saveNicknameButton);

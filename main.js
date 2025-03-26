@@ -66,7 +66,7 @@ await app.on('ready', async () => {
     const settings = loadSettings();
     applySettings(settings);
     resetReminderSettingsIfNeeded();
-    scheduleReminders();
+    scheduleReminders(DateTime);
 });
 
 ipcMain.handle('clear-character-settings', () => {
@@ -269,9 +269,9 @@ function shouldNotifyToday(type, settings) {
     return !settings[`disable${capitalize(type)}ReminderToday`] || settings.lastDisabledReminderDate !== today;
 }
 
-function scheduleReminders() {
+function scheduleReminders(DateTime) {
     const settings = loadSettings();
-    const now = DateTime.now().setZone('Europe/Moscow');
+    const now = DateTime.now();
     const weekday = now.weekday;
     const toolsInfo = getToolsInfo();
 
@@ -288,10 +288,10 @@ function scheduleReminders() {
 
         info.hours.forEach(hour => {
             const [h, m] = hour.split(':');
-            const notifyTime = DateTime.local().setZone('Europe/Moscow').set({ hour: +h, minute: +m }).minus({ minutes: 5 });
+            const notifyTime = DateTime.local().set({ hour: +h, minute: +m }).minus({ minutes: 5 });
 
             cron.schedule(`${notifyTime.minute} ${notifyTime.hour} * * *`, () => {
-                const now = DateTime.local().setZone('Europe/Moscow');
+                const now = DateTime.local();
                 if (now.weekday === weekday) {
                     new Notification({
                         title: 'Напоминание',
@@ -299,6 +299,27 @@ function scheduleReminders() {
                     }).show();
                 }
             });
+        });
+    });
+
+    const customNotifications = settings.customNotifications;
+    customNotifications.forEach(notification => {
+        if (!notification.enable) {
+            return;
+        }
+
+        const interval = parseInt(notification.frequency);
+        const days = notification.days.map(day => parseInt(day));
+
+        cron.schedule(`*/${interval} * * * *`, () => {
+            const now = DateTime.local();
+
+            if (days.includes(now.weekday)) {
+                new Notification({
+                    title: 'Напоминание',
+                    body: `${notification.name}`,
+                }).show();
+            }
         });
     });
 }

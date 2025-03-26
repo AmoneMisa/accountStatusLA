@@ -102,3 +102,14 @@ export function setLastResetDaily(date) {
     saveSettings(settings);
 }
 
+export function setCustomNotifications(notifications) {
+    const settings = loadSettings();
+    settings.customNotifications = notifications;
+    saveSettings(settings);
+}
+
+export function getCustomNotifications() {
+    const settings = loadSettings();
+    return settings.customNotifications || null;
+}
+
