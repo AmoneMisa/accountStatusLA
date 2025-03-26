@@ -49,17 +49,21 @@ export async function parseLostArkProfile(nickname) {
                 if (_key.includes("Gem")) {
                     equipmentData["gemBonuses"][_key] = getGemBonuses(_key, value);
                 } else if (_key < "006") {
-                    equipmentData["equip"][_key] = (parseEquipmentInfo(_key, value));
+                    equipmentData["equip"][_key] = parseEquipmentInfo(_key, value);
+
+                    if (_key === "000" ){
+                        equipmentData["equip"][_key]["additionalDamage"] = getAdditionalDamage(_key, value);
+                    }
 
                     if (_key > "000") {
-                        equipmentData["elixirs"][_key] = (getElixirs(_key, value));
+                        equipmentData["elixirs"][_key] = getElixirs(_key, value);
                     }
                 } else if (_key > "005" && _key < "011") {
-                    equipmentData["accessorizes"][_key] = (getAccessorize(_key, value));
+                    equipmentData["accessorizes"][_key] = getAccessorize(_key, value);
                 } else if (_key === "011") {
-                    equipmentData["stone"] = (getStone(_key, value));
+                    equipmentData["stone"] = getStone(_key, value);
                 } else if (_key === "026") {
-                    equipmentData["bracelet"] = (getBracelet(_key, value));
+                    equipmentData["bracelet"] = getBracelet(_key, value);
                 }
             }
 
@@ -412,7 +416,7 @@ function getAccessorizeEffects(data) {
         return ;
     }
     let result = {};
-    const clean = data.replace(/<img[^>]*>/g, '');
+    let clean = data.replace(/<img[^>]*>/g, '').replace(/<\/img>/g, '');
     const lines = clean.split('<BR>');
 
     for (const line of lines) {
@@ -436,6 +440,11 @@ function getEquipmentScriptData(page) {
     let result = "(function () {return " + script.innerText.replace("$.Profile =", "").trim() + "})()";
 
     return eval(result);
+}
+
+function getAdditionalDamage(key, data) {
+    const match = data?.Element_007?.value?.Element_001.match(/^(.+?)\s+\+([\d.]+)%?$/);
+    return { [match[1].trim()]: match[2].trim() };
 }
 
 function shorterKey(key) {

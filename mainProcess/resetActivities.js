@@ -9,12 +9,9 @@ import {
 export function resetWeeklyActivities(DateTime) {
     let lastResetWeekly = getLastResetWeekly();
     const now = DateTime.now();
-    console.log(lastResetWeekly);
+
     if (lastResetWeekly) {
         let date = DateTime.fromISO(lastResetWeekly).plus({days: 7}).set({weekday: 3, hours: 6, minutes: 0, seconds: 0, milliseconds: 0});
-        console.log(date);
-        console.log(now);
-        console.log(now < date);
 
         if (now < date) {
             return;
