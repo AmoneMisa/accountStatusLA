@@ -94,6 +94,10 @@ function createNotificationItem(notification, index) {
     notificationDeleteButton.classList.add("button_icon");
     notificationDeleteButton.classList.add("tooltip");
     notificationLabel.classList.add("custom-label");
+    notificationLabel.classList.add("notification-item__cell");
+    notificationFrequency.classList.add("notification-item__cell");
+    notificationDays.classList.add("notification-item__cell");
+    notificationName.classList.add("notification-item__cell");
     notificationCheckbox.classList.add("notification-item__checkbox");
 
     notificationControls.append(notificationDeleteButton);

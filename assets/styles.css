@@ -1121,6 +1121,12 @@ input[type=number]::-webkit-inner-spin-button {
     font-size: 12px;
 }
 
+.notification-item__cell {
+    border-right: 1px solid var(--grey);
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
 .notification-popup {
     font-size: 14px;
     height: 350px;
