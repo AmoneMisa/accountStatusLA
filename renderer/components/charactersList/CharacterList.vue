@@ -1,19 +1,16 @@
 <script setup>
 import CharacterListItem from "@/components/charactersList/CharacterListItem.vue";
 import draggable from 'vuedraggable';
-import {ref} from "vue";
 
 const emit = defineEmits({'showRaidSelector': String, "dragEnd": Array});
 
 const props = defineProps({
-  characterList: [],
+  characterList: Array,
   isEditMode: false,
 });
 
-const sortedCharactersList = ref({...props.characterList});
-
 function onDragEnd() {
-  emit("dragEnd", sortedCharactersList.value);
+  emit("dragEnd", props.characterList);
 }
 </script>
 
@@ -21,7 +18,7 @@ function onDragEnd() {
   <h1 class="title">Список персонажей</h1>
   <div id="character-list" class="character-list" :class="{'edit-mode': isEditMode}">
     <draggable
-        v-model="sortedCharactersList"
+        :list="characterList"
         item-key="name"
         handle=".character__drag"
         ghost-class="dragging"

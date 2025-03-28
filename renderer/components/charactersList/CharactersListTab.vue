@@ -60,7 +60,7 @@ function saveCharacterList(newCharacterList) {
                   @show-raid-selector="showRaidSelector"
                   @dragEnd="saveCharacterList"/>
   <button id="save-button" class="button save-button" v-show="isEditMode" @click="saveCharacters">Сохранить</button>
-  <raid-selector v-show="isShowRaidSelector" @save="isShowRaidSelector = false" :character-name="currentChosenCharacter"/>
+  <raid-selector v-show="isShowRaidSelector" @save="isShowRaidSelector = false" :character-name="currentChosenCharacter" @close="isShowRaidSelector = false"/>
 </template>
 
 <style scoped lang="scss">
