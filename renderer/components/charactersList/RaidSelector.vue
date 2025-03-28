@@ -1,8 +1,8 @@
 <script setup>
 import {saveSettings} from "../../../utils/utils.js";
-import {computed, inject, ref} from "vue";
+import {computed, inject, ref, watchEffect} from "vue";
 
-defineProps({
+const props = defineProps({
   characterName: ""
 });
 
@@ -25,6 +25,10 @@ function applyRaidSelection(characterName) {
     }});
   emit("save");
 }
+
+watchEffect(() => {
+  currentOptions.value = characterSettings.value?.[props.characterName]?.raids || [];
+});
 </script>
 
 <template>
@@ -33,7 +37,7 @@ function applyRaidSelection(characterName) {
   <label class="raid-selector__label">
     Выбери активность для персонажа: <i>{{characterName}}</i>.<br>Для мульти-выбора: нажми <i>Cntrl</i> и выбирай необходимые пункты
     <select class="raid-selector__select" multiple v-model="currentOptions" >
-      <option v-for="raid in raids" :value="raid" :selected="characterSettings[characterName].raidStatus[raid]">{{raid}}</option>
+      <option v-for="raid in raids" :value="raid">{{raid}}</option>
     </select>
   </label>
   <button id="apply-raids" class="apply-button button" @click="applyRaidSelection(characterName)">Применить</button>
