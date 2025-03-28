@@ -45,6 +45,10 @@ function showRaidSelector(characterName) {
   currentChosenCharacter.value = characterName;
   isShowRaidSelector.value = true;
 }
+
+function saveCharacterList(newCharacterList) {
+  saveSettings({characterList: newCharacterList});
+}
 </script>
 
 <template>
@@ -53,7 +57,8 @@ function showRaidSelector(characterName) {
              @edit-characters="toggleEditCharacters"
              :is-edit-mode="isEditMode"/>
   <character-list :characterList="characterList" :is-edit-mode="isEditMode"
-                  @show-raid-selector="showRaidSelector"/>
+                  @show-raid-selector="showRaidSelector"
+                  @dragEnd="saveCharacterList"/>
   <button id="save-button" class="button save-button" v-show="isEditMode" @click="saveCharacters">Сохранить</button>
   <raid-selector v-show="isShowRaidSelector" @save="isShowRaidSelector = false" :character-name="currentChosenCharacter"/>
 </template>

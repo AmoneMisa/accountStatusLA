@@ -20,7 +20,7 @@
     "node-cron": "^3.0.3",
     "node-html-parser": "^7.0.1",
     "semver": "^7.7.1",
-    "sortablejs": "^1.15.6"
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
