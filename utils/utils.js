@@ -1,5 +1,13 @@
 export function saveSettings(settings) {
-    window.electron.ipcRenderer.send("save-settings", settings);
+    try {
+        window.electron.ipcRenderer.send("save-settings", settings);
+    } catch (error) {
+        try {
+            window.electron.ipcRenderer.send("save-settings", JSON.parse(JSON.stringify(settings)));
+        } catch (e) {
+            console.error('Failed to save settings for settings', e);
+        }
+    }
 }
 
 export function capitalize(str) {

@@ -17,7 +17,7 @@ export async function createWindow() {
         }
     });
 
-    await mainWindow.loadFile('index.html');
+    await mainWindow.loadFile('dist/index.html');
 
     return mainWindow;
 }

@@ -29,9 +29,5 @@ export default function (settings) {
         }
     });
 
-    if (settings.theme) {
-        mainWindow.webContents.send('apply-theme', settings.theme);
-    }
-
     mainWindow.webContents.send('init-settings', settings);
 }

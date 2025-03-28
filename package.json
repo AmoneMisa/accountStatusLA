@@ -6,9 +6,12 @@
   "description": "The application, created by WhitesLove for personal usage for save and check characters status in Lost Ark game. Do not re-upload on another places without my permission. All rights reserved.",
   "main": "main.js",
   "scripts": {
-    "start": "chcp 65001 && electron .",
+    "start": "chcp 65001 && npm run build && npm run electron",
     "dist": "electron-builder --win portable",
-    "watch:scss": "sass --watch ./src/styles.scss:./dist/styles.css"
+    "watch:scss": "sass --watch ./src/styles.scss:./dist/styles.css",
+    "dev": "vite",
+    "build": "vite build",
+    "electron": "electron ."
   },
   "private": true,
   "dependencies": {
@@ -20,9 +23,12 @@
     "sortablejs": "^1.15.6"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.3",
     "electron": "^35.0.2",
     "electron-builder": "^25.1.8",
-    "sass": "^1.86.0"
+    "sass": "^1.86.0",
+    "vite": "^6.2.3",
+    "vue": "^3.5.13"
   },
   "build": {
     "appId": "com.example.yourapp",
