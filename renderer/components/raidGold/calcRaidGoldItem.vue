@@ -54,4 +54,10 @@ function toggleGoldCharacter(button, characterName) {
     display: flex;
     justify-content: space-between;
   }
+
+  @media screen and (max-width: 680px){
+    .calc-raid-gold__item {
+      flex: 33%;
+    }
+  }
 </style>
