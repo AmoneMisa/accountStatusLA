@@ -8,6 +8,7 @@ import NotificationsTab from "@/components/notifications/NotificationsTab.vue";
 import SettingsTable from "@/components/settings/SettingsTable.vue";
 import ToolsTab from "@/components/toolsList/ToolsTab.vue";
 import {onMounted, provide, ref} from "vue";
+import CalcRaidGoldTab from "@/components/raidGold/calcRaidGoldTab.vue";
 
 const tabButtonsList = [{
   data: "main", name: "Активности"
@@ -19,6 +20,8 @@ const tabButtonsList = [{
   data: "notification", name: "Уведомления"
 }, {
   data: "tools", name: "Инструменты"
+}, {
+  data: "calc-raid-gold", name: "Золото с рейдов"
 }, {
   data: "settings", name: "Настройки"
 }];
@@ -70,6 +73,7 @@ function changeTab(tab) {
       <check-list-tab v-if="currentTab === 'check-list'"/>
       <notifications-tab v-if="currentTab === 'notification'"/>
       <tools-tab v-if="currentTab === 'tools'"/>
+      <calc-raid-gold-tab v-if="currentTab === 'calc-raid-gold'"/>
       <settings-table v-if="currentTab === 'settings'"/>
     </div>
     <div id="message" class="message"></div>
