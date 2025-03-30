@@ -8,16 +8,20 @@ export async function createWindow() {
         width: 1200,
         height: 800,
         frame: false,
-        icon: path.join(app.getAppPath(), 'assets', 'icon.png'),
+        icon: path.join(process.env.VITE_PUBLIC, 'assets/icon.png'),
         webPreferences: {
-            preload: join(import.meta.dirname, 'preload.cjs'), // Указываем путь к `preload.cjs`
+            preload: join(import.meta.dirname, 'preload.mjs'),
             contextIsolation: true, // Должно быть `true`
             enableRemoteModule: false,
             nodeIntegration: false // Должно быть `false`!
         }
     });
 
-    await mainWindow.loadFile('dist/index.html');
+    if (process.env.VITE_DEV_SERVER_URL) {
+        await mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
+    } else {
+        await mainWindow.loadFile(path.join(process.env.DIST, 'index.html'))
+    }
 
     return mainWindow;
 }

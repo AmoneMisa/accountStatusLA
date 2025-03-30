@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import {app} from 'electron';
 import {getMainWindow} from "../mainProcess/mainWindow.js";
+import toolsInfo from './toolsInfo.json';
 
 let dataPath = path.join(app.getPath('userData'), 'config.json');
 
@@ -20,10 +21,7 @@ export function loadSettings() {
 }
 
 export function getToolsInfo() {
-    const settingsPath = path.join(app.getAppPath(), "assets", 'toolsInfo.json');
-    if (fs.existsSync(settingsPath)) {
-        return JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
-    }
+    return toolsInfo;
 }
 
 function loadAppDataSettings() {

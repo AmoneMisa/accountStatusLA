@@ -4,14 +4,13 @@
   "type": "module",
   "version": "0.9.0",
   "description": "The application, created by WhitesLove for personal usage for save and check characters status in Lost Ark game. Do not re-upload on another places without my permission. All rights reserved.",
-  "main": "main.js",
+  "main": "dist-electron/main.js",
   "scripts": {
     "start": "chcp 65001 && npm run build && npm run electron",
     "dist": "electron-builder --win portable",
     "dev": "vite",
     "build": "vite build",
-    "electron": "electron .",
-    "package": "npm run build && npm run dist"
+    "electron": "electron ."
   },
   "private": true,
   "dependencies": {
@@ -36,10 +35,14 @@
     "appId": "com.example.yourapp",
     "productName": "Lost Ark Character Manager",
     "directories": {
-      "output": "dist"
+      "output": "build-electron"
     },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
     "win": {
-      "icon": "build/icon.ico",
+      "icon": "electron-builder/icon.ico",
       "target": "portable",
       "artifactName": "${productName}.exe"
     }

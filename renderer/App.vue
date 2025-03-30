@@ -339,7 +339,7 @@ function changeTab(tab) {
 
 @font-face {
   font-family: 'Caveat';
-  src: url('../../assets/fonts/Caveat-VariableFont_wght.ttf') format('truetype');
+  src: url('@/fonts/Caveat-VariableFont_wght.ttf') format('truetype');
 }
 
 body {

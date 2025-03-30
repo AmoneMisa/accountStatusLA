@@ -1,7 +1,7 @@
 <script setup>
 import {computed, inject, ref} from "vue";
 import CalcRaidGoldItem from "@/components/raidGold/calcRaidGoldItem.vue";
-import raidGold from "../../../assets/raidGold.js";
+import raidGold from "@/raidGold.js";
 
 let settings = inject('settings');
 const characterSettings = computed(() => settings.value.characterSettings);
