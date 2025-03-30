@@ -1,5 +1,6 @@
 <script setup>
 import {saveSettings} from "../../../utils/utils.js";
+import {ref} from "vue";
 
 function minimize() {
   window.electron.ipcRenderer.send('window:minimize');
@@ -11,6 +12,13 @@ function maximize() {
 
 function close() {
   window.electron.ipcRenderer.send('window:close');
+}
+
+const upTop = ref(false);
+function alwaysUpTop(elem) {
+  elem.target.classList.toggle('active', !upTop.value);
+  window.electron.ipcRenderer.send('window:toggle-always-on-top', !upTop.value);
+  upTop.value = !upTop.value;
 }
 
 window.electron.ipcRenderer.on('clear-character-settings', () => {
@@ -39,9 +47,10 @@ window.electron.ipcRenderer.on('clear-nickname', async () => {
     <div id="title-bar" class="title-bar">
       <div id="title" class="title-bar__title">Lost Ark Character Manager by WhitesLove v. 0.9-alpha</div>
       <div id="window-controls" class="window-controls">
-        <button id="minimize" class="window-controls__button button button_control" @click="minimize">—</button>
-        <button id="maximize" class="window-controls__button button button_control" @click="maximize">⬜</button>
-        <button id="close" class="window-controls__button button button_control" @click="close">✖</button>
+        <button id="alwaysUpTop" class="window-controls__button button button_control tooltip" data-tooltip="Поверх окон" @click="(elem) => alwaysUpTop(elem)">📌</button>
+        <button id="minimize" class="window-controls__button button button_control tooltip" data-tooltip="Свернуть" @click="minimize">—</button>
+        <button id="maximize" class="window-controls__button button button_control tooltip" data-tooltip="На весь экран" @click="maximize">⬜</button>
+        <button id="close" class="window-controls__button button button_control tooltip" data-tooltip="Закрыть" @click="close">✖</button>
       </div>
     </div>
   </div>
@@ -71,8 +80,15 @@ window.electron.ipcRenderer.on('clear-nickname', async () => {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  width: 90px;
+  width: max-content;
+  gap: 2px;
   padding: 0 5px;
   -webkit-app-region: no-drag;
+}
+
+.window-controls__button {
+  &.active {
+    background-color: var(--light-grey);
+  }
 }
 </style>

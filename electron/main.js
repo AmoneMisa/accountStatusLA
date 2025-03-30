@@ -115,6 +115,12 @@ ipcMain.on('window:quit', () => {
     app.quit();
 });
 
+ipcMain.on('window:toggle-always-on-top', (event, shouldBeOnTop) => {
+    if (mainWindow) {
+        mainWindow.setAlwaysOnTop(shouldBeOnTop);
+    }
+});
+
 ipcMain.handle('set-nickname', (event, nickname) => {
     saveSettings({nickname});
 });

@@ -27,11 +27,14 @@ const filteredCharacters = computed(() =>
 const isSupport = (className) => ['Художница', 'Менестрель', 'Паладин'].includes(className);
 
 const getCellValue = (charName, col) => {
-  return tableData.value[charName]?.[col] || 0;
+  return parseInt(tableData.value[charName]?.[col]) || 0;
 };
 
 const updateValue = (charName, col, value) => {
-  if (!tableData.value[charName]) tableData.value[charName] = {};
+  if (!tableData.value[charName]) {
+    tableData.value[charName] = {};
+  }
+
   tableData.value[charName][col] = parseInt(value) || 0;
 
   if (!tableData.value[charName]) {

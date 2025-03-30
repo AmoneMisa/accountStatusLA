@@ -9,7 +9,6 @@ import SettingsTable from "@/components/settings/SettingsTable.vue";
 import ToolsTab from "@/components/toolsList/ToolsTab.vue";
 import {onMounted, provide, ref} from "vue";
 import CalcRaidGoldTab from "@/components/raidGold/calcRaidGoldTab.vue";
-import CalendarTab from "@/components/calendar/CalendarTab.vue";
 
 const tabButtonsList = [
     {
@@ -24,8 +23,6 @@ const tabButtonsList = [
   data: "tools", name: "Инструменты"
 }, {
   data: "calc-raid-gold", name: "Золото с рейдов"
-}, {
-  data: "calendar", name: "Календарь"
 }, {
   data: "settings", name: "Настройки"
 }];
@@ -59,6 +56,7 @@ function changeTab(tab) {
   currentTab.value = tab.data;
   document.getElementById("message").innerText = "";
   document.getElementById("error").innerText = "";
+  document.querySelector("#loader").style.display = 'none';
 }
 </script>
 
@@ -77,7 +75,6 @@ function changeTab(tab) {
       <notifications-tab v-if="currentTab === 'notification'"/>
       <tools-tab v-if="currentTab === 'tools'"/>
       <calc-raid-gold-tab v-if="currentTab === 'calc-raid-gold'"/>
-      <calendar-tab v-if="currentTab === 'calendar'"/>
       <settings-table v-if="currentTab === 'settings'"/>
     </div>
     <div id="message" class="message"></div>
