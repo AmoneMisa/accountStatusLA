@@ -20,5 +20,11 @@ const customNotifications = computed(() => settings.value.customNotifications);
 </template>
 
 <style scoped lang="scss">
+.notification-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+}
 
 </style>

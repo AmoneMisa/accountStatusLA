@@ -47,6 +47,32 @@ window.electron.ipcRenderer.on('clear-nickname', async () => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
+.title-bar {
+  width: 100%;
+  height: 35px;
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 5px;
+  background: var(--black);
+  box-shadow: var(--shadow);
+}
 
+.title-bar__title {
+  margin-left: 5px;
+  font-family: Caveat, serif;
+  font-size: 18px;
+  -webkit-app-region: drag;
+}
+
+.window-controls {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 90px;
+  padding: 0 5px;
+  -webkit-app-region: no-drag;
+}
 </style>

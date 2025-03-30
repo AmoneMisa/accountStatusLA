@@ -122,4 +122,14 @@ function clear() {
 
 <style scoped lang="scss">
 
+.calc-cubes__inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.tools-container__item-label {
+  flex: 33%;
+}
+
 </style>

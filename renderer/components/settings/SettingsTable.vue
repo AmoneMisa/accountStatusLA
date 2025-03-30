@@ -138,5 +138,37 @@ function changeTheme(newTheme) {
 </template>
 
 <style scoped lang="scss">
+.settings-table {
+  display: grid;
+  border: 1px solid var(--grey);
+  border-bottom: none;
+  padding: 10px;
+  border-radius: 5px 5px 0 0;
+  margin-bottom: 10px;
+  grid-template-areas: "a b";
+  box-shadow: var(--shadow);
+}
+
+.settings-table__cell {
+  padding: 0 10px;
+  height: 80px;
+  border-bottom: 1px solid var(--grey);
+  display: flex;
+  align-items: center;
+}
+
+.settings-table__cell:nth-child(odd) {
+  border-right: 1px solid var(--grey);
+}
+
+.settings-table__cell select {
+  height: 60px;
+}
+
+.choose-folder-input {
+  margin-right: 10px;
+  width: 240px;
+  height: 30px;
+}
 
 </style>

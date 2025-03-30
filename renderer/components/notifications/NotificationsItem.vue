@@ -70,5 +70,26 @@ function onDelete() {
 </template>
 
 <style scoped lang="scss">
+.notification-item {
+  display: flex;
+  flex: 25%;
+  border: 1px solid var(--grey);
+  border-radius: 5px;
+  box-shadow: var(--shadow);
+  height: 60px;
+  padding: 10px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
 
+.notification-item label {
+  font-size: 12px;
+}
+
+.notification-item__cell {
+  border-right: 1px solid var(--grey);
+  padding-right: 10px;
+  padding-left: 10px;
+}
 </style>

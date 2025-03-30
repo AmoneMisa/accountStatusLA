@@ -24,4 +24,29 @@ const emit = defineEmits(['delete', 'toggle']);
 
 <style scoped lang="scss">
 
+.check-list-table__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--grey);
+  padding: 8px 12px;
+  border-radius: 5px;
+}
+
+.check-list-table__item input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.check-list-table__item-text {
+  flex-grow: 1;
+  margin: 0 10px;
+}
+
+.check-list-table__item-delete {
+  background: none;
+  border: none;
+  color: var(--error);
+  font-size: 18px;
+  cursor: pointer;
+}
 </style>

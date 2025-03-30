@@ -72,4 +72,27 @@ function close() {
 
 <style scoped lang="scss">
 
+.notification-popup {
+  font-size: 14px;
+  height: 350px;
+}
+
+.notification-popup__content {
+  gap: 10px;
+}
+
+.notification__create-select-frequency {
+  max-height: 40px;
+  margin-top: 5px;
+}
+
+.notification__create-select-days {
+  height: 115px;
+  margin-top: 5px;
+}
+
+.notification-popup input {
+  margin-top: 5px;
+}
+
 </style>

@@ -40,5 +40,10 @@ function saveItem(todo) {
 </template>
 
 <style scoped lang="scss">
-
+.check-list-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0;
+}
 </style>

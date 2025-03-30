@@ -43,5 +43,16 @@ function editCharacters() {
 </template>
 
 <style scoped lang="scss">
+.nickname-block {
+  display: flex;
+  min-width: 300px;
+  max-width: 80%;
+  align-items: center;
+}
 
+.nickname-block__nickname {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
 </style>

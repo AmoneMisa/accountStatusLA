@@ -35,6 +35,32 @@ function onDragEnd() {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
+.character-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex-direction: column;
+  width: 100%;
+}
 
+.character-list.edit-mode {
+  flex-direction: row;
+}
+
+.character-list.edit-mode .character {
+  flex: 25%;
+}
+
+@media screen and (max-width: 750px) {
+  .character-list {
+    grid-template-areas: "a b";
+  }
+}
+
+@media screen and (max-width: 530px) {
+  .character-list {
+    grid-template-areas: "a";
+  }
+}
 </style>

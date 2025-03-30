@@ -14,7 +14,6 @@ const totalGold = computed(() => {
   let spent = 0;
 
   for (const char of characterList.value) {
-    console.log(excludedGoldCharacters.value);
     if (excludedGoldCharacters.value.includes(char.name)) {
       continue;
     }

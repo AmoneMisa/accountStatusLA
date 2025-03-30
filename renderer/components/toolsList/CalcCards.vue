@@ -99,4 +99,42 @@ const resultHTML = ref('');
 
 <style scoped lang="scss">
 
+.calc-cards__example {
+  font-size: 12px;
+  color: var(--gold);
+}
+
+.calc-cards__list {
+  width: 100%;
+  gap: 20px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.calc-cards__item {
+  flex: 25%;
+}
+
+.calc-cards__select {
+  height: 40px;
+  margin-top: 5px;
+  margin-right: 0;
+}
+
+.calc-cards__card-progress-container {
+  margin: 4px 0 12px;
+  height: 14px;
+  width: 100%;
+  background-color: var(--middle-grey);
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.4);
+}
+
+.calc-cards__card-progress-bar {
+  height: 100%;
+  background-color: var(--gold);
+  transition: width 0.3s ease;
+  border-radius: 5px;
+}
 </style>

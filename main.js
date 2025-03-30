@@ -3,18 +3,19 @@ import path from 'path';
 import {parseLostArkProfile} from "./tabs/characters/parser.js";
 import {changeSettingsPath, getToolsInfo, loadSettings, saveSettings} from "./utils/storage.js";
 import fs from "fs";
-import cron from "node-cron";
+// import cron from "node-cron";
 import {DateTime, Settings} from "luxon";
 import {createWindow, setMainWindow} from "./mainProcess/mainWindow.js";
 import {capitalize} from "./utils/utils.js";
 import applySettings from "./mainProcess/applySettings.js";
 import {resetDailyActivities, resetWeeklyActivities} from "./mainProcess/resetActivities.js";
 import { parse } from 'semver';
+import schedule from "node-schedule";
 
 let tray;
 let mainWindow = null;
 
-await app.on('ready', async () => {
+app.on('ready', async () => {
     mainWindow = await createWindow();
     setMainWindow(mainWindow);
 
@@ -54,14 +55,23 @@ await app.on('ready', async () => {
     Settings.defaultZone = "UTC+3";
     resetDailyActivities(DateTime);
     resetWeeklyActivities(DateTime);
-    cron.schedule('0 3 * * *', () => {
+
+    schedule.scheduleJob('0 3 * * *', () => {
         resetWeeklyActivities(DateTime);
         resetDailyActivities(DateTime);
     });
 
-    cron.schedule('* * * * *', () => {
+    // cron.schedule('0 3 * * *', () => {
+    //     resetWeeklyActivities(DateTime);
+    //     resetDailyActivities(DateTime);
+    // });
+    schedule.scheduleJob('* * * * *', () => {
         resetDailyActivities(DateTime);
     });
+    //
+    // cron.schedule('* * * * *', () => {
+    //     resetDailyActivities(DateTime);
+    // });
 
     const settings = loadSettings();
     applySettings(settings);
@@ -290,7 +300,7 @@ function scheduleReminders(DateTime) {
             const [h, m] = hour.split(':');
             const notifyTime = DateTime.local().set({ hour: +h, minute: +m }).minus({ minutes: 5 });
 
-            cron.schedule(`${notifyTime.minute} ${notifyTime.hour} * * *`, () => {
+            schedule.scheduleJob(`${notifyTime.minute} ${notifyTime.hour} * * *`, () => {
                 const now = DateTime.local();
                 if (now.weekday === weekday) {
                     new Notification({
@@ -298,11 +308,24 @@ function scheduleReminders(DateTime) {
                         body: `${type === 'boss' ? 'Полевой босс' : 'Разлом хаоса'} начнётся через 5 минут!`,
                     }).show();
                 }
-            });
+            })
+
+            // cron.schedule(`${notifyTime.minute} ${notifyTime.hour} * * *`, () => {
+            //     const now = DateTime.local();
+            //     if (now.weekday === weekday) {
+            //         new Notification({
+            //             title: 'Напоминание',
+            //             body: `${type === 'boss' ? 'Полевой босс' : 'Разлом хаоса'} начнётся через 5 минут!`,
+            //         }).show();
+            //     }
+            // });
         });
     });
 
     const customNotifications = settings.customNotifications;
+    if (!customNotifications || !customNotifications.length) {
+        return;
+    }
     customNotifications.forEach(notification => {
         if (!notification.enable) {
             return;
@@ -311,7 +334,7 @@ function scheduleReminders(DateTime) {
         const interval = parseInt(notification.frequency);
         const days = notification.days.map(day => parseInt(day));
 
-        cron.schedule(`*/${interval} * * * *`, () => {
+        schedule.scheduleJob(`*/${interval} * * * *`, () => {
             const now = DateTime.local();
 
             if (days.includes(now.weekday)) {
@@ -321,6 +344,17 @@ function scheduleReminders(DateTime) {
                 }).show();
             }
         });
+
+        // cron.schedule(`*/${interval} * * * *`, () => {
+        //     const now = DateTime.local();
+        //
+        //     if (days.includes(now.weekday)) {
+        //         new Notification({
+        //             title: 'Напоминание',
+        //             body: `${notification.name}`,
+        //         }).show();
+        //     }
+        // });
     });
 }
 
