@@ -72,7 +72,7 @@ window.electron.ipcRenderer.on('clear-nickname', async () => {
 .title-bar__title {
   margin-left: 5px;
   font-family: Caveat, serif;
-  font-size: 18px;
+  font-size: var(--font-h2);;
   -webkit-app-region: drag;
 }
 

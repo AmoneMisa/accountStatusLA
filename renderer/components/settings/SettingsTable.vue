@@ -29,6 +29,21 @@ const disableChaosReminderToday = computed({
   get: () => settings.value.disableChaosReminderToday,
   set: (newValue) => settings.value.disableChaosReminderToday = newValue
 });
+const fontScale = computed({
+  get: () => settings.value.fontScale || 1,
+  set: (newValue) => settings.value.fontScale = newValue
+});
+
+function updateFontScale() {
+  document.documentElement.style.setProperty('--font-scale', fontScale.value);
+  saveSettings({fontScale: fontScale.value});
+}
+
+function resetFontScale() {
+  document.documentElement.style.setProperty('--font-scale', "1");
+  saveSettings({fontScale: 1});
+  document.querySelector('.settings-table__font-scale-input').value = 1;
+}
 
 function save() {
   saveSettings({
@@ -127,6 +142,13 @@ function changeTheme(newTheme) {
     <div class="settings-table__cell"><label class="custom-label">
       <input type="checkbox" id="rememberWindowPosition" v-model="rememberWindowPosition"></label></div>
 
+    <div class="settings-table__cell">Размер шрифта</div>
+    <div class="settings-table__cell"><label class="custom-label settings-table__font-scale-label">
+      <input class="settings-table__font-scale-input" type="range" min="0.7" max="1.3" step="0.05" v-model="fontScale" @input="updateFontScale" />
+    </label>
+    <button class="button" @click="resetFontScale">Сбросить</button>
+    </div>
+
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
       <button type="button" id="update-app" class="button" data-current-version="v0.9-alpha" @click="updateApp">Обновить
@@ -171,4 +193,7 @@ function changeTheme(newTheme) {
   height: 30px;
 }
 
+.settings-table__font-scale-label {
+  margin-right: 10px;
+}
 </style>

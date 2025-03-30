@@ -46,7 +46,7 @@ const emit = defineEmits(['delete', 'toggle']);
   background: none;
   border: none;
   color: var(--error);
-  font-size: 18px;
+  font-size: var(--font-h2);;
   cursor: pointer;
 }
 </style>

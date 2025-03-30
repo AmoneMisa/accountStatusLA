@@ -160,19 +160,19 @@ function removeRaid(raid) {
   margin-bottom: 10px;
   width: 100%;
   text-align: center;
-  font-size: 13px;
+  font-size:  var(--font-very-small);
 }
 
 .character_support.view-mode .character__info div:last-child {
   color: var(--support);
   font-family: Caveat, serif;
-  font-size: 16px;
+  font-size:  var(--font-body);;
 }
 
 .character_dd.view-mode .character__info div:last-child {
   color: var(--dd);
   font-family: Caveat, serif;
-  font-size: 16px;
+  font-size:  var(--font-body);;
 }
 
 .character:hover {
@@ -236,7 +236,7 @@ function removeRaid(raid) {
 .raid__header {
   min-width: 80px;
   width: max-content;
-  font-size: 13px;
+  font-size:  var(--font-very-small);
   display: flex;
   align-items: center;
 }
@@ -285,14 +285,14 @@ function removeRaid(raid) {
 }
 
 .raid-selector__label {
-  font-size: 12px;
+  font-size:  var(--font-tiny);
 }
 
 .raid-selector__label i {
   font-style: normal;
   font-family: Caveat, serif;
   color: var(--gold);
-  font-size: 16px;
+  font-size:  var(--font-body);;
 }
 
 .raid-selector__select {
@@ -309,7 +309,7 @@ function removeRaid(raid) {
 .character-table__settings {
   display: flex;
   flex-wrap: wrap;
-  font-size: 14px;
+  font-size:  var(--font-small);
   justify-content: center;
   align-items: center;
   gap: 10px;
@@ -378,11 +378,6 @@ function removeRaid(raid) {
 }
 
 @media screen and (max-width: 980px) {
-  .character-list {
-    display: grid;
-    grid-template-areas: "a b c";
-  }
-
   .character.view-mode {
     display: grid;
     grid-template-areas: "grab icons info"

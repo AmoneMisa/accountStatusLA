@@ -100,7 +100,7 @@ const resultHTML = ref('');
 <style scoped lang="scss">
 
 .calc-cards__example {
-  font-size: 12px;
+  font-size:  var(--font-tiny);
   color: var(--gold);
 }
 

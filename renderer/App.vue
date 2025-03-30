@@ -86,6 +86,15 @@ function changeTab(tab) {
 
 <style lang="scss">
 :root {
+  --font-scale: 1;
+
+  --font-h1: calc(22px * var(--font-scale));
+  --font-h2: calc(18px * var(--font-scale));
+  --font-body: calc(16px * var(--font-scale));
+  --font-small: calc(14px * var(--font-scale));
+  --font-very-small: calc(13px * var(--font-scale));
+  --font-tiny: calc(12px * var(--font-scale));
+
   --dark-grey: #333333;
   --middle-grey: #2d2d2d;
   --grey: #444444;
@@ -352,10 +361,11 @@ body {
   margin: 0;
   display: flex;
   flex-direction: column;
+  font-size: var(--font-body);
 }
 
 .title {
-  font-size: 22px;
+  font-size: var(--font-h1);
 }
 
 .header {
@@ -385,7 +395,7 @@ body {
 .footer {
   flex: none;
   height: 25px;
-  font-size: 12px;
+  font-size:  var(--font-tiny);
   color: var(--gold);
   display: flex;
   justify-content: center;
@@ -437,7 +447,7 @@ option {
   padding: 5px;
   color: var(--white);
   background-color: var(--dark-grey);
-  font-size: 13px;
+  font-size:  var(--font-very-small);
 }
 
 option:checked {
@@ -541,7 +551,7 @@ input[type=number]::-webkit-inner-spin-button {
   background: none;
   border: 1px solid var(--grey);
   color: var(--white);
-  font-size: 14px;
+  font-size:  var(--font-small);
   cursor: pointer;
   height: 28px;
   width: 28px;
@@ -590,7 +600,7 @@ input[type=number]::-webkit-inner-spin-button {
   color: var(--white);
   border-radius: 5px;
   transition: .2s ease;
-  font-size: 16px;
+  font-size:  var(--font-body);;
   box-shadow: var(--inner-shadow);
 }
 
@@ -626,7 +636,7 @@ input[type=number]::-webkit-inner-spin-button {
   color: var(--white);
   padding: 5px 8px;
   border-radius: 5px;
-  font-size: 12px;
+  font-size:  var(--font-tiny);
   white-space: wrap;
   opacity: 0;
   transition: opacity 0.5s;

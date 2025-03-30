@@ -70,7 +70,7 @@ function getGoldFromRaid(charName, raid) {
   gap: 30px;
   flex-wrap: wrap;
   margin-bottom: 20px;
-  font-size: 14px;
+  font-size:  var(--font-small);
   border-radius: 5px;
   border: 1px solid var(--grey);
   box-shadow: var(--shadow);

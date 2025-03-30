@@ -34,12 +34,12 @@ import CalcCommission from "@/components/toolsList/CalcCommission.vue";
   padding: 10px;
   border-radius: 5px;
   flex: 15%;
-  font-size: 14px;
+  font-size:  var(--font-small);
   height: -webkit-fill-available;
 }
 
 .tools-container__anchor-menu-title {
-  font-size: 18px;
+  font-size: var(--font-h2);
   font-family: Caveat, serif;
   color: var(--gold);
   margin-bottom: 25px;
@@ -67,13 +67,13 @@ import CalcCommission from "@/components/toolsList/CalcCommission.vue";
 .tools-container__item-name {
   margin: 0 auto 10px auto;
   text-align: center;
-  font-size: 22px;
+  font-size: var(--font-h1);
   font-family: Caveat, serif;
   color: var(--light-grey);
 }
 
 .tools-container__item-text {
-  font-size: 14px;
+  font-size:  var(--font-small);
   margin-bottom: 10px;
   margin-top: 10px;
 }
@@ -81,7 +81,7 @@ import CalcCommission from "@/components/toolsList/CalcCommission.vue";
 .tools-container__item-label {
   display: flex;
   flex-direction: column;
-  font-size: 12px;
+  font-size:  var(--font-tiny);
 }
 
 .tools-container__item-input {
@@ -99,6 +99,6 @@ import CalcCommission from "@/components/toolsList/CalcCommission.vue";
 .tools-container__item-message {
   margin-top: 10px;
   margin-bottom: 10px;
-  font-size: 14px;
+  font-size:  var(--font-small);
 }
 </style>

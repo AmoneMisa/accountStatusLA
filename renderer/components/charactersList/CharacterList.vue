@@ -37,30 +37,51 @@ function onDragEnd() {
 
 <style lang="scss">
 .character-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  flex-direction: column;
-  width: 100%;
+  > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex-direction: column;
+    width: 100%;
+  }
 }
 
 .character-list.edit-mode {
-  flex-direction: row;
+  > div {
+    flex-direction: row;
+  }
 }
 
-.character-list.edit-mode .character {
-  flex: 25%;
+.character-list.edit-mode  {
+  > div {
+    .character {
+      flex: 25%;
+    }
+  }
+}
+
+@media screen and (max-width: 980px) {
+  .character-list {
+    > div {
+      display: grid;
+      grid-template-areas: "a b c";
+    }
+  }
 }
 
 @media screen and (max-width: 750px) {
   .character-list {
-    grid-template-areas: "a b";
+    > div {
+      grid-template-areas: "a b";
+    }
   }
 }
 
 @media screen and (max-width: 530px) {
   .character-list {
-    grid-template-areas: "a";
+    > div {
+      grid-template-areas: "a";
+    }
   }
 }
 </style>

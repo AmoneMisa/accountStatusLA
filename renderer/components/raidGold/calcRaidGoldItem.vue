@@ -48,7 +48,7 @@ function toggleGoldCharacter(button, characterName) {
   }
 
   .calc-raid-gold__title {
-    font-size: 18px;
+    font-size: var(--font-h2);;
     font-family: Caveat, serif;
     color: var(--gold);
     display: flex;

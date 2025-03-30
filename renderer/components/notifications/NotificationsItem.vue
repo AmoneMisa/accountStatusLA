@@ -80,11 +80,11 @@ function onDelete() {
   padding: 10px;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
+  font-size:  var(--font-small);
 }
 
 .notification-item label {
-  font-size: 12px;
+  font-size:  var(--font-tiny);
 }
 
 .notification-item__cell {

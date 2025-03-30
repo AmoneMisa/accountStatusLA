@@ -73,7 +73,7 @@ function close() {
 <style scoped lang="scss">
 
 .notification-popup {
-  font-size: 14px;
+  font-size:  var(--font-small);
   height: 350px;
 }
 

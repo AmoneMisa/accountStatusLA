@@ -76,7 +76,7 @@ function getGoldFromRaid(charName, raid) {
 
 <style scoped lang="scss">
 .calc-raid-gold__raid-name {
-  font-size: 16px;
+  font-size:  var(--font-body);;
   font-weight: bold;
   margin-bottom: 10px;
 }
