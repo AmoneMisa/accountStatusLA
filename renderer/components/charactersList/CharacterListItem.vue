@@ -425,6 +425,7 @@ function removeRaid(raid) {
 
   .character__actions {
     grid-area: plus;
+    margin: auto;
   }
 
   .add-raid {
