@@ -134,8 +134,7 @@ function removeRaid(raid) {
   </div>
 </template>
 
-<style scoped lang="scss">
-
+<style lang="scss">
 .character {
   border-radius: 10px;
   background-color: var(--dark-grey);

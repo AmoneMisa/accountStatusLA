@@ -23,7 +23,7 @@ import CalcCommission from "@/components/toolsList/CalcCommission.vue";
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 .tools-container {
   display: flex;
   gap: 20px;

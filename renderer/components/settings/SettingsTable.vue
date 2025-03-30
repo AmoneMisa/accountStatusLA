@@ -90,19 +90,19 @@ function changeTheme(newTheme) {
     <div class="settings-table__cell">Название настройки</div>
     <div class="settings-table__cell">Значение</div>
 
-    <div class="settings-table__cell">Скрыть напоминание о полевом боссе сегодня</div>
-    <div class="settings-table__cell">
-      <label class="custom-label">
-        <input type="checkbox" id="disableBossReminderToday" v-model="disableBossReminderToday"/>
-      </label>
-    </div>
+<!--    <div class="settings-table__cell">Скрыть напоминание о полевом боссе сегодня</div>-->
+<!--    <div class="settings-table__cell">-->
+<!--      <label class="custom-label">-->
+<!--        <input type="checkbox" id="disableBossReminderToday" v-model="disableBossReminderToday"/>-->
+<!--      </label>-->
+<!--    </div>-->
 
-    <div class="settings-table__cell">Скрыть напоминание о разломе сегодня</div>
-    <div class="settings-table__cell">
-      <label class="custom-label">
-        <input type="checkbox" id="disableChaosReminderToday" v-model="disableChaosReminderToday"/>
-      </label>
-    </div>
+<!--    <div class="settings-table__cell">Скрыть напоминание о разломе сегодня</div>-->
+<!--    <div class="settings-table__cell">-->
+<!--      <label class="custom-label">-->
+<!--        <input type="checkbox" id="disableChaosReminderToday" v-model="disableChaosReminderToday"/>-->
+<!--      </label>-->
+<!--    </div>-->
 
     <div class="settings-table__cell">Изменить путь сохранения настроек</div>
     <div class="settings-table__cell">
