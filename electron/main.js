@@ -1,16 +1,21 @@
 import {app, dialog, ipcMain, Menu, net, Notification, shell, Tray} from 'electron';
 import path from 'path';
-import {parseLostArkProfile} from "./tabs/characters/parser.js";
-import {changeSettingsPath, getToolsInfo, loadSettings, saveSettings} from "./utils/storage.js";
+import {parseLostArkProfile} from "../tabs/characters/parser.js";
+import {changeSettingsPath, getToolsInfo, loadSettings, saveSettings} from "../utils/storage.js";
 import fs from "fs";
 // import cron from "node-cron";
 import {DateTime, Settings} from "luxon";
-import {createWindow, setMainWindow} from "./mainProcess/mainWindow.js";
-import {capitalize} from "./utils/utils.js";
-import applySettings from "./mainProcess/applySettings.js";
-import {resetDailyActivities, resetWeeklyActivities} from "./mainProcess/resetActivities.js";
+import {createWindow, setMainWindow} from "../mainProcess/mainWindow.js";
+import {capitalize} from "../utils/utils.js";
+import applySettings from "../mainProcess/applySettings.js";
+import {resetDailyActivities, resetWeeklyActivities} from "../mainProcess/resetActivities.js";
 import { parse } from 'semver';
 import schedule from "node-schedule";
+
+process.env.DIST = path.join(import.meta.dirname, '../dist')
+process.env.VITE_PUBLIC = app.isPackaged
+    ? process.env.DIST
+    : path.join(process.env.DIST, '../public')
 
 let tray;
 let mainWindow = null;
@@ -19,7 +24,7 @@ app.on('ready', async () => {
     mainWindow = await createWindow();
     setMainWindow(mainWindow);
 
-    tray = new Tray(path.join(app.getAppPath(), 'assets', 'icon.png'));
+    tray = new Tray(path.join(process.env.VITE_PUBLIC, 'assets/icon.png'));
     const contextMenu = Menu.buildFromTemplate([
         {label: 'Открыть', click: () => mainWindow.show()},
         {type: 'separator'},

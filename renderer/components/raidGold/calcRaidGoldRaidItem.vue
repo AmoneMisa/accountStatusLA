@@ -1,5 +1,5 @@
 <script setup>
-import raidGold from "../../../assets/raidGold.js";
+import raidGold from "@/raidGold.js";
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject} from "vue";
 

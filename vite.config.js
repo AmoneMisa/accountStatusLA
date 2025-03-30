@@ -1,21 +1,23 @@
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
-import electron from 'vite-plugin-electron'
+import electron from 'vite-plugin-electron/simple'
 
 export default defineConfig({
-    root: path.resolve(__dirname, 'renderer'),
-    base: "./",
     plugins: [
         vue(),
-        // electron({
-        //     entry: 'main.js'
-        // })
+        electron({
+            main: {
+                entry: 'electron/main.js',
+                onstart: function ({startup, reload}) {
+                    startup(['.']);
+                }
+            },
+            preload: {
+                input: 'electron/preload.cjs'
+            }
+        })
     ],
-    build: {
-        outDir: path.resolve(__dirname, 'dist'),
-        emptyOutDir: true
-    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'renderer'),
