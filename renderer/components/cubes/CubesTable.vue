@@ -11,7 +11,11 @@ const tableData = computed(() => settings.value.tableData);
 const cubesSettings = computed(() => settings.value.cubesSettings);
 
 columnNames.forEach(col => {
-  if (!(col in cubesSettings.value)) {
+  if (!cubesSettings.value) {
+    cubesSettings.value = {};
+  }
+
+  if (!cubesSettings.value.hasOwnProperty(col)) {
     cubesSettings.value[col] = true;
   }
 });
