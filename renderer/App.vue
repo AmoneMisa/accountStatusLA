@@ -351,7 +351,6 @@ function changeTab(tab) {
   --inner-shadow: inset 0 0 10px rgba(119, 141, 169, 0.35);
 }
 
-
 @font-face {
   font-family: 'Caveat';
   src: url('@/fonts/Caveat-VariableFont_wght.ttf') format('truetype');
@@ -451,15 +450,15 @@ a {
   color: var(--white);
   transition: color .2s ease;
   text-decoration: none;
-}
 
-a:hover {
-  color: var(--gold);
-}
+  &:hover {
+    color: var(--gold);
+  }
 
-a:visited,
-a:active {
-  color: var(--white);
+  &:visited,
+  &:active {
+    color: var(--white);
+  }
 }
 
 select {
@@ -552,10 +551,10 @@ input[type=number]::-webkit-inner-spin-button {
   width: 160px;
   height: 40px;
   color: var(--white);
-}
 
-.button:hover {
-  background: var(--light-grey);
+  &:hover {
+    background: var(--light-grey);
+  }
 }
 
 .button_icon {
@@ -569,11 +568,11 @@ input[type=number]::-webkit-inner-spin-button {
   align-items: center;
   height: 28px;
   width: 28px;
-}
 
-.button_icon:hover {
-  background-color: transparent;
-  transform: scale(120%);
+  &:hover {
+    background-color: transparent;
+    transform: scale(120%);
+  }
 }
 
 .button_control {
@@ -632,24 +631,24 @@ input[type=number]::-webkit-inner-spin-button {
   color: var(--white);
   border-radius: 5px;
   transition: .2s ease;
-  font-size:  var(--font-body);;
+  font-size:  var(--font-small);
   box-shadow: var(--inner-shadow);
-}
 
-.tab-button.active {
-  background: var(--gold);
-}
+  .active {
+    background: var(--gold);
+  }
 
-.tab-button:hover {
-  background: var(--light-grey);
+  &:hover {
+    background: var(--light-grey);
+  }
 }
 
 .tab-content {
   display: none;
-}
 
-.tab-content.active {
-  display: block;
+  .active {
+    display: block;
+  }
 }
 
 .hidden {
@@ -695,17 +694,17 @@ input[type=number]::-webkit-inner-spin-button {
   border: 1px solid var(--grey);
   z-index: 1;
   box-shadow: var(--shadow);
-}
 
-.popup::after {
-  background: var(--black);
-  opacity: 0.6;
-  position: fixed;
-  content: "";
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  &::after {
+    background: var(--black);
+    opacity: 0.6;
+    position: fixed;
+    content: "";
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
 }
 
 .popup__content {
