@@ -350,6 +350,77 @@ function changeTab(tab) {
   --shadow: 0px 4px 10px rgb(0 123 255 / 40%);
   --inner-shadow: inset 0 0 10px rgba(119, 141, 169, 0.35);
 }
+[data-theme="orange"] {
+  --dark-grey: #402218;
+  --middle-grey: #ff914d;
+  --grey: #ffb347;
+  --light-grey: #ffd580;
+  --black: #2b1d0e;
+  --white: #fff4e6;
+  --error: #e63946;
+  --gold: #ff8c00;
+  --loader-border: #ffd580;
+  --loader-top: #ff6700;
+  --support: #ffb347;
+  --dd: #ffc085;
+  --gs: #ffe2b0;
+  --shadow: 0px 4px 10px rgba(255, 140, 0, 0.4);
+  --inner-shadow: inset 0 0 10px rgba(255, 183, 77, 0.3);
+}
+
+[data-theme="water-road"] {
+  --dark-grey: #2f3640;
+  --middle-grey: #353b48;
+  --grey: #718093;
+  --light-grey: #a4b0be;
+  --black: #1e272e;
+  --white: #dcdde1;
+  --error: #ff6b81;
+  --gold: #4b7bec;
+  --loader-border: #a4b0be;
+  --loader-top: #70a1ff;
+  --support: #7bed9f;
+  --dd: #dff9fb;
+  --gs: #ced6e0;
+  --shadow: 0px 4px 10px rgba(71, 84, 102, 0.4);
+  --inner-shadow: inset 0 0 10px rgba(112, 161, 255, 0.2);
+}
+
+[data-theme="peach"] {
+  --dark-grey: #4e342e;
+  --middle-grey: #ffab91;
+  --grey: #ffccbc;
+  --light-grey: #ffe0b2;
+  --black: #3e2723;
+  --white: #fff3e0;
+  --error: #ff5252;
+  --gold: #ffa07a;
+  --loader-border: #ffd6c2;
+  --loader-top: #ff8a65;
+  --support: #ffc1a1;
+  --dd: #ffe0b2;
+  --gs: #fff2e1;
+  --shadow: 0px 4px 10px rgba(255, 160, 122, 0.4);
+  --inner-shadow: inset 0 0 10px rgba(255, 193, 161, 0.3);
+}
+
+[data-theme="raspberry"] {
+  --dark-grey: #3c0d18;
+  --middle-grey: #a4133c;
+  --grey: #c9184a;
+  --light-grey: #ff758f;
+  --black: #2a050d;
+  --white: #ffe9f0;
+  --error: #ff3e55;
+  --gold: #ff1e56;
+  --loader-border: #ff758f;
+  --loader-top: #ff3e55;
+  --support: #d81159;
+  --dd: #ff5d8f;
+  --gs: #ffb3c6;
+  --shadow: 0px 4px 10px rgba(255, 30, 86, 0.4);
+  --inner-shadow: inset 0 0 10px rgba(255, 117, 143, 0.3);
+}
 
 @font-face {
   font-family: 'Caveat';

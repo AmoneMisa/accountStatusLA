@@ -17,7 +17,7 @@ watch(theme, (newVal) => {
 </script>
 
 <template>
-  <select id="theme" v-model="theme">
+  <select id="theme" v-model="theme" class="theme-select">
     <option value="dark">Тёмная</option>
     <option value="light">Светлая</option>
     <option value="blue">Синяя</option>
@@ -32,9 +32,14 @@ watch(theme, (newVal) => {
     <option value="oceanic">Океаническая</option>
     <option value="purple">Фиолетовая</option>
     <option value="dark-blue-gradient">Тёмно-синий градиент</option>
+    <option value="orange">Апельсиновая</option>
+    <option value="peach">Персиковая</option>
+    <option value="raspberry">Малиновая</option>
   </select>
 </template>
 
 <style scoped lang="scss">
-
+.theme-select {
+  max-height: 150px;
+}
 </style>
