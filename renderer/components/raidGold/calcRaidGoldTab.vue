@@ -38,15 +38,23 @@ function getGoldFromRaid(charName, raid) {
 
   phases.forEach((phase, index) => {
     const bought = savedPhases[index]?.chestBought;
-    if (bought) {
-      earned += phase["золото"] - phase["сундук"];
-      spent += phase["сундук"];
+    const disabled = savedPhases?.disabled || false;
+
+    if (disabled) {
+      if (bought) {
+        spent += phase["сундук"];
+      }
     } else {
-      earned += phase["золото"];
+      if (bought) {
+        earned += phase["золото"];
+        spent += phase["сундук"];
+      } else {
+        earned += phase["золото"];
+      }
     }
   });
 
-  return {earned, spent, total: earned + spent};
+  return {earned, spent, total: earned - spent};
 }
 </script>
 
@@ -55,7 +63,8 @@ function getGoldFromRaid(charName, raid) {
     <calc-raid-gold-item v-for="character in characterList"
                          :key="character.name"
                          :character="character" :character-settings="characterSettings[character.name]"
-                         :gold-characters="excludedGoldCharacters"/>
+                         :gold-characters="excludedGoldCharacters"
+                          />
   </div>
   <div class="calc-raid-gold__total">
     <div>🪙 Общая сумма золота: {{ totalGold.earned }}</div>
