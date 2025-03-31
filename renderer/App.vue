@@ -58,6 +58,7 @@ onMounted(() => {
 function changeTab(tab) {
   currentTab.value = tab.data;
   document.getElementById("message").innerText = "";
+  document.getElementById("message").classList.remove("active");
   document.getElementById("error").innerText = "";
   document.querySelector("#loader").style.display = 'none';
 }
@@ -412,7 +413,33 @@ body {
 }
 
 .message {
-  margin: 10px 0;
+  margin: auto;
+  font-size: var(--font-small);
+  text-align: right;
+  padding: 20px;
+  border: 1px solid var(--grey);
+  box-shadow: var(--shadow);
+  width: fit-content;
+  border-radius: 8px;
+  opacity: 0;
+  transition: 0.3s ease;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  background: var(--black);
+  height: fit-content;
+  min-height: 60px;
+  min-width: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &.active {
+    opacity: 1;
+  }
 }
 
 input, button, select, textarea, a, .popup, .button, label {

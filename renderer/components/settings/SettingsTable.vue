@@ -59,6 +59,8 @@ function save() {
     autoStart: autoStart.value,
   });
   document.getElementById("message").innerText = "Настройки сохранены";
+  document.getElementById("message").classList.add("active");
+  setTimeout(() =>   document.getElementById("message").classList.remove("active"), 5000);
 }
 
 async function chooseFolder() {
@@ -102,6 +104,8 @@ window.electron.ipcRenderer.invoke('set-autostart', autoStart.value);
 function changeTheme(newTheme) {
   document.documentElement.setAttribute("data-theme", newTheme);
   document.getElementById("message").innerText = "Тема изменена";
+  document.getElementById("message").classList.add("active");
+  setTimeout(() =>   document.getElementById("message").classList.remove("active"), 5000);
   theme.value = newTheme;
   saveSettings({theme: newTheme});
 }

@@ -10,13 +10,15 @@ async function capture() {
     const item = new ClipboardItem({'image/png': blob});
     navigator.clipboard.write([item]).then(() => {
       document.querySelector("#message").innerText = "Скриншот скопирован в буфер обмена";
+      document.querySelector("#message").classList.add("active");
+      setTimeout(() =>   document.getElementById("message").classList.remove("active"), 5000);
     });
   });
 }
 </script>
 
 <template>
-  <div class="share-snippet">
+  <div class="share-snippet" style="background-color: var(--black)">
     <div ref="targetRef">
       <slot />
     </div>
@@ -25,11 +27,8 @@ async function capture() {
 </template>
 
 <style scoped lang="scss">
-.share-snippet {
-  background-color: var(--black);
-}
-
 .share-snippet__button {
   margin-left: auto;
+  margin-top: 10px;
 }
 </style>
