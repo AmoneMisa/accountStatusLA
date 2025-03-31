@@ -283,6 +283,13 @@ ipcMain.handle('is-newer-version', async (_, current, latest) => {
     return parse(latest) > parse(current);
 });
 
+ipcMain.handle('set-autostart', (event, enable) => {
+    app.setLoginItemSettings({
+        openAtLogin: enable,
+        path: app.getPath('exe'),
+    });
+});
+
 function shouldNotifyToday(type, settings) {
     Settings.defaultZone = "UTC+3";
 

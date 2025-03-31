@@ -33,6 +33,10 @@ const fontScale = computed({
   get: () => settings.value.fontScale || 1,
   set: (newValue) => settings.value.fontScale = newValue
 });
+const autoStart = computed({
+  get: () => settings.value.autoStart || false,
+  set: () => settings.value.autoStart = !settings.value.autoStart
+});
 
 function updateFontScale() {
   document.documentElement.style.setProperty('--font-scale', fontScale.value);
@@ -52,6 +56,7 @@ function save() {
     minimizeOnClose: minimizeOnClose.value,
     rememberWindowSize: rememberWindowSize.value,
     rememberWindowPosition: rememberWindowPosition.value,
+    autoStart: autoStart.value,
   });
   document.getElementById("message").innerText = "Настройки сохранены";
 }
@@ -92,6 +97,8 @@ window.electron.ipcRenderer.on('update-error', (_, errorMessage) => {
   document.getElementById('error').innerText = `Ошибка обновления: ${errorMessage?.message || "Неизвестная ошибка"}`;
 });
 
+window.electron.ipcRenderer.invoke('set-autostart', autoStart.value);
+
 function changeTheme(newTheme) {
   document.documentElement.setAttribute("data-theme", newTheme);
   document.getElementById("message").innerText = "Тема изменена";
@@ -105,19 +112,19 @@ function changeTheme(newTheme) {
     <div class="settings-table__cell">Название настройки</div>
     <div class="settings-table__cell">Значение</div>
 
-<!--    <div class="settings-table__cell">Скрыть напоминание о полевом боссе сегодня</div>-->
-<!--    <div class="settings-table__cell">-->
-<!--      <label class="custom-label">-->
-<!--        <input type="checkbox" id="disableBossReminderToday" v-model="disableBossReminderToday"/>-->
-<!--      </label>-->
-<!--    </div>-->
+    <!--    <div class="settings-table__cell">Скрыть напоминание о полевом боссе сегодня</div>-->
+    <!--    <div class="settings-table__cell">-->
+    <!--      <label class="custom-label">-->
+    <!--        <input type="checkbox" id="disableBossReminderToday" v-model="disableBossReminderToday"/>-->
+    <!--      </label>-->
+    <!--    </div>-->
 
-<!--    <div class="settings-table__cell">Скрыть напоминание о разломе сегодня</div>-->
-<!--    <div class="settings-table__cell">-->
-<!--      <label class="custom-label">-->
-<!--        <input type="checkbox" id="disableChaosReminderToday" v-model="disableChaosReminderToday"/>-->
-<!--      </label>-->
-<!--    </div>-->
+    <!--    <div class="settings-table__cell">Скрыть напоминание о разломе сегодня</div>-->
+    <!--    <div class="settings-table__cell">-->
+    <!--      <label class="custom-label">-->
+    <!--        <input type="checkbox" id="disableChaosReminderToday" v-model="disableChaosReminderToday"/>-->
+    <!--      </label>-->
+    <!--    </div>-->
 
     <div class="settings-table__cell">Изменить путь сохранения настроек</div>
     <div class="settings-table__cell">
@@ -132,26 +139,38 @@ function changeTheme(newTheme) {
 
     <div class="settings-table__cell">Сворачивать приложение при нажатии на крестик</div>
     <div class="settings-table__cell"><label class="custom-label">
-      <input type="checkbox" id="minimizeOnClose" v-model="minimizeOnClose"></label></div>
+      <input type="checkbox" id="minimizeOnClose" v-model="minimizeOnClose"></label>
+    </div>
 
     <div class="settings-table__cell">Запоминать размер окна при закрытии</div>
     <div class="settings-table__cell"><label class="custom-label">
-      <input type="checkbox" id="rememberWindowSize" v-model="rememberWindowSize"></label></div>
+      <input type="checkbox" id="rememberWindowSize" v-model="rememberWindowSize"></label>
+    </div>
 
     <div class="settings-table__cell">Запоминать расположение окна при закрытии</div>
     <div class="settings-table__cell"><label class="custom-label">
-      <input type="checkbox" id="rememberWindowPosition" v-model="rememberWindowPosition"></label></div>
+      <input type="checkbox" id="rememberWindowPosition" v-model="rememberWindowPosition"></label>
+    </div>
+
+    <div class="settings-table__cell">Автозапуск при старте Windows</div>
+    <div class="settings-table__cell">
+      <label class="custom-label">
+        <input type="checkbox" id="rememberWindowPosition" v-model="autoStart">
+      </label>
+    </div>
 
     <div class="settings-table__cell">Размер шрифта</div>
     <div class="settings-table__cell"><label class="custom-label settings-table__font-scale-label">
-      <input class="settings-table__font-scale-input" type="range" min="0.7" max="1.3" step="0.05" v-model="fontScale" @input="updateFontScale" />
+      <input class="settings-table__font-scale-input" type="range" min="0.7" max="1.3" step="0.05" v-model="fontScale"
+             @input="updateFontScale"/>
     </label>
-    <button class="button" @click="resetFontScale">Сбросить</button>
+      <button class="button" @click="resetFontScale">Сбросить</button>
     </div>
 
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
-      <button type="button" id="update-app" class="button" data-current-version="v0.10-alpha" @click="updateApp">Обновить
+      <button type="button" id="update-app" class="button" data-current-version="v0.10-alpha" @click="updateApp">
+        Обновить
         приложение
       </button>
     </div>
