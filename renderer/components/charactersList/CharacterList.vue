@@ -16,12 +16,19 @@ function onDragEnd() {
 }
 
 const isGridView = ref(false);
+const windowWidth = ref(window.innerWidth);
+
+window.addEventListener("resize", () => {
+  setTimeout(() => {
+    windowWidth.value = window.innerWidth;
+  }, 1000);
+});
 </script>
 
 <template>
   <h1 class="title character-list__title"><span>Список персонажей</span>  <button class="button button_icon tooltip" data-tooltip="Изменить отображение" @click="isGridView = !isGridView">🔷</button></h1>
   <share-snippet>
-    <div id="character-list" class="character-list" :class="{'edit-mode': isEditMode, 'grid': isGridView}">
+    <div id="character-list" class="character-list" :class="{'edit-mode': isEditMode, 'grid': isGridView || windowWidth < 980}">
       <draggable
           :list="characterList"
           item-key="name"
@@ -34,6 +41,7 @@ const isGridView = ref(false);
               :is-edit-mode="isEditMode"
               :character="character"
               :key="character.name"
+              :window-width="windowWidth"
               @show-raid-selector="(characterName) => emit('showRaidSelector', characterName)"/>
         </template>
       </draggable>
@@ -68,6 +76,10 @@ const isGridView = ref(false);
   > div {
     display: grid;
     grid-template-areas: "a b c";
+
+    @media screen and (max-width: 760px){
+      grid-template-areas: "a b";
+    }
   }
 }
 
@@ -75,39 +87,6 @@ const isGridView = ref(false);
   > div {
     .character {
       flex: 25%;
-    }
-  }
-}
-
-@media screen and (max-width: 980px) {
-  .character-list {
-    > div {
-      display: grid;
-      grid-template-areas: "a b c";
-
-      @media screen and (max-width: 750px) {
-        grid-template-areas: "a b";
-      }
-
-      @media screen and (max-width: 530px) {
-        grid-template-areas: "a";
-      }
-    }
-  }
-}
-
-@media screen and (max-width: 750px) {
-  .character-list {
-    > div {
-      grid-template-areas: "a b";
-    }
-  }
-}
-
-@media screen and (max-width: 530px) {
-  .character-list {
-    > div {
-      grid-template-areas: "a";
     }
   }
 }

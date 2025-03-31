@@ -4,7 +4,8 @@ import {computed, inject} from "vue";
 
 const props = defineProps({
   character: Object,
-  isEditMode: Boolean
+  isEditMode: Boolean,
+  windowWidth: Number,
 });
 
 const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String});
@@ -19,13 +20,15 @@ function toggleIcon(icon, statusTitle) {
 
   icon.target.classList.toggle("inactive");
 
-  saveSettings({characterSettings: {
+  saveSettings({
+    characterSettings: {
       ...settings.value.characterSettings,
       [props.character.name]: {
         ...characterSettings.value || {},
         [statusTitle]: !characterSettings.value[statusTitle]
       }
-    }});
+    }
+  });
   emit('updateCharacter', props.character.name);
 }
 
@@ -33,16 +36,18 @@ function toggleRaidStatus(raid) {
   characterSettings.value.raidStatus = characterSettings.value.raidStatus || {};
   characterSettings.value.raidStatus[raid] = !characterSettings.value.raidStatus[raid];
 
-  saveSettings({characterSettings: {
+  saveSettings({
+    characterSettings: {
       ...settings.value.characterSettings,
       [props.character.name]: {
         ...characterSettings.value || {},
         raidStatus: {
           ...characterSettings.value.raidStatus,
-          [raid]:characterSettings.value.raidStatus[raid]
+          [raid]: characterSettings.value.raidStatus[raid]
         }
       }
-    }});
+    }
+  });
   emit('updateCharacter', props.character.name);
 }
 
@@ -50,26 +55,40 @@ function removeRaid(raid) {
   if (characterSettings.value.raids) {
     characterSettings.value.raids = characterSettings.value.raids.filter(r => r !== raid);
     delete characterSettings.value.raidStatus?.[raid];
-    saveSettings({characterSettings: {
+    saveSettings({
+      characterSettings: {
         ...settings.value.characterSettings,
         [props.character.name]: {
           ...characterSettings.value || {},
           raidStatus: {
             ...characterSettings.value.raidStatus,
-            [raid]:characterSettings.value.raidStatus[raid]
+            [raid]: characterSettings.value.raidStatus[raid]
           }
         }
-      }});
+      }
+    });
     emit('updateCharacter', props.character.name);
   }
 }
+
+const chunkedRaids = computed(() => {
+  const raids = characterSettings.value.raids || [];
+  const chunkSize = 3;
+  const result = [];
+
+  for (let i = 0; i < raids.length; i += chunkSize) {
+    result.push(raids.slice(i, i + chunkSize));
+  }
+
+  return result;
+});
 </script>
 <template>
   <div v-if="!(characterSettings.delete && !isEditMode)"
-      class="character"
-      :class="[isEditMode ? '' : 'view-mode', isSupport ? 'character_support' : 'character_dd']"
-      :data-name="character.name"
-      :data-gs="character.gearScore"
+       class="character"
+       :class="[isEditMode ? '' : 'view-mode', isSupport ? 'character_support' : 'character_dd']"
+       :data-name="character.name"
+       :data-gs="character.gearScore"
   >
     <div v-if="!isEditMode" class="character__cell character__drag" data-tooltip="Изменить порядок персонажей">≡</div>
 
@@ -104,26 +123,53 @@ function removeRaid(raid) {
       <div class="character__class">{{ character.className }}</div>
     </div>
 
-    <div class="character__cell character__raids" v-if="!isEditMode">
-      <div v-for="raid in characterSettings?.raids || []" :key="raid" class="raid" :data-raid="raid">
-        <div class="raid__header">
-          <div class="raid__name">{{ raid }}</div>
+    <div class="character__cell character__raids raids" v-if="!isEditMode">
+      <template v-if="windowWidth > 980">
+        <div v-for="raid in characterSettings?.raids || []" :key="raid" class="raid" :data-raid="raid">
+          <div class="raid__header">
+            <div class="raid__name">{{ raid }}</div>
+            <button
+                class="tooltip remove-raid button button_icon"
+                data-tooltip="Удалить рейд"
+                @click="removeRaid(raid)"
+            >
+              🗑️
+            </button>
+          </div>
           <button
-              class="tooltip remove-raid button button_icon"
-              data-tooltip="Удалить рейд"
-              @click="removeRaid(raid)"
+              class="tooltip raid-status button button_icon"
+              data-tooltip="Пройдено ли"
+              @click="toggleRaidStatus(raid)"
           >
-            🗑️
+            {{ characterSettings?.raidStatus?.[raid] ? '✅' : '❌' }}
           </button>
         </div>
-        <button
-            class="tooltip raid-status button button_icon"
-            data-tooltip="Пройдено ли"
-            @click="toggleRaidStatus(raid)"
-        >
-          {{ characterSettings?.raidStatus?.[raid] ? '✅' : '❌' }}
-        </button>
-      </div>
+      </template>
+
+      <template v-else>
+        <div class="raids__row" v-for="(row, rowIndex) in chunkedRaids" :key="rowIndex">
+          <div v-for="raid in row" :key="raid" class="raid" :data-raid="raid">
+            <div class="raid__header">
+              <div class="raid__name">{{ raid }}</div>
+              <button
+                  class="tooltip remove-raid button button_icon"
+                  data-tooltip="Удалить рейд"
+                  @click="removeRaid(raid)"
+              >
+                🗑️
+              </button>
+            </div>
+            <button
+                class="tooltip raid-status button button_icon"
+                data-tooltip="Пройдено ли"
+                @click="toggleRaidStatus(raid)"
+            >
+              {{ characterSettings?.raidStatus?.[raid] ? '✅' : '❌' }}
+            </button>
+          </div>
+        </div>
+      </template>
+
     </div>
 
     <div class="character__cell character__actions" v-if="!isEditMode">
@@ -251,7 +297,7 @@ function removeRaid(raid) {
 .grid {
   .character {
     display: grid;
-    grid-template-areas: "grab icons info" "raid1 raid2 raid3" "plus plus plus";
+    grid-template-areas: "grab info" "raid1 raid2" "plus plus";
     gap: 0;
     margin-bottom: 0;
   }
@@ -279,6 +325,9 @@ function removeRaid(raid) {
     justify-content: center;
     width: -webkit-fill-available;
     padding: 0 5px;
+    grid-area: grab;
+    width: 40px;
+    border-right: 1px solid var(--grey);
   }
 
   .character__info {
@@ -287,11 +336,7 @@ function removeRaid(raid) {
   }
 
   .character__icons {
-    flex-wrap: wrap;
-    height: -webkit-fill-available;
-    border-right: 1px solid var(--grey);
-    border-left: 1px solid var(--grey);
-    grid-area: icons;
+    display: none;
   }
 
   .character__actions {
@@ -306,45 +351,61 @@ function removeRaid(raid) {
     justify-content: center;
   }
 
+  .raids__row {
+    &:first-child {
+      border-right: 1px solid var(--grey);
+    }
+  }
+
   .raid {
     width: 100%;
     display: flex;
     justify-content: space-between;
     flex-direction: column;
     align-items: center;
-    border-bottom: 1px solid var(--grey);
 
     &:nth-child(odd) {
-      border-left: 1px solid var(--grey);
+      border-right: none;
     }
 
     &:last-child:only-child {
       grid-column: 1 / -1;
     }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--grey);
+    }
   }
 
   .character:hover {
-    .character__info,
-    .character__icons {
-      border-right: 1px solid var(--dark-grey);
-    }
-
-    .character__drag,
-    .character__icons {
-      border-left: 1px solid var(--dark-grey);
-    }
-
     .character__raids {
       border-top: 1px solid var(--dark-grey);
       border-bottom: 1px solid var(--dark-grey);
-    }
-
-    .raid {
-      border-bottom: 1px solid var(--dark-grey);
-    }
-
-    .raid:nth-child(odd) {
       border-left: 1px solid var(--dark-grey);
+      border-right: 1px solid var(--dark-grey);
+    }
+
+    .character__info {
+      border-right: 1px solid var(--dark-grey);
+    }
+
+    .character__drag {
+      border-left: 1px solid var(--dark-grey);
+      border-right: 1px solid var(--dark-grey);
+    }
+
+    .raids__row:first-child {
+      border-right: 1px solid var(--dark-grey);
+    }
+
+    .character__cell:not(:last-child) {
+      .raid {
+        border-right: 1px solid var(--dark-grey);
+      }
+    }
+
+    .raid:not(:last-child) {
+      border-bottom: 1px solid var(--dark-grey);
     }
   }
 }

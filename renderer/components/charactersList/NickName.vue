@@ -55,4 +55,9 @@ function editCharacters() {
   gap: 5px;
   align-items: center;
 }
+
+.controls {
+  display: flex;
+  gap: 5px;
+}
 </style>

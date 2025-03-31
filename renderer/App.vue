@@ -711,7 +711,7 @@ input[type=number]::-webkit-inner-spin-button {
 .popup {
   border-radius: 5px;
   width: 300px;
-  height: 150px;
+  height: fit-content;
   position: fixed;
   top: 0;
   right: 0;
