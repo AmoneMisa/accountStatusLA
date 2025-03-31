@@ -26,42 +26,44 @@ function toggleGoldCharacter(button, characterName) {
 
 <template>
   <div class="calc-raid-gold__item" v-if="!characterSettings.delete">
-    <tooltip>
-    <div class="calc-raid-gold__title">{{ character.name }} <button class="button button_icon" @click="(button) => toggleGoldCharacter(button, character.name)">❌</button></div>
-      <template #tooltip>Убрать персонажа из общего расчёта золота</template>
-    </tooltip>
+    <div class="calc-raid-gold__title">{{ character.name }}
+      <tooltip>
+        <button class="button button_icon" @click="(button) => toggleGoldCharacter(button, character.name)">❌</button>
+        <template #tooltip>Убрать персонажа из общего расчёта золота</template>
+      </tooltip>
+    </div>
     <calc-raid-gold-raid-item v-for="raid in getCompletedRaids()" :key="raid" :raid="raid" :character="character"/>
   </div>
 </template>
 
 <style scoped lang="scss">
+.calc-raid-gold__item {
+  flex: 25%;
+  border-radius: 5px;
+  background-color: var(--dark-grey);
+  border: 1px solid var(--grey);
+  color: var(--white);
+  transition: .2s ease;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.calc-raid-gold__item:hover {
+  background-color: var(--grey);
+}
+
+.calc-raid-gold__title {
+  font-size: var(--font-h2);;
+  font-family: Caveat, serif;
+  color: var(--gold);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media screen and (max-width: 680px) {
   .calc-raid-gold__item {
-    flex: 25%;
-    border-radius: 5px;
-    background-color: var(--dark-grey);
-    border: 1px solid var(--grey);
-    color: var(--white);
-    transition: .2s ease;
-    cursor: pointer;
-    padding: 10px;
-    box-shadow: var(--shadow);
+    flex: 33%;
   }
-
-  .calc-raid-gold__item:hover {
-    background-color: var(--grey);
-  }
-
-  .calc-raid-gold__title {
-    font-size: var(--font-h2);;
-    font-family: Caveat, serif;
-    color: var(--gold);
-    display: flex;
-    justify-content: space-between;
-  }
-
-  @media screen and (max-width: 680px){
-    .calc-raid-gold__item {
-      flex: 33%;
-    }
-  }
+}
 </style>

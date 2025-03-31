@@ -210,6 +210,7 @@ function changeTheme(newTheme) {
   border-bottom: 1px solid var(--grey);
   display: flex;
   align-items: center;
+  font-size: var(--font-very-small);
 }
 
 .settings-table__cell:nth-child(odd) {

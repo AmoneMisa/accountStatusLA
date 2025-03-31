@@ -1,6 +1,7 @@
 <script setup>
 import {saveSettings} from "../../../utils/utils.js";
 import {ref} from "vue";
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 function minimize() {
   window.electron.ipcRenderer.send('window:minimize');
@@ -47,10 +48,22 @@ window.electron.ipcRenderer.on('clear-nickname', async () => {
     <div id="title-bar" class="title-bar">
       <div id="title" class="title-bar__title">Lost Ark Character Manager by WhitesLove v. 0.10-alpha</div>
       <div id="window-controls" class="window-controls">
+        <tooltip>
         <button id="alwaysUpTop" class="window-controls__button button button_control" @click="(elem) => alwaysUpTop(elem)">📌</button>
+        <template #tooltip>Поверх окон</template>
+        </tooltip>
+        <tooltip>
         <button id="minimize" class="window-controls__button button button_control" @click="minimize">—</button>
+        <template #tooltip>Свернуть</template>
+        </tooltip>
+        <tooltip>
         <button id="maximize" class="window-controls__button button button_control" @click="maximize">⬜</button>
+        <template #tooltip>Развернуть</template>
+        </tooltip>
+        <tooltip>
         <button id="close" class="window-controls__button button button_control" @click="close">✖</button>
+        <template #tooltip>Закрыть</template>
+        </tooltip>
       </div>
     </div>
   </div>
