@@ -45,12 +45,12 @@ window.electron.ipcRenderer.on('clear-nickname', async () => {
 <template>
   <div class="header">
     <div id="title-bar" class="title-bar">
-      <div id="title" class="title-bar__title">Lost Ark Character Manager by WhitesLove v. 0.9-alpha</div>
+      <div id="title" class="title-bar__title">Lost Ark Character Manager by WhitesLove v. 0.10-alpha</div>
       <div id="window-controls" class="window-controls">
-        <button id="alwaysUpTop" class="window-controls__button button button_control tooltip" data-tooltip="Поверх окон" @click="(elem) => alwaysUpTop(elem)">📌</button>
-        <button id="minimize" class="window-controls__button button button_control tooltip" data-tooltip="Свернуть" @click="minimize">—</button>
-        <button id="maximize" class="window-controls__button button button_control tooltip" data-tooltip="На весь экран" @click="maximize">⬜</button>
-        <button id="close" class="window-controls__button button button_control tooltip" data-tooltip="Закрыть" @click="close">✖</button>
+        <button id="alwaysUpTop" class="window-controls__button button button_control" @click="(elem) => alwaysUpTop(elem)">📌</button>
+        <button id="minimize" class="window-controls__button button button_control" @click="minimize">—</button>
+        <button id="maximize" class="window-controls__button button button_control" @click="maximize">⬜</button>
+        <button id="close" class="window-controls__button button button_control" @click="close">✖</button>
       </div>
     </div>
   </div>

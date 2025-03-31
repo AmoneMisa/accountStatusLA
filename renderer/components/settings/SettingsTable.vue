@@ -151,7 +151,7 @@ function changeTheme(newTheme) {
 
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
-      <button type="button" id="update-app" class="button" data-current-version="v0.9-alpha" @click="updateApp">Обновить
+      <button type="button" id="update-app" class="button" data-current-version="v0.10-alpha" @click="updateApp">Обновить
         приложение
       </button>
     </div>

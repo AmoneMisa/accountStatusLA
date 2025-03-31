@@ -1,6 +1,6 @@
 import {app, dialog, ipcMain, Menu, net, Notification, shell, Tray} from 'electron';
 import path from 'path';
-import {parseLostArkProfile} from "../tabs/characters/parser.js";
+import {parseLostArkProfile} from "../utils/parser.js";
 import {changeSettingsPath, getToolsInfo, loadSettings, saveSettings} from "../utils/storage.js";
 import fs from "fs";
 // import cron from "node-cron";
