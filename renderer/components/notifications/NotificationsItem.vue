@@ -1,6 +1,8 @@
 <script setup>
 import {computed, inject, ref} from "vue";
 import {saveSettings} from "../../../utils/utils.js";
+import Tooltip from "@/components/utils/Tooltip.vue";
+
 const props = defineProps({
   notification: Object,
   index: Number
@@ -28,13 +30,13 @@ const customNotifications = computed(() => settings.value.customNotifications);
 function onToggle() {
   const settings = customNotifications.value || [];
   settings[props.index].enable = props.notification.enable;
-  saveSettings({ customNotifications: settings });
+  saveSettings({customNotifications: settings});
 }
 
 function onDelete() {
   const settings = customNotifications.value || [];
   settings.splice(props.index, 1);
-  saveSettings({ customNotifications: settings });
+  saveSettings({customNotifications: settings});
   emit('remove', props.index);
 }
 </script>
@@ -58,13 +60,15 @@ function onDelete() {
       />
     </label>
     <div class="notification-item__controls">
-      <button
-          class="notification-item__delete button button_icon tooltip"
-          data-tooltip="Удалить напоминание"
-          @click="onDelete"
-      >
-        🗑
-      </button>
+      <tooltip>
+        <button
+            class="notification-item__delete button button_icon"
+            @click="onDelete"
+        >
+          🗑
+        </button>
+        <template #tooltip>Удалить напоминание</template>
+      </tooltip>
     </div>
   </div>
 </template>
@@ -80,11 +84,11 @@ function onDelete() {
   padding: 10px;
   justify-content: space-between;
   align-items: center;
-  font-size:  var(--font-small);
+  font-size: var(--font-small);
 }
 
 .notification-item label {
-  font-size:  var(--font-tiny);
+  font-size: var(--font-tiny);
 }
 
 .notification-item__cell {

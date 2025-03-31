@@ -1,6 +1,7 @@
 <script setup>
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject} from "vue";
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 const props = defineProps({
   character: Object,
@@ -90,31 +91,40 @@ const chunkedRaids = computed(() => {
        :data-name="character.name"
        :data-gs="character.gearScore"
   >
-    <div v-if="!isEditMode" class="character__cell character__drag" data-tooltip="Изменить порядок персонажей">≡</div>
+    <tooltip v-if="!isEditMode">
+      <div class="character__cell character__drag">≡</div>
+      <template #tooltip>Изменить порядок персонажей</template>
+    </tooltip>
 
     <div class="character__cell character__icons">
-      <div
+      <tooltip
           v-for="icon in ['legate', 'goldReceiver', 'favorite']"
           :key="icon"
-          class="tooltip character__icon"
-          :data-type="icon"
-          :class="{ inactive: !characterSettings?.[icon] }"
-          :data-tooltip="icon"
-          @click="(elem) => toggleIcon(elem, icon)"
       >
-        {{ icon === 'legate' ? '👑' : icon === 'goldReceiver' ? '💰' : '⭐' }}
-      </div>
+        <div
+            class="character__icon"
+            :data-type="icon"
+            :class="{ inactive: !characterSettings?.[icon] }"
+            @click="(elem) => toggleIcon(elem, icon)"
+        >
+          {{ icon === 'legate' ? '👑' : icon === 'goldReceiver' ? '💰' : '⭐' }}
+        </div>
+        <template #tooltip>
+          {{ icon === 'legate' ? 'Легат' : icon === 'goldReceiver' ? 'Получатель голды' : 'Избранное' }}
+        </template>
+      </tooltip>
 
-      <div
-          v-if="isEditMode"
-          class="tooltip character__icon"
-          :class="{ inactive: !characterSettings?.delete }"
-          data-type="delete"
-          data-tooltip="Скрыть из списка"
-          @click="(elem) => toggleIcon(elem, 'delete')"
-      >
-        ❌
-      </div>
+      <tooltip v-if="isEditMode">
+        <div
+            class="character__icon"
+            :class="{ inactive: !characterSettings?.delete }"
+            data-type="delete"
+            @click="(elem) => toggleIcon(elem, 'delete')"
+        >
+          ❌
+        </div>
+        <template #tooltip>Скрыть из списка</template>
+      </tooltip>
     </div>
 
     <div class="character__cell character__info">
@@ -125,24 +135,25 @@ const chunkedRaids = computed(() => {
 
     <div class="character__cell character__raids raids" v-if="!isEditMode">
       <template v-if="windowWidth > 980">
-        <div v-for="raid in characterSettings?.raids || []" :key="raid" class="raid" :data-raid="raid">
+        <div
+            v-for="raid in characterSettings?.raids || []"
+            :key="raid"
+            class="raid"
+            :data-raid="raid"
+        >
           <div class="raid__header">
             <div class="raid__name">{{ raid }}</div>
-            <button
-                class="tooltip remove-raid button button_icon"
-                data-tooltip="Удалить рейд"
-                @click="removeRaid(raid)"
-            >
-              🗑️
-            </button>
+            <tooltip>
+              <button class="remove-raid button button_icon" @click="removeRaid(raid)">🗑️</button>
+              <template #tooltip>Удалить рейд</template>
+            </tooltip>
           </div>
-          <button
-              class="tooltip raid-status button button_icon"
-              data-tooltip="Пройдено ли"
-              @click="toggleRaidStatus(raid)"
-          >
-            {{ characterSettings?.raidStatus?.[raid] ? '✅' : '❌' }}
-          </button>
+          <tooltip>
+            <button class="raid-status button button_icon" @click="toggleRaidStatus(raid)">
+              {{ characterSettings?.raidStatus?.[raid] ? '✅' : '❌' }}
+            </button>
+            <template #tooltip>Рейд пройден</template>
+          </tooltip>
         </div>
       </template>
 
@@ -151,33 +162,32 @@ const chunkedRaids = computed(() => {
           <div v-for="raid in row" :key="raid" class="raid" :data-raid="raid">
             <div class="raid__header">
               <div class="raid__name">{{ raid }}</div>
-              <button
-                  class="tooltip remove-raid button button_icon"
-                  data-tooltip="Удалить рейд"
-                  @click="removeRaid(raid)"
-              >
-                🗑️
-              </button>
+              <tooltip>
+                <button class="remove-raid button button_icon" @click="removeRaid(raid)">🗑️</button>
+                <template #tooltip>Удалить рейд</template>
+              </tooltip>
             </div>
-            <button
-                class="tooltip raid-status button button_icon"
-                data-tooltip="Пройдено ли"
-                @click="toggleRaidStatus(raid)"
-            >
-              {{ characterSettings?.raidStatus?.[raid] ? '✅' : '❌' }}
-            </button>
+            <tooltip>
+              <button class="raid-status button button_icon" @click="toggleRaidStatus(raid)">
+                {{ characterSettings?.raidStatus?.[raid] ? '✅' : '❌' }}
+              </button>
+              <template #tooltip>Пройдено ли</template>
+            </tooltip>
           </div>
         </div>
       </template>
-
     </div>
 
     <div class="character__cell character__actions" v-if="!isEditMode">
-      <button class="tooltip button button_icon add-raid" @click="emit('showRaidSelector', character.name)">
-        ➕
-      </button>
+      <tooltip>
+        <button class="button button_icon add-raid" @click="emit('showRaidSelector', character.name)">
+          ➕
+        </button>
+        <template #tooltip>Добавить активность</template>
+      </tooltip>
     </div>
   </div>
+
 </template>
 
 <style lang="scss">
