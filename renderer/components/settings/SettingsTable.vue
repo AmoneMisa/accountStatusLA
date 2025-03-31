@@ -57,10 +57,12 @@ function save() {
     rememberWindowSize: rememberWindowSize.value,
     rememberWindowPosition: rememberWindowPosition.value,
     autoStart: autoStart.value,
+    disableBossReminderToday: disableBossReminderToday.value,
+    disableChaosReminderToday: disableChaosReminderToday.value
   });
   document.getElementById("message").innerText = "Настройки сохранены";
   document.getElementById("message").classList.add("active");
-  setTimeout(() =>   document.getElementById("message").classList.remove("active"), 5000);
+  setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
 }
 
 async function chooseFolder() {
@@ -73,6 +75,8 @@ async function chooseFolder() {
 
 async function updateApp() {
   document.getElementById('message').innerText = "Проверка обновлений...";
+  document.querySelector("#message").classList.add("active");
+  setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
   document.getElementById('error').innerText = "";
 
   await window.electron.ipcRenderer.invoke('check-for-updates');
@@ -80,18 +84,25 @@ async function updateApp() {
 
 window.electron.ipcRenderer.on('update-available', async ({latestVersion, downloadUrl}) => {
   const currentVersion = document.getElementById('update-app').dataset.currentVersion;
+  console.log(currentVersion, latestVersion);
   const isNewer = await window.electron.ipcRenderer.invoke('is-newer-version', currentVersion, latestVersion);
 
   if (isNewer) {
     document.getElementById('message').innerText = `Доступно обновление ${latestVersion}. Открываем страницу загрузки...`;
+    document.querySelector("#message").classList.add("active");
+    setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
     await window.electron.ipcRenderer.openExternal(downloadUrl);
   } else {
     document.getElementById('message').innerText = "У вас актуальная версия.";
+    document.querySelector("#message").classList.add("active");
+    setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
   }
 });
 
 window.electron.ipcRenderer.on('update-not-found', () => {
   document.getElementById('message').innerText = "Обновлений нет.";
+  document.querySelector("#message").classList.add("active");
+  setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
 });
 
 window.electron.ipcRenderer.on('update-error', (_, errorMessage) => {
@@ -105,7 +116,7 @@ function changeTheme(newTheme) {
   document.documentElement.setAttribute("data-theme", newTheme);
   document.getElementById("message").innerText = "Тема изменена";
   document.getElementById("message").classList.add("active");
-  setTimeout(() =>   document.getElementById("message").classList.remove("active"), 5000);
+  setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
   theme.value = newTheme;
   saveSettings({theme: newTheme});
 }
@@ -116,19 +127,19 @@ function changeTheme(newTheme) {
     <div class="settings-table__cell">Название настройки</div>
     <div class="settings-table__cell">Значение</div>
 
-    <!--    <div class="settings-table__cell">Скрыть напоминание о полевом боссе сегодня</div>-->
-    <!--    <div class="settings-table__cell">-->
-    <!--      <label class="custom-label">-->
-    <!--        <input type="checkbox" id="disableBossReminderToday" v-model="disableBossReminderToday"/>-->
-    <!--      </label>-->
-    <!--    </div>-->
+    <div class="settings-table__cell">Прекратить напоминание о полевом боссе на сегодня</div>
+    <div class="settings-table__cell">
+      <label class="custom-label">
+        <input type="checkbox" id="disableBossReminderToday" v-model="disableBossReminderToday"/>
+      </label>
+    </div>
 
-    <!--    <div class="settings-table__cell">Скрыть напоминание о разломе сегодня</div>-->
-    <!--    <div class="settings-table__cell">-->
-    <!--      <label class="custom-label">-->
-    <!--        <input type="checkbox" id="disableChaosReminderToday" v-model="disableChaosReminderToday"/>-->
-    <!--      </label>-->
-    <!--    </div>-->
+    <div class="settings-table__cell">Прекратить напоминание о разломе на сегодня</div>
+    <div class="settings-table__cell">
+      <label class="custom-label">
+        <input type="checkbox" id="disableChaosReminderToday" v-model="disableChaosReminderToday"/>
+      </label>
+    </div>
 
     <div class="settings-table__cell">Изменить путь сохранения настроек</div>
     <div class="settings-table__cell">
@@ -173,9 +184,8 @@ function changeTheme(newTheme) {
 
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
-      <button type="button" id="update-app" class="button" data-current-version="v0.10-alpha" @click="updateApp">
-        Обновить
-        приложение
+      <button type="button" id="update-app" class="button" data-current-version="alpha-0.10" @click="updateApp">
+        Обновить приложение
       </button>
     </div>
   </div>

@@ -55,37 +55,37 @@ const decrement = (charName, col) => {
 };
 
 const saveCubesSettings = () => {
-  saveSettings({ cubesSettings: cubesSettings.value });
+  saveSettings({cubesSettings: cubesSettings.value});
 };
 </script>
 
 <template>
-  <div id="character-table">
-    <div class="character-table__settings">
+  <div id="cubes-table">
+    <div class="cubes-table__settings">
       <label
           v-for="col in columnNames"
           :key="col"
-          class="character-table__settings-item custom-label"
+          class="cubes-table__settings-item custom-label"
       >
         Вкл. {{ col }}
         <input
             type="checkbox"
             v-model="cubesSettings[col]"
             :data-name="col"
-            class="character-table__settings-input"
+            class="cubes-table__settings-input"
             @change="saveCubesSettings"
         />
       </label>
     </div>
 
     <share-snippet>
-      <div class="character-table">
-        <div class="character-table__row">
-          <div class="character-table__cell character-table__cell_name">Персонаж</div>
+      <div class="cubes-table">
+        <div class="cubes-table__row">
+          <div class="cubes-table__cell cubes-table__cell_name">Персонаж</div>
           <div
               v-for="col in columnNames"
               :key="col"
-              class="character-table__cell"
+              class="cubes-table__cell"
               :data-cube="col"
               v-show="cubesSettings[col]"
           >
@@ -96,12 +96,12 @@ const saveCubesSettings = () => {
         <div
             v-for="char in filteredCharacters"
             :key="char.name"
-            class="character-table__row"
+            class="cubes-table__row"
         >
           <div
-              class="character-table__cell character-table__cell_name"
-              :class="{'character-table_support': isSupport(char.className),
-            'character-table_dd': !isSupport(char.className)}"
+              class="cubes-table__cell cubes-table__cell_name"
+              :class="{'cubes-table_support': isSupport(char.className),
+            'cubes-table_dd': !isSupport(char.className)}"
           >
             {{ char.name }}
           </div>
@@ -109,18 +109,18 @@ const saveCubesSettings = () => {
           <div
               v-for="col in columnNames"
               :key="col"
-              class="character-table__cell"
+              class="cubes-table__cell"
               :data-cube="col"
               v-show="cubesSettings[col]"
           >
             <input
-                class="character-table__input"
+                class="cubes-table__input"
                 type="number"
                 min="0"
                 :value="getCellValue(char.name, col)"
                 @input="e => updateValue(char.name, col, e.target.value)"
             />
-            <div class="character-table__controls">
+            <div class="cubes-table__controls">
               <button class="button button_control btn-minus" @click="decrement(char.name, col)">-</button>
               <button class="button button_control btn-plus" @click="increment(char.name, col)">+</button>
             </div>
@@ -132,5 +132,77 @@ const saveCubesSettings = () => {
 </template>
 
 <style scoped lang="scss">
+.cubes-table__settings {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  font-size: var(--font-very-small);
+}
 
+.cubes-table {
+  border: 1px solid var(--grey);
+  box-shadow: var(--shadow);
+  border-radius: 8px;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.cubes-table__row {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--grey);
+  justify-content: space-between;
+  overflow: auto;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:nth-child(even) {
+    background-color: var(--dark-grey);
+  }
+}
+
+.cubes-table__cell {
+  width: 60px;
+  border-right: 1px solid var(--grey);
+  padding: 0 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-small);
+  flex: auto;
+
+  &:first-child {
+    min-width: 140px;
+    max-width: 30%;
+  }
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.cubes-table__input {
+  width: 50px;
+}
+
+.cubes-table__controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  gap: 5px;
+}
+
+.cubes-table_dd {
+  color: var(--dd);
+}
+
+.cubes-table_support {
+  color: var(--support);
+}
 </style>

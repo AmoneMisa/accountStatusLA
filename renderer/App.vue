@@ -347,7 +347,7 @@ function changeTab(tab) {
   --support: #48CAE4;
   --dd: #ADE8F4;
   --gs: #CAF0F8;
-  --shadow: 0px 4px 10px rgba(13, 27, 42, 0.4);
+  --shadow: 0px 4px 10px rgb(0 123 255 / 40%);
   --inner-shadow: inset 0 0 10px rgba(119, 141, 169, 0.35);
 }
 
@@ -436,6 +436,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  pointer-events: none;
 
   &.active {
     opacity: 1;

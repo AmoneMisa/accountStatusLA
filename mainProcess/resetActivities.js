@@ -1,7 +1,7 @@
 import {
     getCharactersSettings,
     getLastResetDaily,
-    getLastResetWeekly,
+    getLastResetWeekly, loadSettings, saveSettings,
     setCharactersSettings,
     setLastResetDaily,
     setLastResetWeekly
@@ -76,4 +76,9 @@ export function resetDailyActivities(DateTime) {
     });
 
     setCharactersSettings(charSettings);
+
+    const settings = loadSettings();
+    settings.disableBossReminderToday = false;
+    settings.disableChaosReminderToday = false;
+    saveSettings(settings);
 }

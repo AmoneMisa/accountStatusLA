@@ -7,7 +7,7 @@ const props = defineProps({
   isEditMode: Boolean
 });
 
-const emit = defineEmits({'updateCharacter': String, 'showRaidSelector': String});
+const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String});
 let settings = inject('settings');
 const characterSettings = computed(() => settings.value.characterSettings?.[props.character.name]);
 const isSupport = ['Художница', 'Менестрель', 'Паладин'].includes(props.character.className);
@@ -26,7 +26,7 @@ function toggleIcon(icon, statusTitle) {
         [statusTitle]: !characterSettings.value[statusTitle]
       }
     }});
-  emit('updateCharacter');
+  emit('updateCharacter', props.character.name);
 }
 
 function toggleRaidStatus(raid) {
@@ -43,7 +43,7 @@ function toggleRaidStatus(raid) {
         }
       }
     }});
-  emit('updateCharacter');
+  emit('updateCharacter', props.character.name);
 }
 
 function removeRaid(raid) {
@@ -60,7 +60,7 @@ function removeRaid(raid) {
           }
         }
       }});
-    emit('updateCharacter');
+    emit('updateCharacter', props.character.name);
   }
 }
 </script>
@@ -154,41 +154,35 @@ function removeRaid(raid) {
     margin-bottom: 10px;
     width: 100%;
     text-align: center;
-    font-size:  var(--font-very-small);
-  }
-}
-
-.character:not(.view-mode) .character__icons {
-  display: flex;
-  flex-direction: row;
-}
-
-.character_support.view-mode .character__info div:last-child {
-  color: var(--support);
-  font-family: Caveat, serif;
-  font-size:  var(--font-body);;
-}
-
-.character_dd.view-mode .character__info div:last-child {
-  color: var(--dd);
-  font-family: Caveat, serif;
-  font-size:  var(--font-body);;
-}
-
-.character:hover {
-  background-color: var(--grey);
-}
-
-@media screen and (min-width: 981px) {
-  .character__cell:not(:last-child) {
-    border-right: 2px solid var(--grey);
+    font-size: var(--font-very-small);
   }
 
-  .character:hover .character__cell:not(:last-child) {
+  &:not(.view-mode) .character__icons {
+    display: flex;
+    flex-direction: row;
+  }
+
+  &.character_support.view-mode .character__info div:last-child {
+    color: var(--support);
+    font-family: Caveat, serif;
+    font-size: var(--font-body);
+  }
+
+  &.character_dd.view-mode .character__info div:last-child {
+    color: var(--dd);
+    font-family: Caveat, serif;
+    font-size: var(--font-body);
+  }
+
+  &:hover {
+    background-color: var(--grey);
+  }
+
+  &:hover .character__cell:not(:last-child) {
     border-right: 2px solid var(--dark-grey);
   }
 
-  .character:hover .character__cell:not(:last-child) .raid {
+  &:hover .character__cell:not(:last-child) .raid {
     border-right: 1px solid var(--dark-grey);
   }
 }
@@ -197,6 +191,10 @@ function removeRaid(raid) {
   display: flex;
   min-width: 20px;
   padding: 0 10px;
+
+  &:not(:last-child) {
+    border-right: 2px solid var(--grey);
+  }
 }
 
 .character__drag {
@@ -236,7 +234,7 @@ function removeRaid(raid) {
 .raid__header {
   min-width: 80px;
   width: max-content;
-  font-size:  var(--font-very-small);
+  font-size: var(--font-very-small);
   display: flex;
   align-items: center;
 }
@@ -250,240 +248,10 @@ function removeRaid(raid) {
   color: var(--gs);
 }
 
-.save-button {
-  margin-top: 20px;
-  margin-left: auto;
-}
-
-.refresh-characters {
-  margin-right: 5px;
-}
-
-.controls {
-  display: flex;
-  justify-content: space-between;
-}
-
-.raid-selector {
-  border-radius: 5px;
-  width: 300px;
-  height: 350px;
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  background-color: var(--black);
-  color: var(--white);
-  padding: 20px;
-  margin: auto;
-}
-
-.raid-selector .cross {
-  top: 0;
-  right: 0;
-}
-
-.raid-selector__label {
-  font-size:  var(--font-tiny);
-}
-
-.raid-selector__label i {
-  font-style: normal;
-  font-family: Caveat, serif;
-  color: var(--gold);
-  font-size:  var(--font-body);;
-}
-
-.raid-selector__select {
-  height: 200px;
-  margin-top: 10px;
-}
-
-.character-table {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.character-table__settings {
-  display: flex;
-  flex-wrap: wrap;
-  font-size:  var(--font-small);
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.character-table__row {
-  display: flex;
-  align-items: center;
-  width: fit-content;
-  border-bottom: 1px solid var(--grey);
-  border-left: 1px solid var(--grey);
-  border-right: 1px solid var(--grey);
-  margin: auto;
-  box-shadow: var(--shadow);
-}
-
-.character-table__row:first-child {
-  border-top: 1px solid var(--grey);
-  border-radius: 3px 3px 0 0;
-}
-
-.character-table__row:nth-child(even) .character-table__cell {
-  background-color: var(--middle-grey);
-}
-
-.character-table__cell {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  padding: 8px;
-  height: 60px;
-}
-
-.character-table__cell:last-child {
-  border-right: 1px solid var(--grey);
-}
-
-.character-table__cell:not(:last-child) {
-  border-right: 1px solid var(--grey);
-}
-
-.character-table__cell_name {
-  width: 240px;
-  flex: none;
-}
-
-.character-table__input {
-  width: 50px;
-  margin-bottom: 5px;
-}
-
-.character-table__controls {
-  display: flex;
-  gap: 5px;
-}
-
-.character-table_support {
-  color: var(--support);
-}
-
-.character-table_dd {
-  color: var(--dd);
-}
-
-@media screen and (max-width: 980px) {
-  .character.view-mode {
-    display: grid;
-    grid-template-areas: "grab icons info"
-                             "raid1 raid2 raid3"
-                             "plus plus plus ";
-    gap: 0;
-    margin-bottom: 0;
-  }
-
-  .character__raids {
-    display: grid;
-    grid-template-areas: "a b";
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    grid-column: 1 / -1;
-    gap: 0;
-    border-top: 1px solid var(--grey);
-    border-bottom: 1px solid var(--grey);
-    padding: 0;
-  }
-
-  .raid__header {
-    min-width: initial;
-    width: auto;
-  }
-
-  .character__drag {
-    border-left: 1px solid var(--grey);
-    justify-content: center;
-    width: -webkit-fill-available;
-    padding: 0 5px;
-  }
-
-  .character__info {
-    border-right: 1px solid var(--grey);
-    grid-area: info;
-  }
-
-  .character__icons {
-    flex-wrap: wrap;
-    height: -webkit-fill-available;
-    border-right: 1px solid var(--grey);
-    border-left: 1px solid var(--grey);
-    grid-area: icons;
-  }
-
-  .character__actions {
-    grid-area: plus;
-    margin: auto;
-  }
-
-  .add-raid {
-    border-radius: 0;
-    width: -webkit-fill-available;
-    grid-column: 1 / -1;
-    justify-content: center;
-  }
-
-  .raid {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    align-items: center;
-    border-right: 1px solid var(--grey);
-    border-bottom: 1px solid var(--grey);
-  }
-
-  .raid:nth-child(odd) {
-    border-left: 1px solid var(--grey);
-  }
-
-  .character:hover .character__info,
-  .character:hover .character__icons,
-  .character:hover .raid {
-    border-right: 1px solid var(--dark-grey);
-  }
-
-  .character:hover .character__drag,
-  .character:hover .raid:nth-child(odd),
-  .character:hover .character__icons {
-    border-left: 1px solid var(--dark-grey);
-  }
-
-  .character:hover .character__raids {
-    border-top: 1px solid var(--dark-grey);
-  }
-
-  .character:hover .raid,
-  .character:hover .character__raids {
-    border-bottom: 1px solid var(--dark-grey);
-  }
-}
-
-@media screen and (max-width: 750px) {
-  .character__raids {
-    grid-template-areas: "a b";
-  }
-}
-
-
 .grid {
   .character {
     display: grid;
-    grid-template-areas: "grab icons info"
-                             "raid1 raid2 raid3"
-                             "plus plus plus ";
+    grid-template-areas: "grab icons info" "raid1 raid2 raid3" "plus plus plus";
     gap: 0;
     margin-bottom: 0;
   }
@@ -496,6 +264,8 @@ function removeRaid(raid) {
     gap: 0;
     border-top: 1px solid var(--grey);
     border-bottom: 1px solid var(--grey);
+    border-left: 1px solid var(--grey);
+    border-right: 1px solid var(--grey);
     padding: 0;
   }
 
@@ -542,38 +312,39 @@ function removeRaid(raid) {
     justify-content: space-between;
     flex-direction: column;
     align-items: center;
-    border-right: 1px solid var(--grey);
     border-bottom: 1px solid var(--grey);
+
+    &:nth-child(odd) {
+      border-left: 1px solid var(--grey);
+    }
+
+    &:last-child:only-child {
+      grid-column: 1 / -1;
+    }
   }
 
-  .raid:nth-child(odd) {
-    border-left: 1px solid var(--grey);
-  }
+  .character:hover {
+    .character__info,
+    .character__icons {
+      border-right: 1px solid var(--dark-grey);
+    }
 
-  .character:hover .character__info,
-  .character:hover .character__icons,
-  .character:hover .raid {
-    border-right: 1px solid var(--dark-grey);
-  }
+    .character__drag,
+    .character__icons {
+      border-left: 1px solid var(--dark-grey);
+    }
 
-  .character:hover .character__drag,
-  .character:hover .raid:nth-child(odd),
-  .character:hover .character__icons {
-    border-left: 1px solid var(--dark-grey);
-  }
-
-  .character:hover .character__raids {
-    border-top: 1px solid var(--dark-grey);
-  }
-
-  .character:hover .raid,
-  .character:hover .character__raids {
-    border-bottom: 1px solid var(--dark-grey);
-  }
-
-  @media screen and (max-width: 750px) {
     .character__raids {
-      grid-template-areas: "a b";
+      border-top: 1px solid var(--dark-grey);
+      border-bottom: 1px solid var(--dark-grey);
+    }
+
+    .raid {
+      border-bottom: 1px solid var(--dark-grey);
+    }
+
+    .raid:nth-child(odd) {
+      border-left: 1px solid var(--dark-grey);
     }
   }
 }

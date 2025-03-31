@@ -66,17 +66,9 @@ app.on('ready', async () => {
         resetDailyActivities(DateTime);
     });
 
-    // cron.schedule('0 3 * * *', () => {
-    //     resetWeeklyActivities(DateTime);
-    //     resetDailyActivities(DateTime);
-    // });
     schedule.scheduleJob('* * * * *', () => {
         resetDailyActivities(DateTime);
     });
-    //
-    // cron.schedule('* * * * *', () => {
-    //     resetDailyActivities(DateTime);
-    // });
 
     const settings = loadSettings();
     applySettings(settings);
@@ -255,7 +247,7 @@ ipcMain.handle('check-for-updates', async (event) => {
             response.on('end', async () => {
                 try {
                     const releaseData = JSON.parse(rawData);
-                    const latestVersion = releaseData.tag_name;
+                    const latestVersion = releaseData.name;
                     const assets = releaseData.assets;
 
                     // Ищем .exe в релизе
