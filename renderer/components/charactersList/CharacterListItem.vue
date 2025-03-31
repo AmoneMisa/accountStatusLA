@@ -145,22 +145,22 @@ function removeRaid(raid) {
   padding: 16px;
   max-width: -webkit-fill-available;
   box-shadow: var(--shadow);
+
+  &.view-mode {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size:  var(--font-very-small);
+  }
 }
 
 .character:not(.view-mode) .character__icons {
   display: flex;
   flex-direction: row;
-}
-
-.character.view-mode {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
-  margin-bottom: 10px;
-  width: 100%;
-  text-align: center;
-  font-size:  var(--font-very-small);
 }
 
 .character_support.view-mode .character__info div:last-child {
@@ -474,6 +474,107 @@ function removeRaid(raid) {
 @media screen and (max-width: 750px) {
   .character__raids {
     grid-template-areas: "a b";
+  }
+}
+
+
+.grid {
+  .character {
+    display: grid;
+    grid-template-areas: "grab icons info"
+                             "raid1 raid2 raid3"
+                             "plus plus plus ";
+    gap: 0;
+    margin-bottom: 0;
+  }
+
+  .character__raids {
+    display: grid;
+    grid-template-areas: "a b";
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-column: 1 / -1;
+    gap: 0;
+    border-top: 1px solid var(--grey);
+    border-bottom: 1px solid var(--grey);
+    padding: 0;
+  }
+
+  .raid__header {
+    min-width: initial;
+    width: auto;
+  }
+
+  .character__drag {
+    border-left: 1px solid var(--grey);
+    justify-content: center;
+    width: -webkit-fill-available;
+    padding: 0 5px;
+  }
+
+  .character__info {
+    border-right: 1px solid var(--grey);
+    grid-area: info;
+  }
+
+  .character__icons {
+    flex-wrap: wrap;
+    height: -webkit-fill-available;
+    border-right: 1px solid var(--grey);
+    border-left: 1px solid var(--grey);
+    grid-area: icons;
+  }
+
+  .character__actions {
+    grid-area: plus;
+    margin: auto;
+  }
+
+  .add-raid {
+    border-radius: 0;
+    width: -webkit-fill-available;
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+
+  .raid {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    border-right: 1px solid var(--grey);
+    border-bottom: 1px solid var(--grey);
+  }
+
+  .raid:nth-child(odd) {
+    border-left: 1px solid var(--grey);
+  }
+
+  .character:hover .character__info,
+  .character:hover .character__icons,
+  .character:hover .raid {
+    border-right: 1px solid var(--dark-grey);
+  }
+
+  .character:hover .character__drag,
+  .character:hover .raid:nth-child(odd),
+  .character:hover .character__icons {
+    border-left: 1px solid var(--dark-grey);
+  }
+
+  .character:hover .character__raids {
+    border-top: 1px solid var(--dark-grey);
+  }
+
+  .character:hover .raid,
+  .character:hover .character__raids {
+    border-bottom: 1px solid var(--dark-grey);
+  }
+
+  @media screen and (max-width: 750px) {
+    .character__raids {
+      grid-template-areas: "a b";
+    }
   }
 }
 </style>

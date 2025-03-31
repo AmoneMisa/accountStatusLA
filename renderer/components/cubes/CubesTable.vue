@@ -1,6 +1,7 @@
 <script setup>
 import {computed, inject, reactive, ref} from 'vue';
 import {saveSettings} from '../../../utils/utils.js';
+import ShareSnippet from "@/components/utils/ShareSnippet.vue";
 
 const columnNames = ['3.1', '3.2', '3.3', '3.4', '3.5', '4.1', '4.2'];
 
@@ -77,54 +78,56 @@ const saveCubesSettings = () => {
       </label>
     </div>
 
-    <div class="character-table">
-      <div class="character-table__row">
-        <div class="character-table__cell character-table__cell_name">Персонаж</div>
-        <div
-            v-for="col in columnNames"
-            :key="col"
-            class="character-table__cell"
-            :data-cube="col"
-            v-show="cubesSettings[col]"
-        >
-          {{ col }}
+    <share-snippet>
+      <div class="character-table">
+        <div class="character-table__row">
+          <div class="character-table__cell character-table__cell_name">Персонаж</div>
+          <div
+              v-for="col in columnNames"
+              :key="col"
+              class="character-table__cell"
+              :data-cube="col"
+              v-show="cubesSettings[col]"
+          >
+            {{ col }}
+          </div>
         </div>
-      </div>
 
-      <div
-          v-for="char in filteredCharacters"
-          :key="char.name"
-          class="character-table__row"
-      >
         <div
-            class="character-table__cell character-table__cell_name"
-            :class="{'character-table_support': isSupport(char.className),
+            v-for="char in filteredCharacters"
+            :key="char.name"
+            class="character-table__row"
+        >
+          <div
+              class="character-table__cell character-table__cell_name"
+              :class="{'character-table_support': isSupport(char.className),
             'character-table_dd': !isSupport(char.className)}"
-        >
-          {{ char.name }}
-        </div>
+          >
+            {{ char.name }}
+          </div>
 
-        <div
-            v-for="col in columnNames"
-            :key="col"
-            class="character-table__cell"
-            :data-cube="col"
-            v-show="cubesSettings[col]"
-        >
-          <input
-              class="character-table__input"
-              type="number"
-              min="0"
-              :value="getCellValue(char.name, col)"
-              @input="e => updateValue(char.name, col, e.target.value)"
-          />
-          <div class="character-table__controls">
-            <button class="button button_control btn-minus" @click="decrement(char.name, col)">-</button>
-            <button class="button button_control btn-plus" @click="increment(char.name, col)">+</button>
+          <div
+              v-for="col in columnNames"
+              :key="col"
+              class="character-table__cell"
+              :data-cube="col"
+              v-show="cubesSettings[col]"
+          >
+            <input
+                class="character-table__input"
+                type="number"
+                min="0"
+                :value="getCellValue(char.name, col)"
+                @input="e => updateValue(char.name, col, e.target.value)"
+            />
+            <div class="character-table__controls">
+              <button class="button button_control btn-minus" @click="decrement(char.name, col)">-</button>
+              <button class="button button_control btn-plus" @click="increment(char.name, col)">+</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </share-snippet>
   </div>
 </template>
 
