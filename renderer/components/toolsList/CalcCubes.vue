@@ -1,5 +1,6 @@
 <script setup>
 import {ref} from "vue";
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 const cubes = [{
   text: "Ур. 1 т.4",
@@ -90,10 +91,12 @@ function clear() {
 
 <template>
   <div class="tools-container__item calc-cubes" id="calc-cubes">
-    <div class="tools-container__item-name tooltip"
-         data-tooltip="Количество кубов рассчитывается без учёта возможных бонусных комнат">
+    <tooltip>
+    <div class="tools-container__item-name">
       Рассчитать количество кубов
     </div>
+      <template #tooltip>Количество кубов рассчитывается без учёта возможных бонусных комнат</template>
+    </tooltip>
     <div class="tools-container__item-content">
       <div>
         <label class="tools-container__item-label">

@@ -3,6 +3,7 @@ import CharacterListItem from "@/components/charactersList/CharacterListItem.vue
 import draggable from 'vuedraggable';
 import ShareSnippet from "@/components/utils/ShareSnippet.vue";
 import {ref} from "vue";
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 const emit = defineEmits({'showRaidSelector': String, "dragEnd": Array});
 
@@ -26,7 +27,12 @@ window.addEventListener("resize", () => {
 </script>
 
 <template>
-  <h1 class="title character-list__title"><span>Список персонажей</span>  <button class="button button_icon tooltip" data-tooltip="Изменить отображение" @click="isGridView = !isGridView">🔷</button></h1>
+  <h1 class="title character-list__title"><span>Список персонажей</span>
+    <tooltip>
+      <button class="button button_icon" @click="isGridView = !isGridView">🔷</button>
+      <template #tooltip>Изменить отображение</template>
+    </tooltip>
+  </h1>
   <share-snippet>
     <div id="character-list" class="character-list" :class="{'edit-mode': isEditMode, 'grid': isGridView || windowWidth < 980}">
       <draggable

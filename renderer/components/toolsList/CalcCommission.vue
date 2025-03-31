@@ -1,4 +1,6 @@
 <script setup>
+import Tooltip from "@/components/utils/Tooltip.vue";
+
 let desiredAmountValue;
 
 function calc() {
@@ -19,9 +21,11 @@ function calc() {
 
 <template>
   <div class="tools-container__item" id="calc-commission">
-    <div class="tools-container__item-name tooltip"
-         data-tooltip="Расчёт суммы для перевода с учётом комиссии 5%">Калькулятор комиссии перевода
+    <tooltip>
+    <div class="tools-container__item-name">Калькулятор комиссии перевода
     </div>
+      <template #tooltip>Расчёт суммы для перевода с учётом комиссии 5%</template>
+    </tooltip>
     <div class="tools-container__item-content">
       <label class="tools-container__item-label">
         Сумма, которую должен получить получатель:

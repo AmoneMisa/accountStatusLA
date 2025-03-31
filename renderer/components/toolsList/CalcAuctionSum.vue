@@ -1,5 +1,6 @@
 <script setup>
 import {ref} from "vue";
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 let bid = ref(0);
 let players = ref(3);
@@ -32,10 +33,12 @@ function calc() {
 
 <template>
   <div class="tools-container__item calc-auction-sum" id="calc-auction-sum">
-    <div class="tools-container__item-name tooltip"
-         data-tooltip="Подсчёт суммы, которую получит каждый член группы при чьей-то покупке на аукционе">
+    <tooltip>
+    <div class="tools-container__item-name">
       Выгода на человека при покупке на аукционе
     </div>
+      <template #tooltip>Подсчёт суммы, которую получит каждый член группы при чьей-то покупке на аукционе</template>
+    </tooltip>
     <label class="tools-container__item-label">
       Количество участников (без учёта себя)
       <input type="number" min="3" max="30"

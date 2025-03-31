@@ -1,6 +1,7 @@
 <script setup>
 import html2canvas from 'html2canvas';
 import {ref} from 'vue';
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 const targetRef = ref(null);
 
@@ -11,18 +12,21 @@ async function capture() {
     navigator.clipboard.write([item]).then(() => {
       document.querySelector("#message").innerText = "Скриншот скопирован в буфер обмена";
       document.querySelector("#message").classList.add("active");
-      setTimeout(() =>   document.getElementById("message").classList.remove("active"), 3500);
+      setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
     });
   });
 }
 </script>
 
 <template>
-  <div class="share-snippet" >
+  <div class="share-snippet">
     <div ref="targetRef">
-      <slot />
+      <slot/>
     </div>
-    <button class="button button_icon share-snippet__button tooltip" data-tooltip="Поделиться" @click="capture">✉️</button>
+    <tooltip>
+      <button class="button button_icon share-snippet__button" @click="capture">✉️</button>
+      <template #tooltip>Поделиться</template>
+    </tooltip>
   </div>
 </template>
 

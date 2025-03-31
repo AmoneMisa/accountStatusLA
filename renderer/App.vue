@@ -652,34 +652,6 @@ input[type=number]::-webkit-inner-spin-button {
   display: block;
 }
 
-.tooltip {
-  position: relative;
-  cursor: pointer;
-}
-
-.tooltip::after {
-  content: attr(data-tooltip); /* Берем текст из data-tooltip */
-  font-family: Arial, sans-serif;
-  position: absolute;
-  bottom: 120%; /* Поднимаем выше элемента */
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--black);
-  color: var(--white);
-  padding: 5px 8px;
-  border-radius: 5px;
-  font-size:  var(--font-tiny);
-  white-space: wrap;
-  opacity: 0;
-  transition: opacity 0.5s;
-  pointer-events: none; /* Чтоб не мешал клику */
-  z-index: 1;
-}
-
-.tooltip:hover::after {
-  opacity: 1;
-}
-
 .hidden {
   display: none;
 }
@@ -706,7 +678,6 @@ input[type=number]::-webkit-inner-spin-button {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--light-grey);
 }
-
 
 .popup {
   border-radius: 5px;

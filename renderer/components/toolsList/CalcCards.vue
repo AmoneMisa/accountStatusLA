@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue';
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 const cardCount = ref(0);
 const cardInputs = ref([]);
@@ -48,10 +49,12 @@ const resultHTML = ref('');
 
 <template>
   <div class="tools-container__item calc-cards">
-    <div class="tools-container__item-name tooltip"
-         data-tooltip="Подсчёт количества карт, которые необходимо дособирать для получения 30-й колоды">
+    <tooltip>
+    <div class="tools-container__item-name">
       Расчёт недостающих карт в колоде
     </div>
+      <template #tooltip>Подсчёт количества карт, которые необходимо дособирать для получения 30-й колоды</template>
+    </tooltip>
 
     <label class="tools-container__item-label">
       Количество карт в колоде (от 2 до 6)

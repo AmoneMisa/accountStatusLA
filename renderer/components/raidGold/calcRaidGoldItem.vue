@@ -1,5 +1,6 @@
 <script setup>
 import CalcRaidGoldRaidItem from "@/components/raidGold/calcRaidGoldRaidItem.vue";
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 const props = defineProps({
   characterSettings: Object,
@@ -25,7 +26,10 @@ function toggleGoldCharacter(button, characterName) {
 
 <template>
   <div class="calc-raid-gold__item" v-if="!characterSettings.delete">
-    <div class="calc-raid-gold__title">{{ character.name }} <button class="button button_icon tooltip" data-tooltip="Убрать персонажа из общего расчёта золота" @click="(button) => toggleGoldCharacter(button, character.name)">❌</button></div>
+    <tooltip>
+    <div class="calc-raid-gold__title">{{ character.name }} <button class="button button_icon" @click="(button) => toggleGoldCharacter(button, character.name)">❌</button></div>
+      <template #tooltip>Убрать персонажа из общего расчёта золота</template>
+    </tooltip>
     <calc-raid-gold-raid-item v-for="raid in getCompletedRaids()" :key="raid" :raid="raid" :character="character"/>
   </div>
 </template>

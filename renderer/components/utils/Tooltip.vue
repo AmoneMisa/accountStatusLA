@@ -17,16 +17,15 @@ function updatePosition() {
   let top = rect.top - tooltipRect.height - 6;
   let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
 
-  // если вылазит за левый край
-  if (left < 4) left = 4;
+  if (left < 4) {
+    left = 4;
+  }
 
-  // если вылазит за правый край
   const rightEdge = left + tooltipRect.width;
   if (rightEdge > window.innerWidth - 4) {
     left = window.innerWidth - tooltipRect.width - 4;
   }
 
-  // если не хватает места сверху — показываем снизу
   if (top < 4) {
     top = rect.bottom + 6;
   }

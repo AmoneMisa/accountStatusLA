@@ -1,5 +1,6 @@
 <script setup>
 import {ref} from "vue";
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 let auctionBet = ref(0);
 
@@ -20,10 +21,14 @@ function calc() {
 
 <template>
   <div class="tools-container__item calc-bet" id="calc-bet">
-    <div class="tools-container__item-name tooltip"
-         data-tooltip="Стоимость рассчитывается, беря за основу 15% прибыли от продажи предмета на ауке, с вычетом комиссии">
+    <tooltip>
+    <div class="tools-container__item-name">
       Рассчитать оптимальную ставку для аукциона
     </div>
+      <template #tooltip>Стоимость рассчитывается, беря за основу 15% прибыли от продажи предмета на ауке, с вычетом
+        комиссии
+      </template>
+    </tooltip>
     <div class="tools-container__item-content">
       <label class="tools-container__item-label">
         Стоимость на аукционе
