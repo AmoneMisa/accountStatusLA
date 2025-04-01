@@ -1,20 +1,28 @@
 <script setup>
 import CharacterList from "@/components/charactersList/CharacterList.vue";
 import NickName from "@/components/charactersList/NickName.vue";
+import RaidSelector from "@/components/charactersList/RaidSelector.vue";
 import {computed, inject, ref} from "vue";
 import {saveSettings} from "../../../utils/utils.js";
-import RaidSelector from "@/components/charactersList/RaidSelector.vue";
 
 let settings = inject('settings');
-let nickname = computed({
+let isShowLoader = inject('isShowLoader');
+
+const isEditMode = ref(false);
+const isShowRaidSelector = ref(false);
+const currentChosenCharacter = ref({});
+
+const nickname = computed({
   get: () => settings.value?.nickname,
   set: (newValue) => settings.value.nickname = newValue
 });
-let characterList = computed(() => settings.value?.characterList || []);
-let characterSettings = computed(() => settings.value?.characterSettings);
-let isShowRaidSelector = ref(false);
-const isEditMode = ref(false);
-const currentChosenCharacter = ref({});
+
+const characterList = computed(() => settings.value?.characterList || []);
+const characterSettings = computed(() => settings.value?.characterSettings || {});
+
+function toggleEditCharacters() {
+  isEditMode.value = !isEditMode.value;
+}
 
 async function saveNickname(newNickname) {
   isEditMode.value = false;
@@ -26,10 +34,9 @@ async function refreshCharacters() {
   await loadCharacters(nickname.value);
 }
 
-let isShowLoader = inject('isShowLoader');
 async function loadCharacters(nickname) {
   const container = document.getElementById('character-list');
-  isShowLoader.value  = true;
+  isShowLoader.value = true;
 
   const result = await window.electron.ipcRenderer.fetchCharacters(nickname);
 
@@ -42,37 +49,19 @@ async function loadCharacters(nickname) {
 
   let filteredCharacters = new Map();
   [...characterList.value, ...result].forEach(char => {
-    if (!isValidCharacter(char)) {
-      return;
-    }
+    if (!isValidCharacter(char)) return;
 
     const existingChar = filteredCharacters.get(char.name);
+    const newGS = parseFloat(char.gearScore.replace(',', ''));
+    const oldGS = existingChar ? parseFloat(existingChar.gearScore.replace(',', '')) : 0;
 
-    if (!existingChar || parseFloat(char.gearScore.replace(',', '')) > parseFloat(existingChar.gearScore.replace(',', ''))) {
+    if (!existingChar || newGS > oldGS) {
       filteredCharacters.set(char.name, char);
     }
   });
 
   saveCharacterList(Array.from(filteredCharacters.values()));
   isShowLoader.value = false;
-}
-
-function toggleEditCharacters() {
-  isEditMode.value = !isEditMode.value;
-}
-
-function saveCharacters(characterNickname, key, value) {
-  saveSettings({
-    characterSettings: {
-      ...characterSettings.value,
-      [characterNickname]: {
-        ...characterSettings.value[characterNickname] || {},
-        [key]: value
-      }
-    }
-  });
-
-  isEditMode.value = false;
 }
 
 function showRaidSelector(characterName) {
@@ -83,21 +72,62 @@ function showRaidSelector(characterName) {
 function saveCharacterList(newCharacterList) {
   saveSettings({characterList: newCharacterList});
 }
+
+function saveCharacters() {
+  saveSettings({
+    characterSettings: characterSettings.value,
+    characterList: characterList.value
+  });
+  isEditMode.value = false;
+}
+
+function onDragEnd(flatList) {
+  const updatedSettings = {...characterSettings.value};
+
+  flatList.forEach(char => {
+    if (!updatedSettings[char.name]) updatedSettings[char.name] = {};
+  });
+
+  saveSettings({
+    characterList: flatList,
+    characterSettings: updatedSettings
+  });
+}
 </script>
 
 <template>
-  <nick-name v-model="nickname" @save-nickname="saveNickname"
-             @refresh-characters="refreshCharacters"
-             @edit-characters="toggleEditCharacters"
-             @edit-nickname="isEditMode = true"
-             :is-edit-mode="isEditMode"/>
-  <character-list :characterList="characterList"
-                  :is-edit-mode="isEditMode"
-                  @show-raid-selector="showRaidSelector"
-                  @dragEnd="saveCharacterList"/>
-  <button id="save-button" class="button save-button" v-show="isEditMode" @click="saveCharacters">Сохранить</button>
-  <raid-selector v-show="isShowRaidSelector" @save="isShowRaidSelector = false" :character-name="currentChosenCharacter"
-                 @close="isShowRaidSelector = false"/>
+  <nick-name
+      v-model="nickname"
+      @save-nickname="saveNickname"
+      @refresh-characters="refreshCharacters"
+      @edit-characters="toggleEditCharacters"
+      @edit-nickname="isEditMode = true"
+      :is-edit-mode="isEditMode"
+  />
+
+  <character-list
+      :characterList="characterList"
+      :characterSettings="characterSettings"
+      :is-edit-mode="isEditMode"
+      @show-raid-selector="showRaidSelector"
+      @dragEnd="onDragEnd"
+  />
+
+  <button
+      id="save-button"
+      class="button save-button"
+      v-show="isEditMode"
+      @click="saveCharacters"
+  >
+    Сохранить
+  </button>
+
+  <raid-selector
+      v-show="isShowRaidSelector"
+      @save="isShowRaidSelector = false"
+      :character-name="currentChosenCharacter"
+      @close="isShowRaidSelector = false"
+  />
 </template>
 
 <style scoped lang="scss">
