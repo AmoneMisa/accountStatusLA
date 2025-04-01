@@ -5,11 +5,10 @@ const props = defineProps({
   isEditMode: false
 })
 
-const emit = defineEmits(['refresh-characters', 'edit-characters', 'save-nickname']);
+const emit = defineEmits(['refresh-characters', 'edit-characters', 'save-nickname', 'edit-nickname']);
 
 function saveNickname(newNickname) {
   emit('save-nickname', newNickname);
-  props.isEditMode.value = false;
 }
 
 const model = defineModel();
@@ -18,6 +17,7 @@ function editCharacters() {
   if (props.isEditMode.value) {
     return;
   }
+
   emit('edit-characters');
 }
 </script>
@@ -35,7 +35,7 @@ function editCharacters() {
       </tooltip>
       <tooltip>
         <button type="button" id="edit-nickname" class="button button_icon nickname-block__button"
-                v-show="!isEditMode" @click="isEditMode = true">✏️
+                v-show="!isEditMode" @click="$emit('edit-nickname')">✏️
         </button>
         <template #tooltip>Редактировать ник</template>
       </tooltip>

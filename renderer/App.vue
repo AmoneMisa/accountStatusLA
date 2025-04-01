@@ -12,23 +12,23 @@ import CalcRaidGoldTab from "@/components/raidGold/calcRaidGoldTab.vue";
 import FAQTab from "@/components/FAQ/FAQTab.vue";
 
 const tabButtonsList = [
-    {
-  data: "main", name: "Активности"
-}, {
-  data: "table", name: "Кубы"
-}, {
-  data: "check-list", name: "Чек-лист"
-}, {
-  data: "notification", name: "Уведомления"
-}, {
-  data: "tools", name: "Инструменты"
-}, {
-  data: "calc-raid-gold", name: "Золото с рейдов"
-}, {
-  data: "FAQ", name: "FAQ"
-}, {
-  data: "settings", name: "Настройки"
-}];
+  {
+    data: "main", name: "Активности"
+  }, {
+    data: "table", name: "Кубы"
+  }, {
+    data: "check-list", name: "Чек-лист"
+  }, {
+    data: "notification", name: "Уведомления"
+  }, {
+    data: "tools", name: "Инструменты"
+  }, {
+    data: "calc-raid-gold", name: "Золото с рейдов"
+  }, {
+    data: "FAQ", name: "FAQ"
+  }, {
+    data: "settings", name: "Настройки"
+  }];
 
 let settings = ref();
 provide('settings', settings);
@@ -42,7 +42,9 @@ window.electron.ipcRenderer.on('init-settings', async (settings_) => {
 });
 
 window.electron.ipcRenderer.on('update-settings', (settings_) => {
+  console.log("update", settings_);
   settings.value = settings_;
+  console.log("update end", settings.value);
 });
 
 onMounted(async () => {
@@ -84,7 +86,9 @@ function changeTab(tab) {
     </div>
     <div id="message" class="message"></div>
     <div id="error" class="error"></div>
-    <div id="loader" class="loader"></div>
+    <div id="loader" class="loader">
+      <div class="loader__content"></div>
+    </div>
   </div>
   <custom-footer/>
 </template>
@@ -350,6 +354,7 @@ function changeTab(tab) {
   --shadow: 0px 4px 10px rgb(0 123 255 / 40%);
   --inner-shadow: inset 0 0 10px rgba(119, 141, 169, 0.35);
 }
+
 [data-theme="orange"] {
   --dark-grey: #402218;
   --middle-grey: #ff914d;
@@ -470,7 +475,7 @@ body {
 .footer {
   flex: none;
   height: 25px;
-  font-size:  var(--font-tiny);
+  font-size: var(--font-tiny);
   color: var(--gold);
   display: flex;
   justify-content: center;
@@ -549,7 +554,7 @@ option {
   padding: 5px;
   color: var(--white);
   background-color: var(--dark-grey);
-  font-size:  var(--font-very-small);
+  font-size: var(--font-very-small);
 }
 
 option:checked {
@@ -653,7 +658,7 @@ input[type=number]::-webkit-inner-spin-button {
   background: none;
   border: 1px solid var(--grey);
   color: var(--white);
-  font-size:  var(--font-small);
+  font-size: var(--font-small);
   cursor: pointer;
   height: 28px;
   width: 28px;
@@ -662,14 +667,32 @@ input[type=number]::-webkit-inner-spin-button {
 }
 
 .loader {
+  background: var(--black);
+  opacity: 0.6;
+  position: fixed;
+  content: "";
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: none;
+  z-index: 1;
+}
+
+.loader__content {
   border: 8px solid var(--loader-border);
   border-top: 8px solid var(--loader-top);
   border-radius: 50%;
   width: 60px;
   height: 60px;
   animation: spin 1s linear infinite;
-  margin: 20px auto;
-  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  z-index: 2;
 }
 
 @keyframes spin {
@@ -702,7 +725,7 @@ input[type=number]::-webkit-inner-spin-button {
   color: var(--white);
   border-radius: 5px;
   transition: .2s ease;
-  font-size:  var(--font-small);
+  font-size: var(--font-small);
   box-shadow: var(--inner-shadow);
 
   .active {

@@ -6,14 +6,24 @@ import {saveSettings} from "../../../utils/utils.js";
 import RaidSelector from "@/components/charactersList/RaidSelector.vue";
 
 let settings = inject('settings');
-let nickname = computed(() => settings.value?.nickname);
-let characterList = computed(() => settings.value?.characterList);
+let nickname = computed({
+  get: () => settings.value?.nickname,
+  set: (newValue) => settings.value.nickname = newValue
+});
+let characterList = computed( {
+  get: () => {
+    console.log("characterList", settings.value?.characterList);
+    return settings.value?.characterList || [];
+  },
+  set: (newList) => settings.value.characterList = newList
+});
 let characterSettings = computed(() => settings.value?.characterSettings);
 let isShowRaidSelector = ref(false);
 const isEditMode = ref(false);
 const currentChosenCharacter = ref({});
 
 async function saveNickname(newNickname) {
+  isEditMode.value = false;
   saveSettings({nickname: newNickname});
   await refreshCharacters();
 }
@@ -24,9 +34,7 @@ async function refreshCharacters() {
 
 async function loadCharacters(nickname) {
   const container = document.getElementById('character-list');
-  container.innerHTML = 'Загрузка...';
   document.querySelector("#loader").style.display = 'block';
-  const charactersList = characterList.value || [];
   const result = await window.electron.ipcRenderer.fetchCharacters(nickname);
 
   if (result.error) {
@@ -37,7 +45,7 @@ async function loadCharacters(nickname) {
   const isValidCharacter = char => char && char.name && char.gearScore;
 
   let filteredCharacters = new Map();
-  [...charactersList, ...result].forEach(char => {
+  [...characterList.value, ...result].forEach(char => {
     if (!isValidCharacter(char)) {
       return;
     }
@@ -49,7 +57,7 @@ async function loadCharacters(nickname) {
     }
   });
 
-  saveSettings({characterList: Array.from(filteredCharacters.values())});
+  saveCharacterList(Array.from(filteredCharacters.values()));
   document.querySelector("#loader").style.display = 'none';
 }
 
@@ -85,6 +93,7 @@ function saveCharacterList(newCharacterList) {
   <nick-name v-model="nickname" @save-nickname="saveNickname"
              @refresh-characters="refreshCharacters"
              @edit-characters="toggleEditCharacters"
+             @edit-nickname="isEditMode = true"
              :is-edit-mode="isEditMode"/>
   <character-list :characterList="characterList" :is-edit-mode="isEditMode"
                   @show-raid-selector="showRaidSelector"

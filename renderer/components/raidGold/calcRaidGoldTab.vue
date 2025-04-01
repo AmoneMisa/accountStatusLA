@@ -28,7 +28,7 @@ const totalGold = computed(() => {
       spent += g.spent;
     }
   }
-  return {earned, spent, total: earned + spent};
+  return {earned, spent, total: earned - spent};
 });
 
 function getGoldFromRaid(charName, raid) {

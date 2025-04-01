@@ -38,6 +38,7 @@ function getGoldFromRaid(charName, raid) {
   phases.forEach((phase, index) => {
     const bought = savedPhases[index]?.chestBought;
     const disabled = savedPhases?.disabled || false;
+
     if (disabled) {
       if (bought) {
         spent += phase["сундук"];
