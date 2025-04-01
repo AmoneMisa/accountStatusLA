@@ -84,7 +84,6 @@ async function updateApp() {
 
 window.electron.ipcRenderer.on('update-available', async ({latestVersion, downloadUrl}) => {
   const currentVersion = document.getElementById('update-app').dataset.currentVersion;
-  console.log(currentVersion, latestVersion);
   const isNewer = await window.electron.ipcRenderer.invoke('is-newer-version', currentVersion, latestVersion);
 
   if (isNewer) {

@@ -42,9 +42,7 @@ window.electron.ipcRenderer.on('init-settings', async (settings_) => {
 });
 
 window.electron.ipcRenderer.on('update-settings', (settings_) => {
-  console.log("update", settings_);
   settings.value = settings_;
-  console.log("update end", settings.value);
 });
 
 onMounted(async () => {
@@ -62,8 +60,11 @@ function changeTab(tab) {
   document.getElementById("message").innerText = "";
   document.getElementById("message").classList.remove("active");
   document.getElementById("error").innerText = "";
-  document.querySelector("#loader").style.display = 'none';
+  isShowLoader.value = false;
 }
+
+const isShowLoader = ref(false);
+provide('isShowLoader', isShowLoader);
 </script>
 
 <template>
@@ -86,7 +87,7 @@ function changeTab(tab) {
     </div>
     <div id="message" class="message"></div>
     <div id="error" class="error"></div>
-    <div id="loader" class="loader">
+    <div id="loader" class="loader" v-show="isShowLoader">
       <div class="loader__content"></div>
     </div>
   </div>
@@ -675,7 +676,6 @@ input[type=number]::-webkit-inner-spin-button {
   bottom: 0;
   left: 0;
   right: 0;
-  display: none;
   z-index: 1;
 }
 

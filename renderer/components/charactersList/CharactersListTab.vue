@@ -10,13 +10,7 @@ let nickname = computed({
   get: () => settings.value?.nickname,
   set: (newValue) => settings.value.nickname = newValue
 });
-let characterList = computed( {
-  get: () => {
-    console.log("characterList", settings.value?.characterList);
-    return settings.value?.characterList || [];
-  },
-  set: (newList) => settings.value.characterList = newList
-});
+let characterList = computed(() => settings.value?.characterList || []);
 let characterSettings = computed(() => settings.value?.characterSettings);
 let isShowRaidSelector = ref(false);
 const isEditMode = ref(false);
@@ -32,9 +26,11 @@ async function refreshCharacters() {
   await loadCharacters(nickname.value);
 }
 
+let isShowLoader = inject('isShowLoader');
 async function loadCharacters(nickname) {
   const container = document.getElementById('character-list');
-  document.querySelector("#loader").style.display = 'block';
+  isShowLoader.value  = true;
+
   const result = await window.electron.ipcRenderer.fetchCharacters(nickname);
 
   if (result.error) {
@@ -58,7 +54,7 @@ async function loadCharacters(nickname) {
   });
 
   saveCharacterList(Array.from(filteredCharacters.values()));
-  document.querySelector("#loader").style.display = 'none';
+  isShowLoader.value = false;
 }
 
 function toggleEditCharacters() {
@@ -95,11 +91,13 @@ function saveCharacterList(newCharacterList) {
              @edit-characters="toggleEditCharacters"
              @edit-nickname="isEditMode = true"
              :is-edit-mode="isEditMode"/>
-  <character-list :characterList="characterList" :is-edit-mode="isEditMode"
+  <character-list :characterList="characterList"
+                  :is-edit-mode="isEditMode"
                   @show-raid-selector="showRaidSelector"
                   @dragEnd="saveCharacterList"/>
   <button id="save-button" class="button save-button" v-show="isEditMode" @click="saveCharacters">Сохранить</button>
-  <raid-selector v-show="isShowRaidSelector" @save="isShowRaidSelector = false" :character-name="currentChosenCharacter" @close="isShowRaidSelector = false"/>
+  <raid-selector v-show="isShowRaidSelector" @save="isShowRaidSelector = false" :character-name="currentChosenCharacter"
+                 @close="isShowRaidSelector = false"/>
 </template>
 
 <style scoped lang="scss">
