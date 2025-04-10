@@ -7,11 +7,11 @@ const props = defineProps({
   character: Object,
   isEditMode: Boolean,
   windowWidth: Number,
+  characterSettings: Object
 });
 
 const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String});
 let settings = inject('settings');
-const characterSettings = computed(() => settings.value.characterSettings?.[props.character.name]);
 const isSupport = ['Художница', 'Менестрель', 'Паладин'].includes(props.character.className);
 
 function toggleIcon(icon, statusTitle) {
@@ -25,8 +25,8 @@ function toggleIcon(icon, statusTitle) {
     characterSettings: {
       ...settings.value.characterSettings,
       [props.character.name]: {
-        ...characterSettings.value || {},
-        [statusTitle]: !characterSettings.value[statusTitle]
+        ...props.characterSettings || {},
+        [statusTitle]: !props.characterSettings[statusTitle]
       }
     }
   });
@@ -34,17 +34,17 @@ function toggleIcon(icon, statusTitle) {
 }
 
 function toggleRaidStatus(raid) {
-  characterSettings.value.raidStatus = characterSettings.value.raidStatus || {};
-  characterSettings.value.raidStatus[raid] = !characterSettings.value.raidStatus[raid];
+  props.characterSettings.raidStatus = props.characterSettings.raidStatus || {};
+  props.characterSettings.raidStatus[raid] = !props.characterSettings.raidStatus[raid];
 
   saveSettings({
     characterSettings: {
       ...settings.value.characterSettings,
       [props.character.name]: {
-        ...characterSettings.value || {},
+        ...props.characterSettings || {},
         raidStatus: {
-          ...characterSettings.value.raidStatus,
-          [raid]: characterSettings.value.raidStatus[raid]
+          ...props.characterSettings.raidStatus,
+          [raid]: props.characterSettings.raidStatus[raid]
         }
       }
     }
@@ -53,17 +53,17 @@ function toggleRaidStatus(raid) {
 }
 
 function removeRaid(raid) {
-  if (characterSettings.value.raids) {
-    characterSettings.value.raids = characterSettings.value.raids.filter(r => r !== raid);
-    delete characterSettings.value.raidStatus?.[raid];
+  if (props.characterSettings.raids) {
+    props.characterSettings.raids = props.characterSettings.raids.filter(r => r !== raid);
+    delete props.characterSettings.raidStatus?.[raid];
     saveSettings({
       characterSettings: {
         ...settings.value.characterSettings,
         [props.character.name]: {
-          ...characterSettings.value || {},
+          ...props.characterSettings || {},
           raidStatus: {
-            ...characterSettings.value.raidStatus,
-            [raid]: characterSettings.value.raidStatus[raid]
+            ...props.characterSettings.raidStatus,
+            [raid]: props.characterSettings.raidStatus[raid]
           }
         }
       }
@@ -73,7 +73,7 @@ function removeRaid(raid) {
 }
 
 const chunkedRaids = computed(() => {
-  const raids = characterSettings.value.raids || [];
+  const raids = props.characterSettings.raids || [];
   const chunkSize = 3;
   const result = [];
 
@@ -92,7 +92,7 @@ const chunkedRaids = computed(() => {
        :data-gs="character.gearScore"
   >
     <tooltip v-if="!isEditMode">
-      <div class="character__cell character__drag">≡</div>
+      <div class="character__cell character__drag" draggable="true">≡</div>
       <template #tooltip>Изменить порядок персонажей</template>
     </tooltip>
 
@@ -218,13 +218,13 @@ const chunkedRaids = computed(() => {
     flex-direction: row;
   }
 
-  &.character_support.view-mode .character__info div:last-child {
+  &.character_support.view-mode .character__info {
     color: var(--support);
     font-family: Caveat, serif;
     font-size: var(--font-body);
   }
 
-  &.character_dd.view-mode .character__info div:last-child {
+  &.character_dd.view-mode .character__info {
     color: var(--dd);
     font-family: Caveat, serif;
     font-size: var(--font-body);

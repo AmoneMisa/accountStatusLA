@@ -6,7 +6,7 @@ const props = defineProps({
   characterName: ""
 });
 
-const emit = defineEmits(['save']);
+const emit = defineEmits(['save', 'close']);
 
 const raids = ["Камен 2.0 (гер)", "Камен 2.0 (об)", "Аврель (гер)", "Аврель (об)", "Эгир (гер)", "Эгир (об)", "Ехидна", "Бехемос", "Камен (гер)", "Хаос", "Хранитель", "Эфонка"];
 let settings = inject('settings');

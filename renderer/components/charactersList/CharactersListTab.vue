@@ -5,8 +5,8 @@ import RaidSelector from "@/components/charactersList/RaidSelector.vue";
 import {computed, inject, ref} from "vue";
 import {saveSettings} from "../../../utils/utils.js";
 
-let settings = inject('settings');
-let isShowLoader = inject('isShowLoader');
+const settings = inject("settings");
+const isShowLoader = inject("isShowLoader");
 
 const isEditMode = ref(false);
 const isShowRaidSelector = ref(false);
@@ -19,6 +19,7 @@ const nickname = computed({
 
 const characterList = computed(() => settings.value?.characterList || []);
 const characterSettings = computed(() => settings.value?.characterSettings || {});
+const groupOrder = computed(() => settings.value?.groupOrder || []);
 
 function toggleEditCharacters() {
   isEditMode.value = !isEditMode.value;
@@ -35,63 +36,50 @@ async function refreshCharacters() {
 }
 
 async function loadCharacters(nickname) {
-  const container = document.getElementById('character-list');
+  const container = document.getElementById("character-list");
   isShowLoader.value = true;
 
   const result = await window.electron.ipcRenderer.fetchCharacters(nickname);
 
   if (result.error) {
-    container.innerText = 'Ошибка: ' + result.error;
+    container.innerText = "Ошибка: " + result.error;
     return;
   }
 
-  const isValidCharacter = char => char && char.name && char.gearScore;
+  const isValidCharacter = (char) => char && char.name && char.gearScore;
 
-  let filteredCharacters = new Map();
-  [...characterList.value, ...result].forEach(char => {
+  const filtered = new Map();
+  [...characterList.value, ...result].forEach((char) => {
     if (!isValidCharacter(char)) return;
 
-    const existingChar = filteredCharacters.get(char.name);
-    const newGS = parseFloat(char.gearScore.replace(',', ''));
-    const oldGS = existingChar ? parseFloat(existingChar.gearScore.replace(',', '')) : 0;
+    const existing = filtered.get(char.name);
+    const newGS = parseFloat(char.gearScore.replace(",", ""));
+    const oldGS = existing ? parseFloat(existing.gearScore.replace(",", "")) : 0;
 
-    if (!existingChar || newGS > oldGS) {
-      filteredCharacters.set(char.name, char);
+    if (!existing || newGS > oldGS) {
+      filtered.set(char.name, char);
     }
   });
 
-  saveCharacterList(Array.from(filteredCharacters.values()));
+  saveCharacterList(Array.from(filtered.values()));
   isShowLoader.value = false;
+}
+
+function saveCharacterList(newList) {
+  saveSettings({characterList: newList});
+}
+
+function saveCharacters() {
+  saveSettings({
+    characterList: characterList.value,
+    characterSettings: characterSettings.value,
+  });
+  isEditMode.value = false;
 }
 
 function showRaidSelector(characterName) {
   currentChosenCharacter.value = characterName;
   isShowRaidSelector.value = true;
-}
-
-function saveCharacterList(newCharacterList) {
-  saveSettings({characterList: newCharacterList});
-}
-
-function saveCharacters() {
-  saveSettings({
-    characterSettings: characterSettings.value,
-    characterList: characterList.value
-  });
-  isEditMode.value = false;
-}
-
-function onDragEnd(flatList) {
-  const updatedSettings = {...characterSettings.value};
-
-  flatList.forEach(char => {
-    if (!updatedSettings[char.name]) updatedSettings[char.name] = {};
-  });
-
-  saveSettings({
-    characterList: flatList,
-    characterSettings: updatedSettings
-  });
 }
 </script>
 
@@ -102,15 +90,15 @@ function onDragEnd(flatList) {
       @refresh-characters="refreshCharacters"
       @edit-characters="toggleEditCharacters"
       @edit-nickname="isEditMode = true"
-      :is-edit-mode="isEditMode"
+      :isEditMode="isEditMode"
   />
 
   <character-list
       :characterList="characterList"
       :characterSettings="characterSettings"
-      :is-edit-mode="isEditMode"
+      :groupOrder="groupOrder"
+      :isEditMode="isEditMode"
       @show-raid-selector="showRaidSelector"
-      @dragEnd="onDragEnd"
   />
 
   <button
