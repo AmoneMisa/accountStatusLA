@@ -32,6 +32,10 @@ async function saveNickname(newNickname) {
 }
 
 async function refreshCharacters() {
+  if (!nickname.value.length) {
+    return;
+  }
+
   await loadCharacters(nickname.value);
 }
 
@@ -50,7 +54,9 @@ async function loadCharacters(nickname) {
 
   const filtered = new Map();
   [...characterList.value, ...result].forEach((char) => {
-    if (!isValidCharacter(char)) return;
+    if (!isValidCharacter(char)) {
+      return;
+    }
 
     const existing = filtered.get(char.name);
     const newGS = parseFloat(char.gearScore.replace(",", ""));
@@ -60,6 +66,10 @@ async function loadCharacters(nickname) {
       filtered.set(char.name, char);
     }
   });
+
+  if (!groupOrder.value.length) {
+    saveSettings({groupOrder: ["Без группы"]});
+  }
 
   saveCharacterList(Array.from(filtered.values()));
   isShowLoader.value = false;

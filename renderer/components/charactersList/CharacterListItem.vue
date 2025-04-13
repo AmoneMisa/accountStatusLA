@@ -85,7 +85,7 @@ const chunkedRaids = computed(() => {
 });
 </script>
 <template>
-  <div v-if="!(characterSettings.delete && !isEditMode)"
+  <div v-if="!((characterSettings && characterSettings.delete) && !isEditMode)"
        class="character"
        :class="[isEditMode ? '' : 'view-mode', isSupport ? 'character_support' : 'character_dd']"
        :data-name="character.name"
