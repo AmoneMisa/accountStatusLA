@@ -8,8 +8,8 @@ const columnNames = ['3.1', '3.2', '3.3', '3.4', '3.5', '4.1', '4.2'];
 let settings = inject('settings');
 const characterList = computed(() => settings.value.characterList);
 const characterSettings = computed(() => settings.value.characterSettings);
-const tableData = computed(() => settings.value.tableData);
-const cubesSettings = computed(() => settings.value.cubesSettings);
+const tableData = computed(() => settings.value.tableData || {});
+const cubesSettings = computed(() => settings.value.cubesSettings || {});
 
 columnNames.forEach(col => {
   if (!cubesSettings.value) {

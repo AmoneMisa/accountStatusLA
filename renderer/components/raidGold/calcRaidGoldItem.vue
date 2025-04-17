@@ -9,8 +9,8 @@ const props = defineProps({
 });
 
 function getCompletedRaids() {
-  const raids = props.characterSettings.raids;
-  return raids.filter(raid => props.characterSettings.raidStatus[raid] && raid !== "Хранитель" && raid !== "Эфонка" && raid !== "Хаос");
+  const raids = props.characterSettings?.raids || [];
+  return raids.filter(raid => props.characterSettings?.raidStatus[raid] && raid !== "Хранитель" && raid !== "Эфонка" && raid !== "Хаос");
 }
 
 function toggleGoldCharacter(button, characterName) {
@@ -25,7 +25,7 @@ function toggleGoldCharacter(button, characterName) {
 </script>
 
 <template>
-  <div class="calc-raid-gold__item" v-if="!characterSettings.delete">
+  <div class="calc-raid-gold__item" v-if="characterSettings && !characterSettings.delete">
     <div class="calc-raid-gold__title">{{ character.name }}
       <tooltip>
         <button class="button button_icon" @click="(button) => toggleGoldCharacter(button, character.name)">❌</button>

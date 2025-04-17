@@ -32,6 +32,10 @@ const totalGold = computed(() => {
 });
 
 function getGoldFromRaid(charName, raid) {
+  if (!characterSettings.value?.[charName]?.raidStatus?.[raid]) {
+    return {earned: 0, spent: 0, total: 0};
+  }
+
   let earned = 0, spent = 0;
   const phases = raidGold[raid] || [];
   const savedPhases = characterSettings.value?.[charName]?.phases?.[raid] || {};

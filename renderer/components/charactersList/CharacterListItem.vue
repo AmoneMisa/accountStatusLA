@@ -21,15 +21,21 @@ function toggleIcon(icon, statusTitle) {
 
   icon.target.classList.toggle("inactive");
 
-  saveSettings({
-    characterSettings: {
-      ...settings.value.characterSettings,
-      [props.character.name]: {
-        ...props.characterSettings || {},
-        [statusTitle]: !props.characterSettings[statusTitle]
+  if (!props.characterSettings) {
+      settings.value.characterSettings[props.character.name] = {};
+  }
+
+    saveSettings({
+      characterSettings: {
+        ...settings.value.characterSettings,
+        [props.character.name]: {
+          ...props.characterSettings || {},
+          [statusTitle]: props.characterSettings ? !props.characterSettings[statusTitle] : true
+        }
       }
-    }
-  });
+    });
+
+
   emit('updateCharacter', props.character.name);
 }
 
