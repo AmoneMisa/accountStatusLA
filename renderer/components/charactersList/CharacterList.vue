@@ -5,6 +5,11 @@ import {onMounted, ref, watch} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 import {saveSettings} from "../../../utils/utils.js";
 
+import trash from "../../../public/assets/svg/trash.svg";
+import changeMenu from "../../../public/assets/svg/menu.svg";
+import pencil from "../../../public/assets/svg/pencil.svg";
+import plus from "../../../public/assets/svg/plus.svg";
+
 const emit = defineEmits(["showRaidSelector"]);
 const props = defineProps({
   characterList: Array,
@@ -21,6 +26,12 @@ const newGroupName = ref("");
 let draggedCharacter = ref(null);
 let draggedFromGroup = ref(null);
 let draggedGroup = ref(null);
+
+window.addEventListener("resize", (e) => {
+  setTimeout(() => {
+    windowWidth.value = e.target.innerWidth;
+  }, 1000);
+});
 
 function buildGrouped() {
   const sorted = {};
@@ -237,7 +248,7 @@ function deleteGroup(group) {
   <h1 class="title character-list__title">
     <span>Список персонажей</span>
     <tooltip>
-      <button class="button button_icon character-list__button" @click="isGridView = !isGridView">🔷</button>
+      <button class="button button_icon character-list__button" @click="isGridView = !isGridView"><changeMenu class="icon menu-icon" /></button>
       <template #tooltip>Изменить отображение</template>
     </tooltip>
   </h1>
@@ -245,7 +256,7 @@ function deleteGroup(group) {
   <share-snippet>
     <div class="group-controls">
       <input v-model="newGroupName" placeholder="Новая группа"/>
-      <button class="button" @click="createGroup">➕ Добавить группу</button>
+      <button class="button" @click="createGroup"><plus class="icon plus-icon plus-icon_small"/> Добавить группу</button>
     </div>
 
     <div id="character-list" class="character-list" :class="{'grid': isGridView || windowWidth < 980}" v-if="grouped">
@@ -268,11 +279,11 @@ function deleteGroup(group) {
               <span draggable="true">{{ group }}</span>
               <div class="character-group__controls" v-if="group !== 'Без группы'">
                 <tooltip>
-                <button class="button button_icon" @click="enableRenameGroup(group)">✏️</button>
+                <button class="button button_icon" @click="enableRenameGroup(group)"><pencil class="icon pencil-icon"/></button>
                   <template #tooltip>Переименовать группу</template>
                 </tooltip>
                   <tooltip>
-                <button class="button button_icon" @click="deleteGroup(group)">🗑️</button>
+                <button class="button button_icon" @click="deleteGroup(group)"><trash class="icon trash-icon"/></button>
                     <template #tooltip>Удалить группу</template>
                   </tooltip>
               </div>

@@ -1,5 +1,8 @@
 <script setup>
 import Tooltip from "@/components/utils/Tooltip.vue";
+import pencil from "../../../public/assets/svg/pencil.svg";
+import update from "../../../public/assets/svg/update.svg";
+import save from "../../../public/assets/svg/save.svg";
 
 const props = defineProps({
   isEditMode: false
@@ -35,13 +38,13 @@ function editCharacters() {
       </tooltip>
       <tooltip>
         <button type="button" id="edit-nickname" class="button button_icon nickname-block__button"
-                v-show="!isEditMode" @click="$emit('edit-nickname')">✏️
+                v-show="!isEditMode" @click="$emit('edit-nickname')"><pencil class="icon pencil-icon"/>
         </button>
         <template #tooltip>Редактировать ник</template>
       </tooltip>
       <tooltip>
         <button id="save-nickname" class="button button_icon"
-                style="display:none" v-show="isEditMode" @click="saveNickname(model)">💾
+                style="display:none" v-show="isEditMode" @click="saveNickname(model)"><save class="icon save-icon" />
         </button>
         <template #tooltip>Сохранить ник</template>
       </tooltip>
@@ -49,12 +52,12 @@ function editCharacters() {
     <div id="controls" class="controls">
       <tooltip>
         <button type="button" id="refresh-characters" class="button button_icon refresh-characters"
-                @click="emit('refresh-characters')">🔄
+                @click="emit('refresh-characters')"><update class="icon update-icon" />
         </button>
         <template #tooltip>Обновить персонажей</template>
       </tooltip>
       <tooltip>
-        <button type="button" id="edit-characters" class="button button_icon" @click="editCharacters">✏️</button>
+        <button type="button" id="edit-characters" class="button button_icon" @click="editCharacters"><pencil class="icon pencil-icon"/></button>
         <template #tooltip>Редактировать персонажей</template>
       </tooltip>
     </div>

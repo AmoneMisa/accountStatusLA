@@ -3,6 +3,15 @@ import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 
+import checkArrow from "../../../public/assets/svg/check.svg";
+import cross from "../../../public/assets/svg/cross.svg";
+import heart from "../../../public/assets/svg/heart.svg";
+import crown from "../../../public/assets/svg/crown.svg";
+import coin from "../../../public/assets/svg/coin.svg";
+import plus from "../../../public/assets/svg/plus.svg";
+import trash from "../../../public/assets/svg/trash.svg";
+import burger from "../../../public/assets/svg/burger.svg";
+
 const props = defineProps({
   character: Object,
   isEditMode: Boolean,
@@ -98,7 +107,7 @@ const chunkedRaids = computed(() => {
        :data-gs="character.gearScore"
   >
     <tooltip v-if="!isEditMode">
-      <div class="character__cell character__drag" draggable="true">≡</div>
+      <div class="character__cell character__drag" draggable="true"><burger class="icon burger-icon"  /></div>
       <template #tooltip>Изменить порядок персонажей</template>
     </tooltip>
 
@@ -113,7 +122,9 @@ const chunkedRaids = computed(() => {
             :class="{ inactive: !characterSettings?.[icon] }"
             @click="(elem) => toggleIcon(elem, icon)"
         >
-          {{ icon === 'legate' ? '👑' : icon === 'goldReceiver' ? '💰' : '⭐' }}
+          <crown class="icon crown-icon" v-if="icon === 'legate'" />
+          <coin class="icon coin-icon" v-if="icon === 'goldReceiver'" />
+          <heart class="icon heart-icon" v-if="icon === 'favorite'" />
         </div>
         <template #tooltip>
           {{ icon === 'legate' ? 'Легат' : icon === 'goldReceiver' ? 'Получатель голды' : 'Избранное' }}
@@ -127,7 +138,7 @@ const chunkedRaids = computed(() => {
             data-type="delete"
             @click="(elem) => toggleIcon(elem, 'delete')"
         >
-          ❌
+          <cross class="icon cross-icon" />
         </div>
         <template #tooltip>Скрыть из списка</template>
       </tooltip>
@@ -150,13 +161,14 @@ const chunkedRaids = computed(() => {
           <div class="raid__header">
             <div class="raid__name">{{ raid }}</div>
             <tooltip>
-              <button class="remove-raid button button_icon" @click="removeRaid(raid)">🗑️</button>
+              <button class="remove-raid button button_icon" @click="removeRaid(raid)"><trash class="icon trash-icon" /></button>
               <template #tooltip>Удалить рейд</template>
             </tooltip>
           </div>
           <tooltip>
             <button class="raid-status button button_icon" @click="toggleRaidStatus(raid)">
-              {{ characterSettings?.raidStatus?.[raid] ? '✅' : '❌' }}
+              <checkArrow class="icon check-icon" v-if="characterSettings?.raidStatus?.[raid]" />
+              <cross class="icon cross-icon" v-else />
             </button>
             <template #tooltip>Рейд пройден</template>
           </tooltip>
@@ -169,13 +181,14 @@ const chunkedRaids = computed(() => {
             <div class="raid__header">
               <div class="raid__name">{{ raid }}</div>
               <tooltip>
-                <button class="remove-raid button button_icon" @click="removeRaid(raid)">🗑️</button>
+                <button class="remove-raid button button_icon" @click="removeRaid(raid)"><trash class="icon trash-icon" /></button>
                 <template #tooltip>Удалить рейд</template>
               </tooltip>
             </div>
             <tooltip>
               <button class="raid-status button button_icon" @click="toggleRaidStatus(raid)">
-                {{ characterSettings?.raidStatus?.[raid] ? '✅' : '❌' }}
+                <checkArrow class="icon check-icon" v-if="characterSettings?.raidStatus?.[raid]" />
+                <cross class="icon cross-icon" v-else />
               </button>
               <template #tooltip>Пройдено ли</template>
             </tooltip>
@@ -187,7 +200,7 @@ const chunkedRaids = computed(() => {
     <div class="character__cell character__actions" v-if="!isEditMode">
       <tooltip>
         <button class="button button_icon add-raid" @click="emit('showRaidSelector', character.name)">
-          ➕
+          <plus />
         </button>
         <template #tooltip>Добавить активность</template>
       </tooltip>
@@ -299,6 +312,7 @@ const chunkedRaids = computed(() => {
   font-size: var(--font-very-small);
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .raid-status {
@@ -425,4 +439,17 @@ const chunkedRaids = computed(() => {
     }
   }
 }
+
+.check-icon {
+  color: var(--check);
+}
+
+.heart-icon {
+  color: var(--error);
+}
+
+.crown-icon {
+  color: var(--crown);
+}
+
 </style>

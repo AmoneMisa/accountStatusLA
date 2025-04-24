@@ -120,6 +120,9 @@ provide('isShowLoader', isShowLoader);
   --gs: #eab00f;
   --shadow: 0px 4px 10px rgba(129, 106, 0, 0.3);
   --inner-shadow: inset 0 0 10px rgba(103, 103, 103, 0.35);
+
+  --check: #00d26a;
+  --crown: #feb929;
 }
 
 [data-theme="light"] {
@@ -440,9 +443,53 @@ body {
   -webkit-app-region: drag; /* Позволяет перемещать окно */
   box-sizing: border-box;
   margin: 0;
+  font-size: var(--font-body);
+}
+
+.icon {
+  max-width: 28px;
+  max-height: 28px;
+  width: -webkit-fill-available;
+}
+
+.cross-icon {
+  color: var(--error);
+}
+
+.trash-icon {
+  color: var(--light-grey);
+  max-width: 16px;
+}
+
+.burger-icon {
+  color: var(--white);
+}
+
+.plus-icon {
+  &_small {
+    max-height: 20px;
+    max-width: 20px;
+    display: inline;
+  }
+}
+
+.pencil-icon {
+  color: var(--gs);
+  max-width: 16px;
+}
+
+.save-icon {
+  color: var(--white);
+}
+
+.menu-icon {
+  color: var(--white);
+}
+
+#app {
   display: flex;
   flex-direction: column;
-  font-size: var(--font-body);
+  min-height: 100vh;
 }
 
 .title {
@@ -470,7 +517,8 @@ body {
   position: relative;
   -webkit-app-region: no-drag;
   flex: auto;
-  min-height: 100vh;
+  max-height: calc(100vh - 40px - 55px);
+  overflow: auto;
 }
 
 .footer {
@@ -628,6 +676,9 @@ input[type=number]::-webkit-inner-spin-button {
   width: 160px;
   height: 40px;
   color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
   &:hover {
     background: var(--light-grey);
@@ -663,7 +714,7 @@ input[type=number]::-webkit-inner-spin-button {
   cursor: pointer;
   height: 28px;
   width: 28px;
-  padding-bottom: 12px;
+  padding: 5px;
   border-radius: 5px;
 }
 

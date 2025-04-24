@@ -16,6 +16,7 @@ function close() {
 }
 
 const upTop = ref(false);
+
 function alwaysUpTop(elem) {
   elem.target.classList.toggle('active', !upTop.value);
   window.electron.ipcRenderer.send('window:toggle-always-on-top', !upTop.value);
@@ -41,28 +42,33 @@ window.electron.ipcRenderer.on('clear-nickname', async () => {
   saveSettings({nickname: undefined});
   document.getElementById('nickname').innerText = "Ник не установлен";
 });
+
+import pinIcon from "../../../public/assets/svg/pin.svg";
 </script>
 
 <template>
   <div class="header">
     <div id="title-bar" class="title-bar">
-      <div id="title" class="title-bar__title">Lost Ark Character Manager by WhitesLove v. alpha-0.13</div>
+      <div id="title" class="title-bar__title">Lost Ark Character Manager v. alpha-0.14</div>
       <div id="window-controls" class="window-controls">
         <tooltip>
-        <button id="alwaysUpTop" class="window-controls__button button button_control" @click="(elem) => alwaysUpTop(elem)">📌</button>
-        <template #tooltip>Поверх окон</template>
+          <button id="alwaysUpTop" class="window-controls__button button button_control"
+                  @click="(elem) => alwaysUpTop(elem)">
+            <pinIcon class="icon pin-icon"/>
+          </button>
+          <template #tooltip>Поверх окон</template>
         </tooltip>
         <tooltip>
-        <button id="minimize" class="window-controls__button button button_control" @click="minimize">—</button>
-        <template #tooltip>Свернуть</template>
+          <button id="minimize" class="window-controls__button button button_control" @click="minimize">—</button>
+          <template #tooltip>Свернуть</template>
         </tooltip>
         <tooltip>
-        <button id="maximize" class="window-controls__button button button_control" @click="maximize">⬜</button>
-        <template #tooltip>Развернуть</template>
+          <button id="maximize" class="window-controls__button button button_control" @click="maximize">⬜</button>
+          <template #tooltip>Развернуть</template>
         </tooltip>
         <tooltip>
-        <button id="close" class="window-controls__button button button_control" @click="close">✖</button>
-        <template #tooltip>Закрыть</template>
+          <button id="close" class="window-controls__button button button_control" @click="close">✖</button>
+          <template #tooltip>Закрыть</template>
         </tooltip>
       </div>
     </div>
@@ -102,6 +108,14 @@ window.electron.ipcRenderer.on('clear-nickname', async () => {
 .window-controls__button {
   &.active {
     background-color: var(--light-grey);
+  }
+}
+
+.pin-icon {
+  color: var(--error);
+
+  path:last-child {
+    fill: var(--white);
   }
 }
 </style>
