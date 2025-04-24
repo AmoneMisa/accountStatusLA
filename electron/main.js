@@ -3,13 +3,12 @@ import path from 'path';
 import {parseLostArkProfile} from "../utils/parser.js";
 import {changeSettingsPath, getToolsInfo, loadSettings, saveSettings} from "../utils/storage.js";
 import fs from "fs";
-// import cron from "node-cron";
 import {DateTime, Settings} from "luxon";
 import {createWindow, setMainWindow} from "../mainProcess/mainWindow.js";
 import {capitalize} from "../utils/utils.js";
 import applySettings from "../mainProcess/applySettings.js";
 import {resetDailyActivities, resetWeeklyActivities} from "../mainProcess/resetActivities.js";
-import { parse } from 'semver';
+import {parse} from 'semver';
 import schedule from "node-schedule";
 
 process.env.DIST = path.join(import.meta.dirname, '../dist')
@@ -61,13 +60,22 @@ app.on('ready', async () => {
     resetDailyActivities(DateTime);
     resetWeeklyActivities(DateTime);
 
-    schedule.scheduleJob('0 3 * * *', () => {
-        resetWeeklyActivities(DateTime);
-        resetDailyActivities(DateTime);
+    schedule.scheduleJob('*/30 * * * *', () => {
+        const now = DateTime.now().setZone("UTC+3");
+        const then = DateTime.now().setZone("UTC+5");
+        console.log(now);
+        console.log(then);
+        if (now.hour === 6 && now.minute === 0) {
+            resetWeeklyActivities(DateTime);
+            resetDailyActivities(DateTime);
+        }
     });
 
     schedule.scheduleJob('* * * * *', () => {
-        resetDailyActivities(DateTime);
+        const now = DateTime.now().setZone("UTC+3");
+        if (now.hour === 6 && now.minute === 0) {
+            resetDailyActivities(DateTime);
+        }
     });
 
     const settings = loadSettings();
@@ -308,7 +316,7 @@ function scheduleReminders(DateTime) {
 
         info.hours.forEach(hour => {
             const [h, m] = hour.split(':');
-            const notifyTime = DateTime.local().set({ hour: +h, minute: +m }).minus({ minutes: 5 });
+            const notifyTime = DateTime.local().set({hour: +h, minute: +m}).minus({minutes: 5});
 
             schedule.scheduleJob(`${notifyTime.minute} ${notifyTime.hour} * * *`, () => {
                 const now = DateTime.local();
