@@ -123,6 +123,8 @@ provide('isShowLoader', isShowLoader);
 
   --check: #00d26a;
   --crown: #feb929;
+  --chest: #ef7200;
+  --money: #f78fb3;
 }
 
 [data-theme="light"] {
@@ -450,10 +452,22 @@ body {
   max-width: 28px;
   max-height: 28px;
   width: -webkit-fill-available;
+
+  &_small {
+    max-width: 20px;
+  }
+
+  &_very-small {
+   max-width: 16px;
+  }
 }
 
 .cross-icon {
   color: var(--error);
+
+  &_control {
+    color: var(--white);
+  }
 }
 
 .trash-icon {
@@ -467,9 +481,8 @@ body {
 
 .plus-icon {
   &_small {
-    max-height: 20px;
-    max-width: 20px;
     display: inline;
+    margin-right: 5px;
   }
 }
 
@@ -484,6 +497,18 @@ body {
 
 .menu-icon {
   color: var(--white);
+}
+
+.share-icon {
+  color: var(--gold);
+}
+
+.chest-icon {
+  color: var(--chest);
+}
+
+.money-icon {
+  color: var(--money);
 }
 
 #app {
@@ -678,7 +703,7 @@ input[type=number]::-webkit-inner-spin-button {
   color: var(--white);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
   &:hover {
     background: var(--light-grey);

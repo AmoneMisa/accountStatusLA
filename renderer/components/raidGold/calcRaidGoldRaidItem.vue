@@ -2,6 +2,9 @@
 import raidGold from "@/raidGold.js";
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject} from "vue";
+import coin from "../../../public/assets/svg/coin.svg";
+import money from "../../../public/assets/svg/money.svg";
+import chest from "../../../public/assets/svg/chest.svg";
 
 defineProps({
   raid: String,
@@ -99,9 +102,9 @@ function toggleRaid(charName, raid, elem) {
   </div>
 
   <div class="calc-raid-gold__raid-total">
-    <div>🪙 Получено: {{ getGoldFromRaid(character.name, raid).earned }}</div>
-    <div>💰 Потрачено на сундуки: {{ getGoldFromRaid(character.name, raid).spent }}</div>
-    <div>💎 Всего: {{ getGoldFromRaid(character.name, raid).total }}</div>
+    <div class="calc-raid-gold__raid-total-item"><coin class="icon icon_very-small coin-icon" /> Получено: {{ getGoldFromRaid(character.name, raid).earned }}</div>
+    <div class="calc-raid-gold__raid-total-item"><chest class="icon icon_very-small chest-icon" />  Потрачено на сундуки: {{ getGoldFromRaid(character.name, raid).spent }}</div>
+    <div class="calc-raid-gold__raid-total-item"><money class="icon icon_very-small money-icon" />  Всего: {{ getGoldFromRaid(character.name, raid).total }}</div>
   </div>
 </template>
 
@@ -114,5 +117,12 @@ function toggleRaid(charName, raid, elem) {
 
 .calc-raid-gold__raid-total {
   text-align: right;
+}
+
+.calc-raid-gold__raid-total-item {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-bottom: 5px;
 }
 </style>

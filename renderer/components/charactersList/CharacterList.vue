@@ -256,7 +256,7 @@ function deleteGroup(group) {
   <share-snippet>
     <div class="group-controls">
       <input v-model="newGroupName" placeholder="Новая группа"/>
-      <button class="button" @click="createGroup"><plus class="icon plus-icon plus-icon_small"/> Добавить группу</button>
+      <button class="button" @click="createGroup"><plus class="icon icon_small plus-icon plus-icon_small"/> Добавить группу</button>
     </div>
 
     <div id="character-list" class="character-list" :class="{'grid': isGridView || windowWidth < 980}" v-if="grouped">

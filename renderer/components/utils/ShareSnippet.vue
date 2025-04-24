@@ -2,7 +2,7 @@
 import html2canvas from 'html2canvas';
 import {ref} from 'vue';
 import Tooltip from "@/components/utils/Tooltip.vue";
-
+import share from "../../../public/assets/svg/share.svg"
 const targetRef = ref(null);
 
 async function capture() {
@@ -24,7 +24,7 @@ async function capture() {
       <slot/>
     </div>
     <tooltip>
-      <button class="button button_icon share-snippet__button" @click="capture">✉️</button>
+      <button class="button button_icon share-snippet__button" @click="capture"><share class="icon share-icon" /></button>
       <template #tooltip>Поделиться</template>
     </tooltip>
   </div>

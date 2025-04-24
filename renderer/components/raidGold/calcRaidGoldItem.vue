@@ -1,6 +1,7 @@
 <script setup>
 import CalcRaidGoldRaidItem from "@/components/raidGold/calcRaidGoldRaidItem.vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
+import cross from "../../../public/assets/svg/cross.svg";
 
 const props = defineProps({
   characterSettings: Object,
@@ -28,7 +29,7 @@ function toggleGoldCharacter(button, characterName) {
   <div class="calc-raid-gold__item" v-if="characterSettings && !characterSettings.delete">
     <div class="calc-raid-gold__title">{{ character.name }}
       <tooltip>
-        <button class="button button_icon" @click="(button) => toggleGoldCharacter(button, character.name)">❌</button>
+        <button class="button button_icon" @click="(button) => toggleGoldCharacter(button, character.name)"><cross class="icon cross-icon" /></button>
         <template #tooltip>Убрать персонажа из общего расчёта золота</template>
       </tooltip>
     </div>

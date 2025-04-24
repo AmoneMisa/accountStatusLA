@@ -2,6 +2,9 @@
 import {saveSettings} from "../../../utils/utils.js";
 import {ref} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
+import minus from "../../../public/assets/svg/minus.svg";
+import square from "../../../public/assets/svg/square.svg";
+import cross from "../../../public/assets/svg/cross.svg";
 
 function minimize() {
   window.electron.ipcRenderer.send('window:minimize');
@@ -59,15 +62,15 @@ import pinIcon from "../../../public/assets/svg/pin.svg";
           <template #tooltip>Поверх окон</template>
         </tooltip>
         <tooltip>
-          <button id="minimize" class="window-controls__button button button_control" @click="minimize">—</button>
+          <button id="minimize" class="window-controls__button button button_control" @click="minimize"><minus class="icon icon_very-small minus-icon" /></button>
           <template #tooltip>Свернуть</template>
         </tooltip>
         <tooltip>
-          <button id="maximize" class="window-controls__button button button_control" @click="maximize">⬜</button>
+          <button id="maximize" class="window-controls__button button button_control" @click="maximize"><square class="icon icon_very-small square-icon" /></button>
           <template #tooltip>Развернуть</template>
         </tooltip>
         <tooltip>
-          <button id="close" class="window-controls__button button button_control" @click="close">✖</button>
+          <button id="close" class="window-controls__button button button_control" @click="close"><cross class="icon icon_very-small cross-icon cross-icon_control" /></button>
           <template #tooltip>Закрыть</template>
         </tooltip>
       </div>

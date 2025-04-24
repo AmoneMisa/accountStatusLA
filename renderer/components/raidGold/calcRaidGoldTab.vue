@@ -2,6 +2,9 @@
 import {computed, inject, ref} from "vue";
 import CalcRaidGoldItem from "@/components/raidGold/calcRaidGoldItem.vue";
 import raidGold from "@/raidGold.js";
+import coin from "../../../public/assets/svg/coin.svg";
+import money from "../../../public/assets/svg/money.svg";
+import chest from "../../../public/assets/svg/chest.svg";
 
 let settings = inject('settings');
 const characterSettings = computed(() => settings.value.characterSettings);
@@ -71,9 +74,9 @@ function getGoldFromRaid(charName, raid) {
                           />
   </div>
   <div class="calc-raid-gold__total">
-    <div>🪙 Общая сумма золота: {{ totalGold.earned }}</div>
-    <div>💰 Потрачено на сундуки: {{ totalGold.spent }}</div>
-    <div>💎 После выкупа: {{ totalGold.total }}</div>
+    <div class="calc-raid-gold__total-item"><coin class="icon icon_very-small coin-icon" /> Общая сумма золота: {{ totalGold.earned }}</div>
+    <div class="calc-raid-gold__total-item"><chest class="icon icon_very-small chest-icon" />  Потрачено на сундуки: {{ totalGold.spent }}</div>
+    <div class="calc-raid-gold__total-item"><money class="icon icon_very-small money-icon" />  После выкупа: {{ totalGold.total }}</div>
   </div>
 </template>
 
@@ -88,5 +91,11 @@ function getGoldFromRaid(charName, raid) {
   border: 1px solid var(--grey);
   box-shadow: var(--shadow);
   padding: 15px;
+}
+
+.calc-raid-gold__total-item {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
 }
 </style>
