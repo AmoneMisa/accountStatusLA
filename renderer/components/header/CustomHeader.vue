@@ -46,7 +46,7 @@ window.electron.ipcRenderer.on('clear-nickname', async () => {
 <template>
   <div class="header">
     <div id="title-bar" class="title-bar">
-      <div id="title" class="title-bar__title">Lost Ark Character Manager by WhitesLove v. alpha-0.12</div>
+      <div id="title" class="title-bar__title">Lost Ark Character Manager by WhitesLove v. alpha-0.13</div>
       <div id="window-controls" class="window-controls">
         <tooltip>
         <button id="alwaysUpTop" class="window-controls__button button button_control" @click="(elem) => alwaysUpTop(elem)">📌</button>
