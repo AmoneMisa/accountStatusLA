@@ -1,5 +1,6 @@
 <script setup>
 import {ref} from 'vue';
+import cross from "../../../public/assets/svg/cross.svg";
 
 const emit = defineEmits(['closePopup', 'saveItem']);
 
@@ -36,7 +37,7 @@ const close = () => {
         <input v-model="newTaskText" type="text" class="popup__input check-list-table__popup__input"/>
       </label>
       <button class="button" @click="saveTask">Сохранить</button>
-      <button class="cross button button_icon" @click="close">✖</button>
+      <button class="cross button button_icon" @click="close"><cross class="icon icon_very-small cross-icon" /></button>
     </div>
   </div>
 </template>

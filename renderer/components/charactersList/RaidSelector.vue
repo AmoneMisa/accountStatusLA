@@ -1,6 +1,7 @@
 <script setup>
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject, ref, watchEffect} from "vue";
+import cross from "../../../public/assets/svg/cross.svg";
 
 const props = defineProps({
   characterName: ""
@@ -34,7 +35,7 @@ watchEffect(() => {
 <template>
 <div class="raid-selector popup">
   <div class="popup__content">
-    <button class="cross button button_icon" @click="emit('close')">✖</button>
+    <button class="cross button button_icon" @click="emit('close')"><cross class="icon icon_very-small cross-icon" /></button>
     <label class="raid-selector__label">
       Выбери активность для персонажа: <i>{{characterName}}</i>.<br>Для мульти-выбора: нажми <i>Cntrl</i> и выбирай необходимые пункты
       <select class="raid-selector__select" multiple v-model="currentOptions" >

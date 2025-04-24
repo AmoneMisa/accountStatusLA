@@ -1,6 +1,7 @@
 <script setup>
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject, ref} from "vue";
+import cross from "../../../public/assets/svg/cross.svg";
 
 const emit = defineEmits(['close', 'saveItem']);
 let selectDays = ref();
@@ -34,7 +35,7 @@ function close() {
 <template>
   <div class="popup notification-popup">
     <div class="popup__content notification-popup__content">
-      <button class="cross button button_icon notification-popup__cross" @click="close">✖</button>
+      <button class="cross button button_icon notification-popup__cross" @click="close"><cross class="icon icon_very-small cross-icon" /></button>
       <label class="popup__label">
         Название напоминания
         <input v-model="inputValue" type="text" placeholder="Название напоминания" class="notification__create-title popup__input"/>

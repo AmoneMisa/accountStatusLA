@@ -117,6 +117,7 @@ function toggleRaid(charName, raid, elem) {
 
 .calc-raid-gold__raid-total {
   text-align: right;
+  margin-top: 10px;
 }
 
 .calc-raid-gold__raid-total-item {
