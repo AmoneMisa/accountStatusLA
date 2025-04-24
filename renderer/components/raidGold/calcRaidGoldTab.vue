@@ -2,9 +2,9 @@
 import {computed, inject, ref} from "vue";
 import CalcRaidGoldItem from "@/components/raidGold/calcRaidGoldItem.vue";
 import raidGold from "@/raidGold.js";
-import coin from "../../../public/assets/svg/coin.svg";
-import money from "../../../public/assets/svg/money.svg";
-import chest from "../../../public/assets/svg/chest.svg";
+import coin from "../../../src/svg/coin.svg";
+import money from "../../../src/svg/money.svg";
+import chest from "../../../src/svg/chest.svg";
 
 let settings = inject('settings');
 const characterSettings = computed(() => settings.value.characterSettings);

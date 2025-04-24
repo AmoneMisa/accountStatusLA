@@ -2,9 +2,9 @@
 import {saveSettings} from "../../../utils/utils.js";
 import {ref} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
-import minus from "../../../public/assets/svg/minus.svg";
-import square from "../../../public/assets/svg/square.svg";
-import cross from "../../../public/assets/svg/cross.svg";
+import minus from "../../../src/svg/minus.svg";
+import square from "../../../src/svg/square.svg";
+import cross from "../../../src/svg/cross.svg";
 
 function minimize() {
   window.electron.ipcRenderer.send('window:minimize');
@@ -46,7 +46,7 @@ window.electron.ipcRenderer.on('clear-nickname', async () => {
   document.getElementById('nickname').innerText = "Ник не установлен";
 });
 
-import pinIcon from "../../../public/assets/svg/pin.svg";
+import pinIcon from "../../../src/svg/pin.svg";
 </script>
 
 <template>

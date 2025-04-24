@@ -1,7 +1,7 @@
 <script setup>
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject, ref, watchEffect} from "vue";
-import cross from "../../../public/assets/svg/cross.svg";
+import cross from "../../../src/svg/cross.svg";
 
 const props = defineProps({
   characterName: ""

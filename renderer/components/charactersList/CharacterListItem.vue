@@ -3,20 +3,21 @@ import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 
-import checkArrow from "../../../public/assets/svg/check.svg";
-import cross from "../../../public/assets/svg/cross.svg";
-import heart from "../../../public/assets/svg/heart.svg";
-import crown from "../../../public/assets/svg/crown.svg";
-import coin from "../../../public/assets/svg/coin.svg";
-import plus from "../../../public/assets/svg/plus.svg";
-import trash from "../../../public/assets/svg/trash.svg";
-import burger from "../../../public/assets/svg/burger.svg";
+import checkArrow from "../../../src/svg/check.svg";
+import cross from "../../../src/svg/cross.svg";
+import heart from "../../../src/svg/heart.svg";
+import crown from "../../../src/svg/crown.svg";
+import coin from "../../../src/svg/coin.svg";
+import plus from "../../../src/svg/plus.svg";
+import trash from "../../../src/svg/trash.svg";
+import burger from "../../../src/svg/burger.svg";
 
 const props = defineProps({
   character: Object,
   isEditMode: Boolean,
   windowWidth: Number,
-  characterSettings: Object
+  characterSettings: Object,
+  currentTag: String
 });
 
 const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String});
@@ -28,7 +29,7 @@ function toggleIcon(icon, statusTitle) {
     return;
   }
 
-  icon.target.classList.toggle("inactive");
+  icon.target.parentElement.classList.toggle("inactive");
 
   if (!props.characterSettings) {
       settings.value.characterSettings[props.character.name] = {};
@@ -100,14 +101,15 @@ const chunkedRaids = computed(() => {
 });
 </script>
 <template>
-  <div v-if="!((characterSettings && characterSettings.delete) && !isEditMode)"
+  <div v-if="!((characterSettings && characterSettings.delete) && !isEditMode)
+  && (currentTag === 'none' || characterSettings[currentTag] || currentTag === 'sup' && isSupport || currentTag === 'dd' && !isSupport)"
        class="character"
        :class="[isEditMode ? '' : 'view-mode', isSupport ? 'character_support' : 'character_dd']"
        :data-name="character.name"
        :data-gs="character.gearScore"
   >
     <tooltip v-if="!isEditMode">
-      <div class="character__cell character__drag" draggable="true"><burger class="icon burger-icon"  /></div>
+      <div class="character__cell character__drag" draggable="true"><burger class="icon burger-icon" /></div>
       <template #tooltip>Изменить порядок персонажей</template>
     </tooltip>
 
@@ -119,7 +121,7 @@ const chunkedRaids = computed(() => {
         <div
             class="character__icon"
             :data-type="icon"
-            :class="{ inactive: !characterSettings?.[icon] }"
+            :class="{ inactive: !characterSettings?.[icon], 'character__icon_edit': isEditMode }"
             @click="(elem) => toggleIcon(elem, icon)"
         >
           <crown class="icon crown-icon" v-if="icon === 'legate'" />
@@ -134,7 +136,7 @@ const chunkedRaids = computed(() => {
       <tooltip v-if="isEditMode">
         <div
             class="character__icon"
-            :class="{ inactive: !characterSettings?.delete }"
+            :class="{ inactive: !characterSettings?.delete, 'character__icon_edit': isEditMode }"
             data-type="delete"
             @click="(elem) => toggleIcon(elem, 'delete')"
         >
@@ -438,6 +440,11 @@ const chunkedRaids = computed(() => {
       border-bottom: 1px solid var(--dark-grey);
     }
   }
+}
+
+.character__icon_edit {
+  width: 22px;
+  margin-right: 5px;
 }
 
 .check-icon {

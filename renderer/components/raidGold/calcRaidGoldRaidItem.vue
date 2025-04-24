@@ -2,9 +2,9 @@
 import raidGold from "@/raidGold.js";
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject} from "vue";
-import coin from "../../../public/assets/svg/coin.svg";
-import money from "../../../public/assets/svg/money.svg";
-import chest from "../../../public/assets/svg/chest.svg";
+import coin from "../../../src/svg/coin.svg";
+import money from "../../../src/svg/money.svg";
+import chest from "../../../src/svg/chest.svg";
 
 defineProps({
   raid: String,

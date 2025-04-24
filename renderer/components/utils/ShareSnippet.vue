@@ -2,7 +2,7 @@
 import html2canvas from 'html2canvas';
 import {ref} from 'vue';
 import Tooltip from "@/components/utils/Tooltip.vue";
-import share from "../../../public/assets/svg/share.svg"
+import share from "../../../src/svg/share.svg"
 const targetRef = ref(null);
 
 async function capture() {

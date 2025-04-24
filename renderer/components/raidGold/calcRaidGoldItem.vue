@@ -1,7 +1,7 @@
 <script setup>
 import CalcRaidGoldRaidItem from "@/components/raidGold/calcRaidGoldRaidItem.vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
-import cross from "../../../public/assets/svg/cross.svg";
+import cross from "../../../src/svg/cross.svg";
 
 const props = defineProps({
   characterSettings: Object,
@@ -15,7 +15,7 @@ function getCompletedRaids() {
 }
 
 function toggleGoldCharacter(button, characterName) {
-  button.target.classList.toggle("inactive");
+  button.target.parentElement.classList.toggle("inactive");
 
   if (props.goldCharacters.includes(characterName)) {
     props.goldCharacters.splice(props.goldCharacters.indexOf(characterName), 1);
@@ -26,7 +26,7 @@ function toggleGoldCharacter(button, characterName) {
 </script>
 
 <template>
-  <div class="calc-raid-gold__item" v-if="characterSettings && !characterSettings.delete">
+  <div class="calc-raid-gold__item" v-if="characterSettings && !characterSettings.delete && getCompletedRaids().length">
     <div class="calc-raid-gold__title">{{ character.name }}
       <tooltip>
         <button class="button button_icon" @click="(button) => toggleGoldCharacter(button, character.name)"><cross class="icon cross-icon" /></button>

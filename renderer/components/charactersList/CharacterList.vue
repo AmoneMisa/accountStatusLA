@@ -5,10 +5,10 @@ import {onMounted, ref, watch} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 import {saveSettings} from "../../../utils/utils.js";
 
-import trash from "../../../public/assets/svg/trash.svg";
-import changeMenu from "../../../public/assets/svg/menu.svg";
-import pencil from "../../../public/assets/svg/pencil.svg";
-import plus from "../../../public/assets/svg/plus.svg";
+import trash from "../../../src/svg/trash.svg";
+import changeMenu from "../../../src/svg/menu.svg";
+import pencil from "../../../src/svg/pencil.svg";
+import plus from "../../../src/svg/plus.svg";
 
 const emit = defineEmits(["showRaidSelector"]);
 const props = defineProps({
@@ -20,6 +20,8 @@ const props = defineProps({
 
 const isGridView = ref(false);
 const windowWidth = ref(window.innerWidth);
+const currentFilter = ref("none");
+const currentTag = ref("none");
 const grouped = ref({});
 const editableGroupTitles = ref({});
 const newGroupName = ref("");
@@ -254,69 +256,92 @@ function deleteGroup(group) {
   </h1>
 
   <share-snippet>
-    <div class="group-controls">
+    <div class="group-controls" v-if="!isEditMode">
       <input v-model="newGroupName" placeholder="Новая группа"/>
       <button class="button" @click="createGroup"><plus class="icon icon_small plus-icon plus-icon_small"/> Добавить группу</button>
     </div>
 
+    <div class="group-filters" v-if="!isEditMode">
+      <div class="group-filters__title">Фильтр групп</div>
+      <div class="group-filters__list">
+        <div class="group-filters__list-item" :class="{'group-tags__list-item_current': currentFilter === 'none'}" @click="currentFilter = 'none'">Все</div>
+        <div class="group-filters__list-item" :class="{'group-tags__list-item_current': currentFilter === group}" v-for="group in props.groupOrder" :key="group" @click="currentFilter = group">{{ group }}</div>
+      </div>
+    </div>
+
+    <div class="group-tags" v-if="!isEditMode">
+      <div class="group-tags__title">Фильтр персонажей</div>
+      <div class="group-tags__list">
+        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'none'}" @click="currentTag = 'none'">Все</div>
+        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'dd'}" @click="currentTag = 'dd'">ДД</div>
+        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'sup'}" @click="currentTag = 'sup'">Сап</div>
+        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'legate'}" @click="currentTag = 'legate'">Легат</div>
+        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'favorite'}" @click="currentTag = 'favorite'">Избранные</div>
+        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'goldReceiver'}" @click="currentTag = 'goldReceiver'">Золото получатели</div>
+      </div>
+    </div>
+
     <div id="character-list" class="character-list" :class="{'grid': isGridView || windowWidth < 980}" v-if="grouped">
-      <div v-for="group in props.groupOrder" :key="group" class="character-group">
-        <div
-            class="character-group__title-wrapper"
-            @dragstart="onGroupDragStart(group)"
-            @dragover.prevent
-            @drop="onGroupDrop(group)"
-        >
-          <div class="character-group__title">
-            <template v-if="editableGroupTitles[group]">
-              <input
-                  v-model="editableGroupTitles[group]"
-                  @blur="renameGroup(group, editableGroupTitles[group])"
-                  @keyup.enter="renameGroup(group, editableGroupTitles[group])"
-              />
-            </template>
-            <template v-else>
-              <span draggable="true">{{ group }}</span>
-              <div class="character-group__controls" v-if="group !== 'Без группы'">
-                <tooltip>
-                <button class="button button_icon" @click="enableRenameGroup(group)"><pencil class="icon pencil-icon"/></button>
-                  <template #tooltip>Переименовать группу</template>
-                </tooltip>
+      <template v-for="group in props.groupOrder" :key="group">
+        <div  class="character-group" v-if="currentFilter === group || currentFilter === 'none'">
+          <div
+              class="character-group__title-wrapper"
+              @dragstart="onGroupDragStart(group)"
+              @dragover.prevent
+              @drop="onGroupDrop(group)"
+          >
+            <div class="character-group__title">
+              <template v-if="editableGroupTitles[group]">
+                <input
+                    v-model="editableGroupTitles[group]"
+                    @blur="renameGroup(group, editableGroupTitles[group])"
+                    @keyup.enter="renameGroup(group, editableGroupTitles[group])"
+                />
+              </template>
+              <template v-else>
+                <span draggable="true">{{ group }}</span>
+                <div class="character-group__controls" v-if="group !== 'Без группы' && !isEditMode">
                   <tooltip>
-                <button class="button button_icon" @click="deleteGroup(group)"><trash class="icon trash-icon"/></button>
+                    <button class="button button_icon" @click="enableRenameGroup(group)"><pencil class="icon pencil-icon"/></button>
+                    <template #tooltip>Переименовать группу</template>
+                  </tooltip>
+                  <tooltip>
+                    <button class="button button_icon" @click="deleteGroup(group)"><trash class="icon trash-icon"/></button>
                     <template #tooltip>Удалить группу</template>
                   </tooltip>
-              </div>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <div class="character-dropzone">
+            <template v-for="(character, index) in grouped[group]" :key="character.name">
+              <character-list-item
+                  :character="character"
+                  :is-edit-mode="isEditMode"
+                  :window-width="windowWidth"
+                  :character-settings="characterSettings[character.name]"
+                  @show-raid-selector="(characterName) => emit('showRaidSelector', characterName)"
+                  @dragstart="onCharacterDragStart(character.name, group, $event)"
+                  @dragover.prevent
+                  @drop="onCharacterDrop($event)"
+                  :data-group="group"
+                  :data-index="index"
+                  :currentTag="currentTag"
+              />
             </template>
-          </div>
-        </div>
 
-        <div class="character-dropzone">
-          <template v-for="(character, index) in grouped[group]" :key="character.name">
-            <character-list-item
-                :character="character"
-                :is-edit-mode="isEditMode"
-                :window-width="windowWidth"
-                :character-settings="characterSettings[character.name]"
-                @show-raid-selector="(characterName) => emit('showRaidSelector', characterName)"
-                @dragstart="onCharacterDragStart(character.name, group, $event)"
+            <div
+                v-if="grouped[group] && grouped[group].length === 0"
+                class="character-dropzone empty"
                 @dragover.prevent
-                @drop="onCharacterDrop($event)"
-                :data-group="group"
-                :data-index="index"
-            />
-          </template>
-
-          <div
-              v-if="grouped[group] && grouped[group].length === 0"
-              class="character-dropzone empty"
-              @dragover.prevent
-              @drop="() => onDropToEmptyGroup(group)"
-          >
-            <em>Перетащи персонажа сюда</em>
+                @drop="() => onDropToEmptyGroup(group)"
+            >
+              <em>Перетащи персонажа сюда</em>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
     </div>
   </share-snippet>
 </template>
@@ -396,5 +421,43 @@ function deleteGroup(group) {
 .character-group {
   margin-top: 30px;
   border-top: 1px solid var(--grey);
+}
+
+.group-filters,
+.group-tags {
+  border-bottom: 1px solid var(--grey);
+  border-top: 1px solid var(--grey);
+  padding: 10px;
+  margin-top: 15px;
+}
+
+.group-filters__title,
+.group-tags__title {
+  font-size: var(--font-small);
+  margin-bottom: 10px;
+}
+
+.group-filters__list,
+.group-tags__list {
+  display: flex;
+  font-size: var(--font-tiny);
+}
+
+.group-filters__list-item,
+.group-tags__list-item {
+  margin-right: 10px;
+  cursor: pointer;
+  transition: .2s ease;
+  padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
+
+  &_current {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  &:hover {
+    color: var(--gs);
+  }
 }
 </style>

@@ -1,8 +1,8 @@
 <script setup>
 import Tooltip from "@/components/utils/Tooltip.vue";
-import pencil from "../../../public/assets/svg/pencil.svg";
-import update from "../../../public/assets/svg/update.svg";
-import save from "../../../public/assets/svg/save.svg";
+import pencil from "../../../src/svg/pencil.svg";
+import update from "../../../src/svg/update.svg";
+import save from "../../../src/svg/save.svg";
 
 const props = defineProps({
   isEditMode: false

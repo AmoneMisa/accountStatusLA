@@ -1,6 +1,6 @@
 <script setup>
 import {ref} from 'vue';
-import cross from "../../../public/assets/svg/cross.svg";
+import cross from "../../../src/svg/cross.svg";
 
 const emit = defineEmits(['closePopup', 'saveItem']);
 

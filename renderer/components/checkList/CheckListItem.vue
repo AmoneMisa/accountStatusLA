@@ -1,4 +1,6 @@
 <script setup>
+import trash from "../../../src/svg/trash.svg";
+
 defineProps({
   text: "",
   index: Number,
@@ -17,7 +19,7 @@ const emit = defineEmits(['delete', 'toggle']);
     {{ text }}
   </span>
   <button type="button" class="check-list-table__item-delete button button_icon" title="Удалить" :data-index="index" @click="emit('delete', index)">
-    🗑
+    <trash class="icon trash-icon" />
   </button>
 </div>
 </template>

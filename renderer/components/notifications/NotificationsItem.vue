@@ -1,7 +1,8 @@
 <script setup>
-import {computed, inject, ref} from "vue";
+import {computed, inject} from "vue";
 import {saveSettings} from "../../../utils/utils.js";
 import Tooltip from "@/components/utils/Tooltip.vue";
+import trash from "../../../src/svg/trash.svg";
 
 const props = defineProps({
   notification: Object,
@@ -65,7 +66,7 @@ function onDelete() {
             class="notification-item__delete button button_icon"
             @click="onDelete"
         >
-          🗑
+          <trash class="icon trash-icon" />
         </button>
         <template #tooltip>Удалить напоминание</template>
       </tooltip>
