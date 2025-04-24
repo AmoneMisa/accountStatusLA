@@ -425,7 +425,6 @@ function deleteGroup(group) {
 
 .group-filters,
 .group-tags {
-  border-bottom: 1px solid var(--grey);
   border-top: 1px solid var(--grey);
   padding: 10px;
   margin-top: 15px;

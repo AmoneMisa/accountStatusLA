@@ -91,9 +91,10 @@ onBeforeUnmount(() => {
   font-size: var(--font-tiny);
   padding: 6px 10px;
   border-radius: 4px;
-  white-space: nowrap;
   pointer-events: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   max-width: 300px;
+  word-break: break-word;
+  white-space: break-spaces;
 }
 </style>

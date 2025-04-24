@@ -63,7 +63,6 @@ import CalcCommission from "@/components/toolsList/CalcCommission.vue";
   flex: auto;
 }
 
-
 .tools-container__item-name {
   margin: 0 auto 10px auto;
   text-align: center;
