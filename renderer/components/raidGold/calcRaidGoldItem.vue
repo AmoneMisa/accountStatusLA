@@ -11,7 +11,8 @@ const props = defineProps({
 
 function getCompletedRaids() {
   const raids = props.characterSettings?.raids || [];
-  return raids.filter(raid => props.characterSettings?.raidStatus[raid] && raid !== "Хранитель" && raid !== "Эфонка" && raid !== "Хаос");
+  const raidStatus = props.characterSettings?.raidStatus || {};
+  return raids.filter(raid => raidStatus[raid] && raid !== "Хранитель" && raid !== "Эфонка" && raid !== "Хаос");
 }
 
 function toggleGoldCharacter(button, characterName) {
