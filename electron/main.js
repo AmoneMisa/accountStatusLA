@@ -62,9 +62,7 @@ app.on('ready', async () => {
 
     schedule.scheduleJob('*/30 * * * *', () => {
         const now = DateTime.now().setZone("UTC+3");
-        const then = DateTime.now().setZone("UTC+5");
-        console.log(now);
-        console.log(then);
+
         if (now.hour === 6 && now.minute === 0) {
             resetWeeklyActivities(DateTime);
             resetDailyActivities(DateTime);
