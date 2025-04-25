@@ -792,7 +792,7 @@ input[type=number]::-webkit-inner-spin-button {
 }
 
 .tab-button {
-  padding: 8px;
+  padding: 8px 3px;
   cursor: pointer;
   border: 1px solid var(--black);
   background: var(--grey);
@@ -801,8 +801,9 @@ input[type=number]::-webkit-inner-spin-button {
   color: var(--white);
   border-radius: 5px;
   transition: .2s ease;
-  font-size: var(--font-small);
+  font-size: var(--font-very-small);
   box-shadow: var(--inner-shadow);
+  white-space: nowrap;
 
   .active {
     background: var(--gold);

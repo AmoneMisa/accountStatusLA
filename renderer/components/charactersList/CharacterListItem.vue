@@ -17,7 +17,8 @@ const props = defineProps({
   isEditMode: Boolean,
   windowWidth: Number,
   characterSettings: Object,
-  currentTag: String
+  currentTag: String,
+  searchCharacter: String,
 });
 
 const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String});
@@ -99,10 +100,30 @@ const chunkedRaids = computed(() => {
 
   return result;
 });
+
+const isShowCharacter = computed(() => {
+  if ((props.characterSettings && props.characterSettings.delete) && !props.isEditMode) {
+    return false;
+  }
+
+  if (props.searchCharacter !== "") {
+    if (!props.character.name.toLowerCase().includes(props.searchCharacter.toLowerCase())) {
+      return false;
+    }
+  }
+
+  if (!(props.currentTag === 'none'
+      || props.characterSettings[props.currentTag]
+      || props.currentTag === 'sup' && isSupport
+      || props.currentTag === 'dd' && !isSupport)) {
+    return false;
+  }
+
+  return true;
+});
 </script>
 <template>
-  <div v-if="!((characterSettings && characterSettings.delete) && !isEditMode)
-  && (currentTag === 'none' || characterSettings[currentTag] || currentTag === 'sup' && isSupport || currentTag === 'dd' && !isSupport)"
+  <div v-if="isShowCharacter"
        class="character"
        :class="[isEditMode ? '' : 'view-mode', isSupport ? 'character_support' : 'character_dd']"
        :data-name="character.name"

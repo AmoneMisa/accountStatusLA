@@ -22,6 +22,7 @@ const isGridView = ref(false);
 const windowWidth = ref(window.innerWidth);
 const currentFilter = ref("none");
 const currentTag = ref("none");
+const searchCharacter = ref("");
 const grouped = ref({});
 const editableGroupTitles = ref({});
 const newGroupName = ref("");
@@ -279,6 +280,12 @@ function deleteGroup(group) {
         <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'favorite'}" @click="currentTag = 'favorite'">Избранные</div>
         <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'goldReceiver'}" @click="currentTag = 'goldReceiver'">Золото получатели</div>
       </div>
+      <div class="group-tags__search">
+        <label class="custom-label group-tags__search-label" for="search-character">
+          Поиск по нику персонажа
+        </label>
+          <input class="input group-tags__search-input" id="search-character" type="search" v-model="searchCharacter" placeholder="Nickname">
+      </div>
     </div>
 
     <div id="character-list" class="character-list" :class="{'grid': isGridView || windowWidth < 980}" v-if="grouped">
@@ -328,6 +335,7 @@ function deleteGroup(group) {
                   :data-group="group"
                   :data-index="index"
                   :currentTag="currentTag"
+                  :searchCharacter="searchCharacter"
               />
             </template>
 
@@ -458,5 +466,17 @@ function deleteGroup(group) {
   &:hover {
     color: var(--gs);
   }
+}
+
+.group-tags__search {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  max-width: 250px;
+}
+
+.group-tags__search-label {
+  font-size: var(--font-very-small);
+  margin-bottom: 10px;
 }
 </style>
