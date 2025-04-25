@@ -8,7 +8,7 @@ import {createWindow, setMainWindow} from "../mainProcess/mainWindow.js";
 import {capitalize} from "../utils/utils.js";
 import applySettings from "../mainProcess/applySettings.js";
 import {resetDailyActivities, resetWeeklyActivities} from "../mainProcess/resetActivities.js";
-import {parse} from 'semver';
+import semver from 'semver';
 import schedule from "node-schedule";
 
 process.env.DIST = path.join(import.meta.dirname, '../dist')
@@ -278,7 +278,7 @@ ipcMain.handle('check-for-updates', async (event) => {
 });
 
 ipcMain.handle('is-newer-version', async (_, current, latest) => {
-    return parse(latest) > parse(current);
+    return semver.gt(semver.coerce(latest), semver.coerce(current));
 });
 
 ipcMain.handle('set-autostart', (event, enable) => {
