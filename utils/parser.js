@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {parse} from 'node-html-parser';
 
-export async function parseLostArkProfile(nickname, isSingle) {
+export async function parseLostArkProfile(nickname) {
     try {
         const page = await getCharacterPage(nickname);
         const charNameList = getCharacterList(page, '.profile-character-list__char');
