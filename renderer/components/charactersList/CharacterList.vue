@@ -1,7 +1,7 @@
 <script setup>
 import CharacterListItem from "@/components/charactersList/CharacterListItem.vue";
 import ShareSnippet from "@/components/utils/ShareSnippet.vue";
-import {onMounted, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 import {saveSettings} from "../../../utils/utils.js";
 
@@ -24,6 +24,7 @@ const windowWidth = ref(window.innerWidth);
 const currentFilter = ref("none");
 const currentTag = ref("none");
 const searchCharacter = ref("");
+const rangeGSCharacter = ref({from: 1580, to: 1735});
 const grouped = ref({});
 const editableGroupTitles = ref({});
 const newGroupName = ref("");
@@ -246,6 +247,39 @@ function deleteGroup(group) {
     characterSettings: newSettings,
   });
 }
+
+const getGs = (char) => parseFloat(char.gearScore?.replace(',', '') || 0);
+const minGs = computed(() => {
+  if (!props.characterList || !props.characterList.length) {
+    return 0;
+  }
+
+  return [...props.characterList].sort((a, b) => getGs(a) - getGs(b))[0]?.gearScore;
+});
+
+const maxGs = computed(() => {
+  if (!props.characterList || !props.characterList.length) {
+    return 0;
+  }
+
+  return [...props.characterList].sort((a, b) => getGs(b) - getGs(a))[0]?.gearScore;
+
+});
+
+function validateGsInput(input) {
+  if (input.value < parseFloat(input.min)) {
+    input.value = input.min;
+  } else if (input.value > parseFloat(input.max)) {
+    input.value = input.max;
+  }
+
+  if (input.name === "gs-to") {
+    rangeGSCharacter.value.to = input.value;
+  } else if (input.name === "gs-from") {
+    rangeGSCharacter.value.from = input.value;
+
+  }
+}
 </script>
 
 <template>
@@ -313,6 +347,21 @@ function deleteGroup(group) {
                  placeholder="Nickname">
         </div>
       </div>
+      <div class="group-tags__col">
+        <div class="group-tags__gear-score">
+          <label class="custom-label group-tags__gear-score-label" for="gs-character">
+            Поиск по ГС персонажа. Значение: {{rangeGSCharacter.from}} - {{rangeGSCharacter.to}}
+          </label>
+          <input class="input input_number group-tags__gear-score-input" id="gs-character-input-min" type="number" @change="({target}) => validateGsInput(target)"
+                 placeholder="От" :min="minGs.replace(',', '')" :max="maxGs.replace(',', '')" name="gs-from">
+          <input class="input input_number group-tags__gear-score-input" id="gs-character-input-max" type="number" @change="({target}) => validateGsInput(target)"
+                 placeholder="До" :min="minGs.replace(',', '')" :max="maxGs.replace(',', '')" name="gs-to">
+          <input class="input group-tags__gear-score-input" id="gs-character" type="range" v-model="rangeGSCharacter.from"
+                 :min="minGs.replace(',', '')" :max="maxGs.replace(',', '')">
+          <input class="input group-tags__gear-score-input" id="gs-character" type="range" v-model="rangeGSCharacter.to"
+                 :min="minGs.replace(',', '')" :max="maxGs.replace(',', '')">
+        </div>
+      </div>
     </div>
 
     <div id="character-list" class="character-list" :class="{'grid': isGridView || windowWidth < 980}" v-if="grouped">
@@ -373,6 +422,7 @@ function deleteGroup(group) {
                   :data-index="index"
                   :currentTag="currentTag"
                   :searchCharacter="searchCharacter"
+                  :gsFilter="rangeGSCharacter"
                   @refreshCharacter="(characterName) => emit('refresh-character', characterName)"
               />
             </template>
@@ -479,7 +529,12 @@ function deleteGroup(group) {
 .group-tags {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.group-tags__col {
+  max-width: 33%;
 }
 
 .group-filters__title,
@@ -512,14 +567,23 @@ function deleteGroup(group) {
   }
 }
 
-.group-tags__search {
+.group-tags__search,
+.group-tags__gear-score {
   display: flex;
   flex-direction: column;
-  max-width: 250px;
+  width: 100%;
 }
 
-.group-tags__search-label {
+.group-tags__search-label,
+.group-tags__gear-score-label {
   font-size: var(--font-very-small);
   margin-bottom: 10px;
+}
+
+.group-tags__gear-score {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 </style>

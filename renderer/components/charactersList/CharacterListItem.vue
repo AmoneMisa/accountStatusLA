@@ -20,6 +20,7 @@ const props = defineProps({
   characterSettings: Object,
   currentTag: String,
   searchCharacter: String,
+  gsFilter: Number
 });
 
 const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String, 'refresh-character': String});
@@ -149,6 +150,14 @@ const isShowCharacter = computed(() => {
       || props.characterSettings[props.currentTag]
       || props.currentTag === 'sup' && isSupport
       || props.currentTag === 'dd' && !isSupport)) {
+    return false;
+  }
+
+  if (parseFloat(props.character.gearScore.replace(",", '')) < props.gsFilter.from) {
+    return false;
+  }
+
+  if (parseFloat(props.character.gearScore.replace(",", '')) > props.gsFilter.to) {
     return false;
   }
 
