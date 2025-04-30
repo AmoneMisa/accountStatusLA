@@ -635,6 +635,12 @@ option:checked {
   background-color: var(--light-grey);
 }
 
+i {
+  font-family: Caveat, serif;
+  color: var(--gold);
+  font-style: initial;
+}
+
 input {
   background-color: transparent;
   border-radius: 5px;

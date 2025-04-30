@@ -251,7 +251,9 @@ function deleteGroup(group) {
   <h1 class="title character-list__title">
     <span>Список персонажей</span>
     <tooltip>
-      <button class="button button_icon character-list__button" @click="isGridView = !isGridView"><changeMenu class="icon menu-icon" /></button>
+      <button class="button button_icon character-list__button" @click="isGridView = !isGridView">
+        <changeMenu class="icon menu-icon"/>
+      </button>
       <template #tooltip>Изменить отображение</template>
     </tooltip>
   </h1>
@@ -259,38 +261,62 @@ function deleteGroup(group) {
   <share-snippet>
     <div class="group-controls" v-if="!isEditMode">
       <input v-model="newGroupName" placeholder="Новая группа"/>
-      <button class="button" @click="createGroup"><plus class="icon icon_small plus-icon plus-icon_small"/> Добавить группу</button>
+      <button class="button" @click="createGroup">
+        <plus class="icon icon_small plus-icon plus-icon_small"/>
+        Добавить группу
+      </button>
     </div>
 
     <div class="group-filters" v-if="!isEditMode">
       <div class="group-filters__title">Фильтр групп</div>
       <div class="group-filters__list">
-        <div class="group-filters__list-item" :class="{'group-tags__list-item_current': currentFilter === 'none'}" @click="currentFilter = 'none'">Все</div>
-        <div class="group-filters__list-item" :class="{'group-tags__list-item_current': currentFilter === group}" v-for="group in props.groupOrder" :key="group" @click="currentFilter = group">{{ group }}</div>
+        <div class="group-filters__list-item" :class="{'group-tags__list-item_current': currentFilter === 'none'}"
+             @click="currentFilter = 'none'">Все
+        </div>
+        <div class="group-filters__list-item" :class="{'group-tags__list-item_current': currentFilter === group}"
+             v-for="group in props.groupOrder" :key="group" @click="currentFilter = group">{{ group }}
+        </div>
       </div>
     </div>
 
     <div class="group-tags" v-if="!isEditMode">
-      <div class="group-tags__title">Фильтр персонажей</div>
-      <div class="group-tags__list">
-        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'none'}" @click="currentTag = 'none'">Все</div>
-        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'dd'}" @click="currentTag = 'dd'">ДД</div>
-        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'sup'}" @click="currentTag = 'sup'">Сап</div>
-        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'legate'}" @click="currentTag = 'legate'">Легат</div>
-        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'favorite'}" @click="currentTag = 'favorite'">Избранные</div>
-        <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'goldReceiver'}" @click="currentTag = 'goldReceiver'">Золото получатели</div>
+      <div class="group-tags__col">
+        <div class="group-tags__title">Фильтр персонажей</div>
+        <div class="group-tags__list">
+          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'none'}"
+               @click="currentTag = 'none'">Все
+          </div>
+          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'dd'}"
+               @click="currentTag = 'dd'">ДД
+          </div>
+          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'sup'}"
+               @click="currentTag = 'sup'">Сап
+          </div>
+          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'legate'}"
+               @click="currentTag = 'legate'">Легат
+          </div>
+          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'favorite'}"
+               @click="currentTag = 'favorite'">Избранные
+          </div>
+          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'goldReceiver'}"
+               @click="currentTag = 'goldReceiver'">Золото получатели
+          </div>
+        </div>
       </div>
-      <div class="group-tags__search">
-        <label class="custom-label group-tags__search-label" for="search-character">
-          Поиск по нику персонажа
-        </label>
-          <input class="input group-tags__search-input" id="search-character" type="search" v-model="searchCharacter" placeholder="Nickname">
+      <div class="group-tags__col">
+        <div class="group-tags__search">
+          <label class="custom-label group-tags__search-label" for="search-character">
+            Поиск по нику персонажа
+          </label>
+          <input class="input group-tags__search-input" id="search-character" type="search" v-model="searchCharacter"
+                 placeholder="Nickname">
+        </div>
       </div>
     </div>
 
     <div id="character-list" class="character-list" :class="{'grid': isGridView || windowWidth < 980}" v-if="grouped">
       <template v-for="group in props.groupOrder" :key="group">
-        <div  class="character-group" v-if="currentFilter === group || currentFilter === 'none'">
+        <div class="character-group" v-if="currentFilter === group || currentFilter === 'none'">
           <div
               class="character-group__title-wrapper"
               @dragstart="onGroupDragStart(group)"
@@ -309,11 +335,15 @@ function deleteGroup(group) {
                 <span draggable="true">{{ group }}</span>
                 <div class="character-group__controls" v-if="group !== 'Без группы' && !isEditMode">
                   <tooltip>
-                    <button class="button button_icon" @click="enableRenameGroup(group)"><pencil class="icon pencil-icon"/></button>
+                    <button class="button button_icon" @click="enableRenameGroup(group)">
+                      <pencil class="icon pencil-icon"/>
+                    </button>
                     <template #tooltip>Переименовать группу</template>
                   </tooltip>
                   <tooltip>
-                    <button class="button button_icon" @click="deleteGroup(group)"><trash class="icon trash-icon"/></button>
+                    <button class="button button_icon" @click="deleteGroup(group)">
+                      <trash class="icon trash-icon"/>
+                    </button>
                     <template #tooltip>Удалить группу</template>
                   </tooltip>
                 </div>
@@ -361,7 +391,7 @@ function deleteGroup(group) {
 }
 
 .character-list__button {
-  @media screen and (max-width: 980px){
+  @media screen and (max-width: 980px) {
     display: none !important;
   }
 }
@@ -438,6 +468,12 @@ function deleteGroup(group) {
   margin-top: 15px;
 }
 
+.group-tags {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .group-filters__title,
 .group-tags__title {
   font-size: var(--font-small);
@@ -469,7 +505,6 @@ function deleteGroup(group) {
 }
 
 .group-tags__search {
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
   max-width: 250px;

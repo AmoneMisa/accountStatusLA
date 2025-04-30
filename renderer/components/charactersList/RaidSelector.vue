@@ -15,15 +15,25 @@ const characterSettings = computed(() => settings.value?.characterSettings);
 
 let currentOptions = ref([]);
 
+function setChosenOption(value, isChecked) {
+  if (!currentOptions.value.includes(value) && isChecked) {
+    currentOptions.value.push(value);
+  } else {
+    currentOptions.value = currentOptions.value.filter(_val => _val !== value);
+  }
+}
+
 function applyRaidSelection(characterName) {
   let selectedRaids = Array.from(currentOptions.value);
-  saveSettings({characterSettings: {
-    ...characterSettings.value,
+  saveSettings({
+    characterSettings: {
+      ...characterSettings.value,
       [characterName]: {
-      ...characterSettings.value[characterName] || {},
+        ...characterSettings.value[characterName] || {},
         raids: selectedRaids
       }
-    }});
+    }
+  });
   emit("save");
 }
 
@@ -33,32 +43,47 @@ watchEffect(() => {
 </script>
 
 <template>
-<div class="raid-selector popup">
-  <div class="popup__content">
-    <button class="cross button button_icon" @click="emit('close')"><cross class="icon icon_very-small cross-icon" /></button>
-    <label class="raid-selector__label">
-      Выбери активность для персонажа: <i>{{characterName}}</i>.<br>Для мульти-выбора: нажми <i>Cntrl</i> и выбирай необходимые пункты
-      <select class="raid-selector__select" multiple v-model="currentOptions" >
-        <option v-for="raid in raids" :value="raid">{{raid}}</option>
-      </select>
-    </label>
-    <button id="apply-raids" class="apply-button button" @click="applyRaidSelection(characterName)">Применить</button>
+  <div class="raid-selector popup">
+    <div class="popup__content">
+      <button class="cross button button_icon" @click="emit('close')">
+        <cross class="icon icon_very-small cross-icon"/>
+      </button>
+      <div>Выбери активность для персонажа: <i>{{ characterName }}</i>.</div>
+      <div class="raid-selector__list">
+        <label v-for="raid in raids" class="raid-selector__label custom-label">
+          <input :value="raid" type="checkbox" class="raid-selector__checkbox" :checked="currentOptions.includes(raid)" @change="({target}) => setChosenOption(raid, target.checked)">
+          <span>{{ raid }}</span>
+        </label>
+      </div>
+      <button id="apply-raids" class="apply-button button" @click="applyRaidSelection(characterName)">Применить</button>
+    </div>
   </div>
-</div>
 </template>
 
 <style scoped lang="scss">
 .raid-selector__label {
- font-size: var(--font-small);
+  font-size: var(--font-small);
+  width: 100%;
+  max-width: calc(50% - 10px);
 
-  i {
-    font-family: Caveat, serif;
-    color: var(--gold);
-    font-style: initial;
+  &:nth-child(even) {
+    justify-content: flex-end;
+
+    span {
+      order: 1;
+    }
+
+    input {
+      order: 2;
+    }
   }
 }
 
-.raid-selector__select {
-  margin-top: 10px;
+.raid-selector__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 }
 </style>

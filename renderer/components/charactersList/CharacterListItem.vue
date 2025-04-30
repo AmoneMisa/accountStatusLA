@@ -1,6 +1,6 @@
 <script setup>
 import {saveSettings} from "../../../utils/utils.js";
-import {computed, inject} from "vue";
+import {computed, inject, ref} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 
 import checkArrow from "../../../src/svg/check.svg";
@@ -24,13 +24,45 @@ const props = defineProps({
 const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String});
 let settings = inject('settings');
 const isSupport = ['Художница', 'Менестрель', 'Паладин'].includes(props.character.className);
+const draggedRaid = ref(null);
 
-function toggleIcon(icon, statusTitle) {
+function onRaidDragStart(raid) {
+  draggedRaid.value = raid;
+}
+
+function onRaidDrop(targetRaid) {
+  if (!draggedRaid.value || draggedRaid.value === targetRaid) return;
+
+  const raids = props.characterSettings.raids;
+  const fromIndex = raids.indexOf(draggedRaid.value);
+  const toIndex = raids.indexOf(targetRaid);
+
+  if (fromIndex !== -1 && toIndex !== -1) {
+    const newRaids = [...raids];
+    const [moved] = newRaids.splice(fromIndex, 1);
+    newRaids.splice(toIndex, 0, moved);
+
+    saveSettings({
+      characterSettings: {
+        ...settings.value.characterSettings,
+        [props.character.name]: {
+          ...props.characterSettings,
+          raids: newRaids
+        }
+      }
+    });
+
+    emit('updateCharacter', props.character.name);
+    draggedRaid.value = null;
+  }
+}
+
+function toggleIcon(target, statusTitle) {
   if (!props.isEditMode) {
     return;
   }
 
-  icon.target.parentElement.classList.toggle("inactive");
+  target.closest(".character__icon").classList.toggle("inactive");
 
   if (!props.characterSettings) {
       settings.value.characterSettings[props.character.name] = {};
@@ -143,7 +175,7 @@ const isShowCharacter = computed(() => {
             class="character__icon"
             :data-type="icon"
             :class="{ inactive: !characterSettings?.[icon], 'character__icon_edit': isEditMode }"
-            @click="(elem) => toggleIcon(elem, icon)"
+            @click="({target}) => toggleIcon(target, icon)"
         >
           <crown class="icon crown-icon" v-if="icon === 'legate'" />
           <coin class="icon coin-icon" v-if="icon === 'goldReceiver'" />
@@ -159,7 +191,7 @@ const isShowCharacter = computed(() => {
             class="character__icon"
             :class="{ inactive: !characterSettings?.delete, 'character__icon_edit': isEditMode }"
             data-type="delete"
-            @click="(elem) => toggleIcon(elem, 'delete')"
+            @click="({target}) => toggleIcon(target, 'delete')"
         >
           <cross class="icon cross-icon" />
         </div>
@@ -180,6 +212,10 @@ const isShowCharacter = computed(() => {
             :key="raid"
             class="raid"
             :data-raid="raid"
+            draggable="true"
+            @dragstart.stop="() => onRaidDragStart(raid)"
+            @dragover.prevent
+            @drop="() => onRaidDrop(raid)"
         >
           <div class="raid__header">
             <div class="raid__name">{{ raid }}</div>
@@ -399,7 +435,6 @@ const isShowCharacter = computed(() => {
 
   .add-raid {
     border-radius: 0;
-    width: -webkit-fill-available;
     grid-column: 1 / -1;
     justify-content: center;
   }
