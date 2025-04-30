@@ -254,7 +254,7 @@ const minGs = computed(() => {
     return 0;
   }
 
-  return [...props.characterList].sort((a, b) => getGs(a) - getGs(b))[0]?.gearScore;
+  return [...props.characterList].sort((a, b) => getGs(a) - getGs(b))[0]?.gearScore.replace(',', '');
 });
 
 const maxGs = computed(() => {
@@ -262,7 +262,7 @@ const maxGs = computed(() => {
     return 0;
   }
 
-  return [...props.characterList].sort((a, b) => getGs(b) - getGs(a))[0]?.gearScore;
+  return [...props.characterList].sort((a, b) => getGs(b) - getGs(a))[0]?.gearScore.replace(',', '');
 
 });
 
@@ -280,6 +280,16 @@ function validateGsInput(input) {
 
   }
 }
+
+const visibleCharactersCount = computed(() => {
+  let counter = {};
+
+  for (let [groupName, group] of Object.entries(grouped.value)) {
+    counter[groupName] = group.filter(char => !char.delete).length;
+  }
+
+  return counter;
+})
 </script>
 
 <template>
@@ -353,13 +363,13 @@ function validateGsInput(input) {
             Поиск по ГС персонажа. Значение: {{rangeGSCharacter.from}} - {{rangeGSCharacter.to}}
           </label>
           <input class="input input_number group-tags__gear-score-input" id="gs-character-input-min" type="number" @change="({target}) => validateGsInput(target)"
-                 placeholder="От" :min="minGs.replace(',', '')" :max="maxGs.replace(',', '')" name="gs-from">
+                 placeholder="От" :min="minGs" :max="maxGs" name="gs-from">
           <input class="input input_number group-tags__gear-score-input" id="gs-character-input-max" type="number" @change="({target}) => validateGsInput(target)"
-                 placeholder="До" :min="minGs.replace(',', '')" :max="maxGs.replace(',', '')" name="gs-to">
+                 placeholder="До" :min="minGs" :max="maxGs" name="gs-to">
           <input class="input group-tags__gear-score-input" id="gs-character" type="range" v-model="rangeGSCharacter.from"
-                 :min="minGs.replace(',', '')" :max="maxGs.replace(',', '')">
+                 :min="minGs" :max="maxGs">
           <input class="input group-tags__gear-score-input" id="gs-character" type="range" v-model="rangeGSCharacter.to"
-                 :min="minGs.replace(',', '')" :max="maxGs.replace(',', '')">
+                 :min="minGs" :max="maxGs">
         </div>
       </div>
     </div>
@@ -382,7 +392,10 @@ function validateGsInput(input) {
                 />
               </template>
               <template v-else>
-                <span draggable="true">{{ group }} ({{ grouped[group].length }} перс.)</span>
+                <span draggable="true">{{ group }}
+                  <tooltip>({{visibleCharactersCount[group]}} / {{ grouped[group].length }} перс.)
+                  <template #tooltip>Отображает видимое и скрытое количество персонажей в группе</template>
+                  </tooltip></span>
                 <div class="character-group__controls" v-if="group !== 'Без группы' && !isEditMode">
                   <tooltip>
                     <button class="button button_icon" @click="enableRenameGroup(group)">
@@ -581,7 +594,6 @@ function validateGsInput(input) {
 }
 
 .group-tags__gear-score {
-  margin-top: 10px;
   display: flex;
   flex-direction: column;
   gap: 5px;

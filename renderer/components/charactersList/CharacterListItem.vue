@@ -20,7 +20,7 @@ const props = defineProps({
   characterSettings: Object,
   currentTag: String,
   searchCharacter: String,
-  gsFilter: Number
+  gsFilter: Object
 });
 
 const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String, 'refresh-character': String});
