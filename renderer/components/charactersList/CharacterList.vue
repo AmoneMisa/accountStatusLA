@@ -333,7 +333,7 @@ function deleteGroup(group) {
                 />
               </template>
               <template v-else>
-                <span draggable="true">{{ group }}</span>
+                <span draggable="true">{{ group }} ({{ grouped[group].length }} перс.)</span>
                 <div class="character-group__controls" v-if="group !== 'Без группы' && !isEditMode">
                   <tooltip>
                     <button class="button button_icon" @click="enableRenameGroup(group)">
