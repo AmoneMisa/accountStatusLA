@@ -1,6 +1,6 @@
 import {app, dialog, ipcMain, Menu, net, Notification, shell, Tray} from 'electron';
 import path from 'path';
-import {parseLostArkProfile} from "../utils/parser.js";
+import {getCharacterPage, getClassName, getGearScore, parseLostArkProfile} from "../utils/parser.js";
 import {changeSettingsPath, getToolsInfo, loadSettings, saveSettings} from "../utils/storage.js";
 import fs from "fs";
 import {DateTime, Settings} from "luxon";
@@ -147,6 +147,26 @@ ipcMain.handle('fetch-characters', async (_, nickname) => {
         return characters;
     } catch (error) {
         return {error: error.message};
+    }
+});
+
+ipcMain.handle('fetch-character', async (_, name) => {
+    try {
+        const page = await getCharacterPage(name);
+        const gearScore = getGearScore(page);
+        const className = getClassName(page);
+
+        if (!gearScore || !className) {
+            throw new Error('Не удалось получить ГС или класс');
+        }
+
+        return {
+            name,
+            gearScore,
+            className
+        };
+    } catch (error) {
+        return { error: error.message };
     }
 });
 

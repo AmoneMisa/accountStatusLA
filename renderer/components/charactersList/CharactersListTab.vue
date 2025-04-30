@@ -91,6 +91,63 @@ function showRaidSelector(characterName) {
   currentChosenCharacter.value = characterName;
   isShowRaidSelector.value = true;
 }
+
+async function refreshSingleCharacter(name) {
+  isShowLoader.value = true;
+
+  const result = await window.electron.ipcRenderer.fetchCharacter(name);
+
+  if (result.error) {
+    console.error('Ошибка:', result.error);
+    isShowLoader.value = false;
+    return;
+  }
+
+  const updated = characterList.value.filter(c => c.name !== name);
+  updated.push(result);
+
+  saveCharacterList(updated);
+  isShowLoader.value = false;
+}
+
+async function refreshCharactersGroup(characters = []) {
+  if (!Array.isArray(characters) || characters.length === 0) {
+    return;
+  }
+
+  isShowLoader.value = true;
+
+  const updated = [];
+  for (const character of characters) {
+    const result = await window.electron.ipcRenderer.fetchCharacter(character.name);
+    if (result && !result.error) {
+      updated.push(result);
+    } else {
+      console.error(`Ошибка при загрузке ${character.name}:`, result.error);
+    }
+    await new Promise(res => setTimeout(res, 1000));
+  }
+
+  saveCharacterList(mergeCharactersPreferMaxGS([...characterList.value, ...updated]));
+  isShowLoader.value = false;
+}
+
+function mergeCharactersPreferMaxGS(list) {
+  const map = new Map();
+
+  for (const char of list) {
+    const existing = map.get(char.name);
+    const currentGS = parseFloat(char.gearScore.replace(',', ''));
+    const existingGS = existing ? parseFloat(existing.gearScore.replace(',', '')) : 0;
+
+    if (!existing || currentGS > existingGS) {
+      map.set(char.name, char);
+    }
+  }
+
+  return Array.from(map.values());
+}
+
 </script>
 
 <template>
@@ -109,6 +166,8 @@ function showRaidSelector(characterName) {
       :groupOrder="groupOrder"
       :isEditMode="isEditMode"
       @show-raid-selector="showRaidSelector"
+      @refresh-character="refreshSingleCharacter"
+      @refresh-character-group="refreshCharactersGroup"
   />
 
   <button

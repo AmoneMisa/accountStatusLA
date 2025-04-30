@@ -11,6 +11,7 @@ import coin from "../../../src/svg/coin.svg";
 import plus from "../../../src/svg/plus.svg";
 import trash from "../../../src/svg/trash.svg";
 import burger from "../../../src/svg/burger.svg";
+import update from "../../../src/svg/update.svg";
 
 const props = defineProps({
   character: Object,
@@ -21,7 +22,7 @@ const props = defineProps({
   searchCharacter: String,
 });
 
-const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String});
+const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String, 'refresh-character': String});
 let settings = inject('settings');
 const isSupport = ['Художница', 'Менестрель', 'Паладин'].includes(props.character.className);
 const draggedRaid = ref(null);
@@ -262,6 +263,12 @@ const isShowCharacter = computed(() => {
           <plus />
         </button>
         <template #tooltip>Добавить активность</template>
+      </tooltip>
+      <tooltip>
+        <button type="button" id="refresh-character" class="button button_icon refresh-characters"
+                @click="emit('refresh-character', character.name)"><update class="icon update-icon" />
+        </button>
+        <template #tooltip>Обновить персонажа</template>
       </tooltip>
     </div>
   </div>

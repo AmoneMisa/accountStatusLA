@@ -9,8 +9,9 @@ import trash from "../../../src/svg/trash.svg";
 import changeMenu from "../../../src/svg/menu.svg";
 import pencil from "../../../src/svg/pencil.svg";
 import plus from "../../../src/svg/plus.svg";
+import update from "../../../src/svg/update.svg";
 
-const emit = defineEmits(["showRaidSelector"]);
+const emit = defineEmits(["showRaidSelector", "refresh-character-group", "refresh-character"]);
 const props = defineProps({
   characterList: Array,
   characterSettings: Object,
@@ -346,6 +347,12 @@ function deleteGroup(group) {
                     </button>
                     <template #tooltip>Удалить группу</template>
                   </tooltip>
+                  <tooltip>
+                    <button class="button button_icon" @click="emit('refresh-character-group', grouped[group])">
+                      <update class="icon update-icon"/>
+                    </button>
+                    <template #tooltip>Обновить группу</template>
+                  </tooltip>
                 </div>
               </template>
             </div>
@@ -366,6 +373,7 @@ function deleteGroup(group) {
                   :data-index="index"
                   :currentTag="currentTag"
                   :searchCharacter="searchCharacter"
+                  @refreshCharacter="(characterName) => emit('refresh-character', characterName)"
               />
             </template>
 
