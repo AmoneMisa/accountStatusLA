@@ -101,6 +101,12 @@ const resources = [
     name: "EU/NA официальный",
     url: "https://www.playlostark.com/en-us/game/releases",
     language: "EN"
+  },
+  {
+    type: "Официальный сайт",
+    name: "CN официальный",
+    url: "https://lostark.qq.com/",
+    language: "CN"
   }
 ];
 
