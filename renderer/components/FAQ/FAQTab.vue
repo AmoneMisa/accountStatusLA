@@ -85,6 +85,18 @@ const resources = [
     language: "EN"
   },
   {
+    type: "Сообщество",
+    name: "Baidu",
+    url: "https://tieba.baidu.com/f?kw=%E5%A4%B1%E8%90%BD%E7%9A%84%E6%96%B9%E8%88%9F&ie=utf-8&tab=good",
+    language: "CN"
+  },
+  {
+    type: "Сообщество",
+    name: "Weibo",
+    url: "https://m.weibo.cn/search?containerid=100103type%3D1%26q%3D%23%E5%A4%B1%E8%90%BD%E7%9A%84%E6%96%B9%E8%88%9F",
+    language: "CN"
+  },
+  {
     type: "Сообщество / Discord",
     name: "Lost Ark Discord (РУ)",
     url: "https://discord.gg/lostarkru",
