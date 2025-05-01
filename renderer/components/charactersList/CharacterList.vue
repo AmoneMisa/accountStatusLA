@@ -9,6 +9,7 @@ import trash from "../../../src/svg/trash.svg";
 import changeMenu from "../../../src/svg/menu.svg";
 import pencil from "../../../src/svg/pencil.svg";
 import plus from "../../../src/svg/plus.svg";
+import minus from "../../../src/svg/minus.svg";
 import update from "../../../src/svg/update.svg";
 
 const emit = defineEmits(["showRaidSelector", "refresh-character-group", "refresh-character"]);
@@ -31,6 +32,7 @@ const newGroupName = ref("");
 let draggedCharacter = ref(null);
 let draggedFromGroup = ref(null);
 let draggedGroup = ref(null);
+let isHiddenFilters = ref(false);
 
 window.addEventListener("resize", (e) => {
   setTimeout(() => {
@@ -277,7 +279,6 @@ function validateGsInput(input) {
     rangeGSCharacter.value.to = input.value;
   } else if (input.name === "gs-from") {
     rangeGSCharacter.value.from = input.value;
-
   }
 }
 
@@ -312,7 +313,15 @@ const visibleCharactersCount = computed(() => {
       </button>
     </div>
 
-    <div class="group-filters" v-if="!isEditMode">
+    <tooltip>
+      <button type="button" class="button button_icon group-filters-button" @click="isHiddenFilters = !isHiddenFilters">
+        <plus v-if="isHiddenFilters" class="icon minus-icon"></plus>
+        <minus v-else class="icon minus-icon"></minus>
+      </button>
+      <template #tooltip>Скрыть или показать список фильтров</template>
+    </tooltip>
+
+    <div class="group-filters" v-if="!isEditMode && !isHiddenFilters">
       <div class="group-filters__title">Фильтр групп</div>
       <div class="group-filters__list">
         <div class="group-filters__list-item" :class="{'group-tags__list-item_current': currentFilter === 'none'}"
@@ -324,7 +333,7 @@ const visibleCharactersCount = computed(() => {
       </div>
     </div>
 
-    <div class="group-tags" v-if="!isEditMode">
+    <div class="group-tags" v-if="!isEditMode && !isHiddenFilters">
       <div class="group-tags__col">
         <div class="group-tags__title">Фильтр персонажей</div>
         <div class="group-tags__list">
@@ -360,13 +369,16 @@ const visibleCharactersCount = computed(() => {
       <div class="group-tags__col">
         <div class="group-tags__gear-score">
           <label class="custom-label group-tags__gear-score-label" for="gs-character">
-            Поиск по ГС персонажа. Значение: {{rangeGSCharacter.from}} - {{rangeGSCharacter.to}}
+            Поиск по ГС персонажа. Значение: {{ rangeGSCharacter.from }} - {{ rangeGSCharacter.to }}
           </label>
-          <input class="input input_number group-tags__gear-score-input" id="gs-character-input-min" type="number" @change="({target}) => validateGsInput(target)"
+          <input class="input input_number group-tags__gear-score-input" id="gs-character-input-min" type="number"
+                 @change="({target}) => validateGsInput(target)" :value="rangeGSCharacter.from"
                  placeholder="От" :min="minGs" :max="maxGs" name="gs-from">
-          <input class="input input_number group-tags__gear-score-input" id="gs-character-input-max" type="number" @change="({target}) => validateGsInput(target)"
+          <input class="input input_number group-tags__gear-score-input" id="gs-character-input-max" type="number"
+                 @change="({target}) => validateGsInput(target)" :value="rangeGSCharacter.to"
                  placeholder="До" :min="minGs" :max="maxGs" name="gs-to">
-          <input class="input group-tags__gear-score-input" id="gs-character" type="range" v-model="rangeGSCharacter.from"
+          <input class="input group-tags__gear-score-input" id="gs-character" type="range"
+                 v-model="rangeGSCharacter.from"
                  :min="minGs" :max="maxGs">
           <input class="input group-tags__gear-score-input" id="gs-character" type="range" v-model="rangeGSCharacter.to"
                  :min="minGs" :max="maxGs">
@@ -393,9 +405,10 @@ const visibleCharactersCount = computed(() => {
               </template>
               <template v-else>
                 <span draggable="true">{{ group }}
-                  <tooltip>({{visibleCharactersCount[group]}} / {{ grouped[group].length }} перс.)
+                  <tooltip>({{ visibleCharactersCount[group] }} / {{ grouped[group].length }} перс.)
                   <template #tooltip>Отображает видимое и скрытое количество персонажей в группе</template>
-                  </tooltip></span>
+                  </tooltip>
+                </span>
                 <div class="character-group__controls" v-if="group !== 'Без группы' && !isEditMode">
                   <tooltip>
                     <button class="button button_icon" @click="enableRenameGroup(group)">
@@ -532,6 +545,11 @@ const visibleCharactersCount = computed(() => {
   border-top: 1px solid var(--grey);
 }
 
+.group-filters-button {
+  color: var(--gold);
+  margin-top: 10px;
+}
+
 .group-filters,
 .group-tags {
   border-top: 1px solid var(--grey);
@@ -545,15 +563,15 @@ const visibleCharactersCount = computed(() => {
   align-items: flex-start;
   gap: 20px;
 
-  @media screen and (max-width: 820px){
+  @media screen and (max-width: 820px) {
     flex-direction: column;
   }
 }
 
 .group-tags__col {
   max-width: 33%;
-  
-  @media screen and (max-width: 820px){
+
+  @media screen and (max-width: 820px) {
     max-width: 100%;
   }
 }

@@ -70,11 +70,7 @@ watchEffect(() => {
     justify-content: flex-end;
 
     span {
-      order: 1;
-    }
-
-    input {
-      order: 2;
+      width: -webkit-fill-available;
     }
   }
 }
