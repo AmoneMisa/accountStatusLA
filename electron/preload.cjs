@@ -9,5 +9,9 @@ contextBridge.exposeInMainWorld('electron', {
         on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
         openExternal: (url) => ipcRenderer.invoke('open-external', url),
         chooseFolder: () => ipcRenderer.invoke('choose-folder'),
+        openConfigFolder: () => ipcRenderer.invoke('open-config-folder'),
+        backupConfig: () => ipcRenderer.invoke('backup-config'),
+        restoreConfigFromBackup: () => ipcRenderer.invoke('restore-config-from-backup'),
+        generateLog: () => ipcRenderer.invoke('generate-log'),
     }
 });

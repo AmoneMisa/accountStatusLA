@@ -24,7 +24,7 @@ export function getToolsInfo() {
     return toolsInfo;
 }
 
-function loadAppDataSettings() {
+export function loadAppDataSettings() {
     let settings = {};
 
     if (fs.existsSync(dataPath)) {

@@ -119,6 +119,31 @@ function changeTheme(newTheme) {
   theme.value = newTheme;
   saveSettings({theme: newTheme});
 }
+
+async function openConfigFolder() {
+  await window.electron.ipcRenderer.openConfigFolder();
+}
+
+async function backupConfig() {
+  const result = await window.electron.ipcRenderer.backupConfig();
+  document.getElementById("message").innerText = result.message || "Бэкап создан";
+  document.getElementById("message").classList.add("active");
+  setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
+}
+
+async function restoreConfigFromBackup() {
+  const result = await window.electron.ipcRenderer.restoreConfigFromBackup();
+  document.getElementById("message").innerText = result.message || "Конфиг восстановлен из бэкапа";
+  document.getElementById("message").classList.add("active");
+  setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
+}
+
+async function generateLogAndOpenFolder() {
+  const result = await window.electron.ipcRenderer.generateLog();
+  document.getElementById("message").innerText = result.message || "Лог создан и папка открыта";
+  document.getElementById("message").classList.add("active");
+  setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
+}
 </script>
 
 <template>
@@ -144,6 +169,26 @@ function changeTheme(newTheme) {
     <div class="settings-table__cell">
       <input type="text" id="savePath" class="choose-folder-input" readonly v-model="savePath"/>
       <button id="choose-folder" class="button" @click="chooseFolder">Выбрать</button>
+    </div>
+
+    <div class="settings-table__cell">Открыть папку с конфигом</div>
+    <div class="settings-table__cell">
+      <button class="button" @click="openConfigFolder">Открыть конфиг</button>
+    </div>
+
+    <div class="settings-table__cell">Сделать бэкап конфига</div>
+    <div class="settings-table__cell">
+      <button class="button" @click="backupConfig">Создать бэкап</button>
+    </div>
+
+    <div class="settings-table__cell">Восстановить конфиг из бэкапа</div>
+    <div class="settings-table__cell">
+      <button class="button" @click="restoreConfigFromBackup">Восстановить</button>
+    </div>
+
+    <div class="settings-table__cell">Сформировать лог и открыть папку</div>
+    <div class="settings-table__cell">
+      <button class="button" @click="generateLogAndOpenFolder">Сформировать лог</button>
     </div>
 
     <div class="settings-table__cell">Выбрать тему</div>
@@ -183,7 +228,7 @@ function changeTheme(newTheme) {
 
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
-      <button type="button" id="update-app" class="button" data-current-version="0.15" @click="updateApp">
+      <button type="button" id="update-app" class="button" data-current-version="0.16" @click="updateApp">
         Обновить приложение
       </button>
     </div>

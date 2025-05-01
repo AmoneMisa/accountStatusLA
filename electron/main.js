@@ -1,7 +1,7 @@
 import {app, dialog, ipcMain, Menu, net, Notification, shell, Tray} from 'electron';
 import path from 'path';
 import {getCharacterPage, getClassName, getGearScore, parseLostArkProfile} from "../utils/parser.js";
-import {changeSettingsPath, getToolsInfo, loadSettings, saveSettings} from "../utils/storage.js";
+import {changeSettingsPath, getToolsInfo, loadAppDataSettings, loadSettings, saveSettings} from "../utils/storage.js";
 import fs from "fs";
 import {DateTime, Settings} from "luxon";
 import {createWindow, setMainWindow} from "../mainProcess/mainWindow.js";
@@ -10,6 +10,7 @@ import applySettings from "../mainProcess/applySettings.js";
 import {resetDailyActivities, resetWeeklyActivities} from "../mainProcess/resetActivities.js";
 import semver from 'semver';
 import schedule from "node-schedule";
+import {getErrorLog} from "../utils/errors.js";
 
 process.env.DIST = path.join(import.meta.dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged
@@ -344,17 +345,7 @@ function scheduleReminders(DateTime) {
                         body: `${type === 'boss' ? 'Полевой босс' : 'Разлом хаоса'} начнётся через 5 минут!`,
                     }).show();
                 }
-            })
-
-            // cron.schedule(`${notifyTime.minute} ${notifyTime.hour} * * *`, () => {
-            //     const now = DateTime.local();
-            //     if (now.weekday === weekday) {
-            //         new Notification({
-            //             title: 'Напоминание',
-            //             body: `${type === 'boss' ? 'Полевой босс' : 'Разлом хаоса'} начнётся через 5 минут!`,
-            //         }).show();
-            //     }
-            // });
+            });
         });
     });
 
@@ -380,17 +371,6 @@ function scheduleReminders(DateTime) {
                 }).show();
             }
         });
-
-        // cron.schedule(`*/${interval} * * * *`, () => {
-        //     const now = DateTime.local();
-        //
-        //     if (days.includes(now.weekday)) {
-        //         new Notification({
-        //             title: 'Напоминание',
-        //             body: `${notification.name}`,
-        //         }).show();
-        //     }
-        // });
     });
 }
 
@@ -415,3 +395,76 @@ function resetReminderSettingsIfNeeded() {
         saveSettings(settings);
     }
 }
+
+const getCurrentConfigPath = () => {
+    const settings = loadAppDataSettings();
+    return settings.savePath
+        ? path.join(settings.savePath, 'config.json')
+        : path.join(app.getPath('userData'), 'config.json');
+};
+
+const getBackupPath = () => {
+    const settings = loadAppDataSettings();
+    return settings.savePath
+        ? path.join(settings.savePath, 'config-backup.json')
+        : path.join(app.getPath('userData'), 'config-backup.json');
+};
+
+// 📂 Открыть папку с конфигом
+ipcMain.handle('open-config-folder', async () => {
+    const configPath = getCurrentConfigPath();
+    return shell.openPath(path.dirname(configPath));
+});
+
+// 💾 Сделать бэкап
+ipcMain.handle('backup-config', async () => {
+    try {
+        const configPath = getCurrentConfigPath();
+        const backupPath = getBackupPath();
+        fs.copyFileSync(configPath, backupPath);
+        return {message: 'Бэкап успешно создан.'};
+    } catch (e) {
+        return {message: `Ошибка при создании бэкапа: ${e.message}`};
+    }
+});
+
+// ♻️ Восстановить из бэкапа
+ipcMain.handle('restore-config-from-backup', async () => {
+    try {
+        const configPath = getCurrentConfigPath();
+        const backupPath = getBackupPath();
+        fs.copyFileSync(backupPath, configPath);
+        const restored = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+        saveSettings(restored); // актуализируем внутри приложения
+        return {message: 'Конфиг восстановлен из бэкапа.'};
+    } catch (e) {
+        return {message: `Ошибка восстановления: ${e.message}`};
+    }
+});
+
+// 🧾 Сформировать лог
+ipcMain.handle('generate-log', async () => {
+    try {
+        const logDir = path.join(app.getPath('userData'), 'logs');
+        if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, {recursive: true});
+        const logFile = path.join(logDir, `log-${Date.now()}.txt`);
+
+        const settingsDump = JSON.stringify(loadSettings(), null, 2);
+        const errorDump = JSON.stringify(getErrorLog(), null, 2);
+
+        const content = `Лог создан: ${new Date().toISOString()}
+
+--- Настройки ---
+${settingsDump}
+
+--- Последние ошибки ---
+${errorDump || 'Ошибок не зафиксировано.'}
+`;
+
+        fs.writeFileSync(logFile, content, 'utf-8');
+        shell.showItemInFolder(logFile);
+        return {message: 'Лог создан и открыт.'};
+    } catch (e) {
+        return {message: `Ошибка при создании лога: ${e.message}`};
+    }
+});
