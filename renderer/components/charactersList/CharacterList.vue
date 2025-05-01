@@ -544,10 +544,18 @@ const visibleCharactersCount = computed(() => {
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
+
+  @media screen and (max-width: 820px){
+    flex-direction: column;
+  }
 }
 
 .group-tags__col {
   max-width: 33%;
+  
+  @media screen and (max-width: 820px){
+    max-width: 100%;
+  }
 }
 
 .group-filters__title,

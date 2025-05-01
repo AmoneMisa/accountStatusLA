@@ -20,6 +20,56 @@ process.env.VITE_PUBLIC = app.isPackaged
 let tray;
 let mainWindow = null;
 
+async function checkForUpdates(mainWindow = mainWindow) {
+    try {
+        console.log("i am work")
+        const request = net.request('https://api.github.com/repos/AmoneMisa/accountStatusLA/releases/latest');
+
+        request.on('response', (response) => {
+            let rawData = '';
+
+            response.on('data', (chunk) => {
+                rawData += chunk;
+            });
+
+            response.on('end', async () => {
+                try {
+                    const releaseData = JSON.parse(rawData);
+                    const latestVersion = releaseData.name;
+                    const assets = releaseData.assets;
+
+                    const exeAsset = assets.find(asset => asset.name.endsWith('.exe'));
+
+                    if (exeAsset) {
+                        const downloadUrl = exeAsset.browser_download_url;
+                        mainWindow.webContents.send('update-available', { latestVersion, downloadUrl });
+
+                        const updateNotification = new Notification({
+                            title: 'Доступно обновление!',
+                            body: `Версия ${latestVersion} доступна. Нажми кнопку "обновить" в настройках, чтобы скачать.`,
+                        });
+
+                        updateNotification.on('click', () => {
+                            shell.openExternal(downloadUrl);
+                        });
+
+                        updateNotification.show();
+                    } else {
+                        mainWindow.webContents.send('update-not-found');
+                    }
+                } catch (error) {
+                    mainWindow.webContents.send('update-error', error);
+                }
+            });
+        });
+
+        request.end();
+    } catch (error) {
+        mainWindow.webContents.send('update-error', error.message);
+    }
+}
+
+
 app.on('ready', async () => {
     mainWindow = await createWindow();
     setMainWindow(mainWindow);
@@ -81,6 +131,10 @@ app.on('ready', async () => {
     applySettings(settings);
     resetReminderSettingsIfNeeded();
     scheduleReminders(DateTime);
+
+    setTimeout(() => {
+        checkForUpdates(mainWindow);
+    }, 3000);
 });
 
 ipcMain.handle('clear-character-settings', () => {
@@ -261,41 +315,7 @@ ipcMain.handle('change-settings-path', async (event, newPath) => {
 });
 
 ipcMain.handle('check-for-updates', async (event) => {
-    try {
-        const request = net.request('https://api.github.com/repos/AmoneMisa/accountStatusLA/releases/latest');
-
-        request.on('response', (response) => {
-            let rawData = '';
-
-            response.on('data', (chunk) => {
-                rawData += chunk;
-            });
-
-            response.on('end', async () => {
-                try {
-                    const releaseData = JSON.parse(rawData);
-                    const latestVersion = releaseData.name;
-                    const assets = releaseData.assets;
-
-                    // Ищем .exe в релизе
-                    const exeAsset = assets.find(asset => asset.name.endsWith('.exe'));
-
-                    if (exeAsset) {
-                        const downloadUrl = exeAsset.browser_download_url;
-                        event.sender.send('update-available', {latestVersion, downloadUrl});
-                    } else {
-                        event.sender.send('update-not-found');
-                    }
-                } catch (error) {
-                    event.sender.send('update-error', error);
-                }
-            });
-        });
-
-        request.end();
-    } catch (error) {
-        event.sender.send('update-error', error.message);
-    }
+    await checkForUpdates(mainWindow);
 });
 
 ipcMain.handle('is-newer-version', async (_, current, latest) => {
