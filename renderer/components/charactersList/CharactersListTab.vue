@@ -39,6 +39,33 @@ async function refreshCharacters() {
   await loadCharacters(nickname.value);
 }
 
+function resetCharacters() {
+  const updatedSettings = {...settings.value};
+
+  for (let [characterName, character] of Object.entries(characterSettings.value)) {
+    if (!character.raidStatus || !character.raids) {
+      continue;
+    }
+
+    let raidStatus = {};
+
+    for (let raidName of Object.keys(character.raidStatus)) {
+      if (!character.raids.includes(raidName)) {
+        continue;
+      }
+
+      raidStatus[raidName] = false;
+    }
+
+    updatedSettings.characterSettings[characterName] = {
+      ...updatedSettings.characterSettings[characterName],
+      raidStatus
+    };
+  }
+
+  saveSettings(updatedSettings);
+}
+
 async function loadCharacters(nickname) {
   const container = document.getElementById("character-list");
   isShowLoader.value = true;
@@ -147,16 +174,16 @@ function mergeCharactersPreferMaxGS(list) {
 
   return Array.from(map.values());
 }
-
 </script>
 
 <template>
   <nick-name
       v-model="nickname"
-      @save-nickname="saveNickname"
-      @refresh-characters="refreshCharacters"
-      @edit-characters="toggleEditCharacters"
-      @edit-nickname="isEditMode = true"
+      @saveNickname="saveNickname"
+      @refreshCharacters="refreshCharacters"
+      @resetCharacters="resetCharacters"
+      @editCharacters="toggleEditCharacters"
+      @editNickname="isEditMode = true"
       :isEditMode="isEditMode"
   />
 
@@ -165,9 +192,9 @@ function mergeCharactersPreferMaxGS(list) {
       :characterSettings="characterSettings"
       :groupOrder="groupOrder"
       :isEditMode="isEditMode"
-      @show-raid-selector="showRaidSelector"
-      @refresh-character="refreshSingleCharacter"
-      @refresh-character-group="refreshCharactersGroup"
+      @showRaidSelector="showRaidSelector"
+      @refreshCharacter="refreshSingleCharacter"
+      @refreshCharacterGroup="refreshCharactersGroup"
   />
 
   <button
