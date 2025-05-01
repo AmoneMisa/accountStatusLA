@@ -22,7 +22,6 @@ let mainWindow = null;
 
 async function checkForUpdates(mainWindow = mainWindow) {
     try {
-        console.log("i am work")
         const request = net.request('https://api.github.com/repos/AmoneMisa/accountStatusLA/releases/latest');
 
         request.on('response', (response) => {
@@ -37,6 +36,17 @@ async function checkForUpdates(mainWindow = mainWindow) {
                     const releaseData = JSON.parse(rawData);
                     const latestVersion = releaseData.name;
                     const assets = releaseData.assets;
+                    const currentVersion = app.getVersion();
+
+                    if (!semver.valid(semver.coerce(latestVersion)) || !semver.valid(currentVersion)) {
+                        return;
+                    }
+
+                    const isNewer = semver.gt(semver.coerce(latestVersion), semver.coerce(semver.coerce(currentVersion)));
+                    if (!isNewer) {
+                        mainWindow.webContents.send('update-not-found');
+                        return;
+                    }
 
                     const exeAsset = assets.find(asset => asset.name.endsWith('.exe'));
 
@@ -46,7 +56,7 @@ async function checkForUpdates(mainWindow = mainWindow) {
 
                         const updateNotification = new Notification({
                             title: 'Доступно обновление!',
-                            body: `Версия ${latestVersion} доступна. Нажми кнопку "обновить" в настройках, чтобы скачать.`,
+                            body: `Версия ${latestVersion} доступна. Нажми кнопку, чтобы скачать.`,
                         });
 
                         updateNotification.on('click', () => {
@@ -68,7 +78,6 @@ async function checkForUpdates(mainWindow = mainWindow) {
         mainWindow.webContents.send('update-error', error.message);
     }
 }
-
 
 app.on('ready', async () => {
     mainWindow = await createWindow();
@@ -107,22 +116,22 @@ app.on('ready', async () => {
         mainWindow.show();
     });
 
-    Settings.defaultZone = "UTC+3";
     resetDailyActivities(DateTime);
     resetWeeklyActivities(DateTime);
 
     schedule.scheduleJob('*/30 * * * *', () => {
-        const now = DateTime.now().setZone("UTC+3");
+        const nowMoscow = DateTime.now().setZone('Europe/Moscow');
 
-        if (now.hour === 6 && now.minute === 0) {
+        if (nowMoscow.hour === 6 && nowMoscow.minute === 0) {
             resetWeeklyActivities(DateTime);
             resetDailyActivities(DateTime);
         }
     });
 
     schedule.scheduleJob('* * * * *', () => {
-        const now = DateTime.now().setZone("UTC+3");
-        if (now.hour === 6 && now.minute === 0) {
+        const nowMoscow = DateTime.now().setZone('Europe/Moscow');
+
+        if (nowMoscow.hour === 6 && nowMoscow.minute === 0) {
             resetDailyActivities(DateTime);
         }
     });
@@ -324,15 +333,12 @@ ipcMain.handle('is-newer-version', async (_, current, latest) => {
 
 ipcMain.handle('set-autostart', (event, enable) => {
     app.setLoginItemSettings({
-        openAtLogin: enable,
-        path: app.getPath('exe'),
+        openAtLogin: enable
     });
 });
 
 function shouldNotifyToday(type, settings) {
-    Settings.defaultZone = "UTC+3";
-
-    const today = DateTime.now().toFormat('yyyy-MM-dd');
+    const today = DateTime.now().setZone('Europe/Moscow').toFormat('yyyy-MM-dd');
     return !settings[`disable${capitalize(type)}ReminderToday`] || settings.lastDisabledReminderDate !== today;
 }
 
