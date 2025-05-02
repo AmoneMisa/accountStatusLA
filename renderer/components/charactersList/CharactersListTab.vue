@@ -41,9 +41,16 @@ async function updateCharacters() {
   await loadCharacters(nickname.value);
 }
 
-function resetCharacters() {
-  const updatedSettings = {...settings.value};
+async function backupConfig() {
+  const result = await window.electron.ipcRenderer.backupConfig();
+  document.getElementById("message").innerText = result.message || "Бэкап создан";
+  document.getElementById("message").classList.add("active");
+  setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
+}
 
+async function resetCharacters() {
+  const updatedSettings = {...settings.value};
+  await backupConfig();
   for (let [characterName, character] of Object.entries(characterSettings.value)) {
     if (!character.raidStatus || !character.raids) {
       continue;
@@ -215,10 +222,14 @@ function mergeCharactersPreferMaxGS(list) {
       @close="isShowRaidSelector = false"
   />
 
-  <confirm-popup text="Ты уверен, что хочешь сбросить прогресс активностей у всех персонажей?"
-                 @closePopup="isShowConfirmPopup = false"
-                 @accept="resetCharacters"
-                 @reject="isShowConfirmPopup = false"
+  <confirm-popup
+      title="Сброс состояния активностей"
+      text="Ты уверен, что хочешь сбросить прогресс активностей у всех персонажей?"
+      note="При подтверждении, будет создан бэкап состояния до сброса"
+      @closePopup="isShowConfirmPopup = false"
+      @accept="resetCharacters"
+      @reject="isShowConfirmPopup = false"
+      v-if="isShowConfirmPopup"
   />
 </template>
 

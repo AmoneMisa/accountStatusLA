@@ -23,7 +23,7 @@ const props = defineProps({
   gsFilter: Object
 });
 
-const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String, 'update-character': String});
+const emit = defineEmits({'show-raid-selector': String, 'update-character': String});
 let settings = inject('settings');
 const isSupport = ['Художница', 'Менестрель', 'Паладин'].includes(props.character.className);
 const draggedRaid = ref(null);
@@ -54,7 +54,7 @@ function onRaidDrop(targetRaid) {
       }
     });
 
-    emit('updateCharacter', props.character.name);
+    emit('update-character', props.character.name);
     draggedRaid.value = null;
   }
 }
@@ -81,7 +81,7 @@ function toggleIcon(target, statusTitle) {
     });
 
 
-  emit('updateCharacter', props.character.name);
+  emit('update-character', props.character.name);
 }
 
 function toggleRaidStatus(raid) {
@@ -100,7 +100,7 @@ function toggleRaidStatus(raid) {
       }
     }
   });
-  emit('updateCharacter', props.character.name);
+  emit('update-character', props.character.name);
 }
 
 function removeRaid(raid) {
@@ -119,7 +119,7 @@ function removeRaid(raid) {
         }
       }
     });
-    emit('updateCharacter', props.character.name);
+    emit('update-character', props.character.name);
   }
 }
 
@@ -268,7 +268,7 @@ const isShowCharacter = computed(() => {
 
     <div class="character__cell character__actions" v-if="!isEditMode">
       <tooltip>
-        <button class="button button_icon add-raid" @click="emit('showRaidSelector', character.name)">
+        <button class="button button_icon add-raid" @click="emit('show-raid-selector', character.name)">
           <plus />
         </button>
         <template #tooltip>Добавить активность</template>

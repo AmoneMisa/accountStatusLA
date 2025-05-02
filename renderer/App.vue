@@ -80,12 +80,12 @@ provide('isShowLoader', isShowLoader);
     </div>
     <div class="main">
       <characters-list-tab v-if="currentTab === 'main'"/>
-      <cubes-tab v-if="currentTab === 'table'"/>
-      <check-list-tab v-if="currentTab === 'check-list'"/>
-      <notifications-tab v-if="currentTab === 'notification'"/>
-      <tools-tab v-if="currentTab === 'tools'"/>
-      <calc-raid-gold-tab v-if="currentTab === 'calc-raid-gold'"/>
-      <f-a-q-tab v-if="currentTab === 'FAQ'"/>
+      <cubes-tab v-if="currentTab === 'cubes' && settings?.tabVisibility[currentTab]"/>
+      <check-list-tab v-if="currentTab === 'checkList' && settings?.tabVisibility[currentTab]"/>
+      <notifications-tab v-if="currentTab === 'notification' && settings?.tabVisibility[currentTab]"/>
+      <tools-tab v-if="currentTab === 'tools' && settings?.tabVisibility[currentTab]"/>
+      <calc-raid-gold-tab v-if="currentTab === 'calcRaidGold' && settings?.tabVisibility[currentTab]"/>
+      <f-a-q-tab v-if="currentTab === 'FAQ' && settings?.tabVisibility[currentTab]"/>
       <settings-table v-if="currentTab === 'settings'"/>
     </div>
     <div id="message" class="message"></div>

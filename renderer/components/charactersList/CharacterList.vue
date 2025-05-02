@@ -12,7 +12,7 @@ import plus from "../../../src/svg/plus.svg";
 import minus from "../../../src/svg/minus.svg";
 import update from "../../../src/svg/update.svg";
 
-const emit = defineEmits(["showRaidSelector", "update-character-group", "update-character"]);
+const emit = defineEmits(["show-raid-selector", "update-character-group", "update-character"]);
 const props = defineProps({
   characterList: Array,
   characterSettings: Object,
@@ -304,7 +304,6 @@ const visibleCharactersCount = computed(() => {
     </tooltip>
   </h1>
 
-  <share-snippet>
     <div class="group-controls" v-if="!isEditMode">
       <input v-model="newGroupName" placeholder="Новая группа"/>
       <button class="button" @click="createGroup">
@@ -385,7 +384,7 @@ const visibleCharactersCount = computed(() => {
         </div>
       </div>
     </div>
-
+  <share-snippet>
     <div id="character-list" class="character-list" :class="{'grid': isGridView || windowWidth < 980}" v-if="grouped">
       <template v-for="group in props.groupOrder" :key="group">
         <div class="character-group" v-if="currentFilter === group || currentFilter === 'none'">
@@ -440,7 +439,7 @@ const visibleCharactersCount = computed(() => {
                   :is-edit-mode="isEditMode"
                   :window-width="windowWidth"
                   :character-settings="characterSettings[character.name]"
-                  @show-raid-selector="(characterName) => emit('showRaidSelector', characterName)"
+                  @show-raid-selector="(characterName) => emit('show-raid-selector', characterName)"
                   @dragstart="onCharacterDragStart(character.name, group, $event)"
                   @dragover.prevent
                   @drop="onCharacterDrop($event)"
@@ -449,7 +448,7 @@ const visibleCharactersCount = computed(() => {
                   :currentTag="currentTag"
                   :searchCharacter="searchCharacter"
                   :gsFilter="rangeGSCharacter"
-                  @refreshCharacter="(characterName) => emit('update-character', characterName)"
+                  @updateCharacter="(characterName) => emit('update-character', characterName)"
               />
             </template>
 

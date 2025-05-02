@@ -205,7 +205,7 @@ async function generateLogAndOpenFolder() {
     </div>
 
     <div class="settings-table__cell">Настройки отображения вкладок</div>
-    <div class="settings-table__cell">
+    <div class="settings-table__cell settings-table__cell_tabs">
       <label class="custom-label">
         <input type="checkbox" id="tabVisibilityCubes" :checked="tabVisibility.cubes"
                @change="({target}) => tabVisibility['cubes'] = target.checked">
@@ -294,6 +294,11 @@ async function generateLogAndOpenFolder() {
   display: flex;
   align-items: center;
   font-size: var(--font-very-small);
+
+  &_tabs {
+    gap: 5px;
+    flex-wrap: wrap;
+  }
 }
 
 .settings-table__cell:nth-child(odd) {
