@@ -10,14 +10,15 @@ let settings = inject('settings');
 const characterSettings = computed(() => settings.value.characterSettings);
 const characterList = computed(() => settings.value.characterList);
 
-const excludedGoldCharacters = ref([]);
+const goldCharacters = ref([]);
+const currentReceivers = ref([]);
 
 const totalGold = computed(() => {
   let earned = 0;
   let spent = 0;
 
   for (const char of characterList.value) {
-    if (excludedGoldCharacters.value.includes(char.name)) {
+    if (goldCharacters.value.includes(char.name)) {
       continue;
     }
 
@@ -36,6 +37,12 @@ const totalGold = computed(() => {
 
 function getGoldFromRaid(charName, raid) {
   if (!characterSettings.value?.[charName]?.raidStatus?.[raid]) {
+    return {earned: 0, spent: 0, total: 0};
+  }
+
+  if (!characterSettings.value?.[charName]?.goldReceiver
+      && !characterSettings.value?.[charName]?.legate
+      && !currentReceivers.value.includes(charName)) {
     return {earned: 0, spent: 0, total: 0};
   }
 
@@ -63,6 +70,19 @@ function getGoldFromRaid(charName, raid) {
 
   return {earned, spent, total: earned - spent};
 }
+
+function toggleGoldCharacter([characterName, isReceiver]) {
+  if (isReceiver && !currentReceivers.value.includes(characterName)) {
+
+    if (goldCharacters.value.includes(characterName)) {
+      return;
+    }
+
+    currentReceivers.value.push(characterName);
+  } else if (currentReceivers.value.includes(characterName) && !isReceiver) {
+    currentReceivers.value.splice(currentReceivers.value.indexOf(characterName), 1);
+  }
+}
 </script>
 
 <template>
@@ -70,13 +90,23 @@ function getGoldFromRaid(charName, raid) {
     <calc-raid-gold-item v-for="character in characterList"
                          :key="character.name"
                          :character="character" :character-settings="characterSettings[character.name]"
-                         :gold-characters="excludedGoldCharacters"
-                          />
+                         :gold-characters="goldCharacters"
+                         @toggleGoldReceiver="toggleGoldCharacter"
+    />
   </div>
   <div class="calc-raid-gold__total">
-    <div class="calc-raid-gold__total-item"><coin class="icon icon_very-small coin-icon" /> Общая сумма золота: {{ totalGold.earned }}</div>
-    <div class="calc-raid-gold__total-item"><chest class="icon icon_very-small chest-icon" />  Потрачено на сундуки: {{ totalGold.spent }}</div>
-    <div class="calc-raid-gold__total-item"><money class="icon icon_very-small money-icon" />  После выкупа: {{ totalGold.total }}</div>
+    <div class="calc-raid-gold__total-item">
+      <coin class="icon icon_very-small coin-icon"/>
+      Общая сумма золота: {{ totalGold.earned }}
+    </div>
+    <div class="calc-raid-gold__total-item">
+      <chest class="icon icon_very-small chest-icon"/>
+      Потрачено на сундуки: {{ totalGold.spent }}
+    </div>
+    <div class="calc-raid-gold__total-item">
+      <money class="icon icon_very-small money-icon"/>
+      После выкупа: {{ totalGold.total }}
+    </div>
   </div>
 </template>
 
@@ -86,7 +116,7 @@ function getGoldFromRaid(charName, raid) {
   gap: 30px;
   flex-wrap: wrap;
   margin-bottom: 20px;
-  font-size:  var(--font-small);
+  font-size: var(--font-small);
   border-radius: 5px;
   border: 1px solid var(--grey);
   box-shadow: var(--shadow);
