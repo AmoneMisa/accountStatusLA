@@ -37,6 +37,10 @@ const autoStart = computed({
   get: () => settings.value.autoStart || false,
   set: () => settings.value.autoStart = !settings.value.autoStart
 });
+const tabVisibility = computed({
+  get: () => settings.value.tabVisibility || {calcRaidGold: true, cubes: true, checkList: true, notification: true, tools: true, FAQ: true},
+  set: (value) => settings.value.tabVisibility[value] = !settings.value.tabVisibility[value]
+});
 
 function updateFontScale() {
   document.documentElement.style.setProperty('--font-scale', fontScale.value);
@@ -58,7 +62,8 @@ function save() {
     rememberWindowPosition: rememberWindowPosition.value,
     autoStart: autoStart.value,
     disableBossReminderToday: disableBossReminderToday.value,
-    disableChaosReminderToday: disableChaosReminderToday.value
+    disableChaosReminderToday: disableChaosReminderToday.value,
+    tabVisibility: tabVisibility.value,
   });
   document.getElementById("message").innerText = "Настройки сохранены";
   document.getElementById("message").classList.add("active");
@@ -151,20 +156,6 @@ async function generateLogAndOpenFolder() {
     <div class="settings-table__cell">Название настройки</div>
     <div class="settings-table__cell">Значение</div>
 
-    <div class="settings-table__cell">Прекратить напоминание о полевом боссе на сегодня</div>
-    <div class="settings-table__cell">
-      <label class="custom-label">
-        <input type="checkbox" id="disableBossReminderToday" v-model="disableBossReminderToday"/>
-      </label>
-    </div>
-
-    <div class="settings-table__cell">Прекратить напоминание о разломе на сегодня</div>
-    <div class="settings-table__cell">
-      <label class="custom-label">
-        <input type="checkbox" id="disableChaosReminderToday" v-model="disableChaosReminderToday"/>
-      </label>
-    </div>
-
     <div class="settings-table__cell">Изменить путь сохранения настроек</div>
     <div class="settings-table__cell">
       <input type="text" id="savePath" class="choose-folder-input" readonly v-model="savePath"/>
@@ -186,14 +177,65 @@ async function generateLogAndOpenFolder() {
       <button class="button" @click="restoreConfigFromBackup">Восстановить</button>
     </div>
 
-    <div class="settings-table__cell">Сформировать лог и открыть папку</div>
+    <div class="settings-table__cell">Прекратить напоминание о полевом боссе на сегодня</div>
     <div class="settings-table__cell">
-      <button class="button" @click="generateLogAndOpenFolder">Сформировать лог</button>
+      <label class="custom-label">
+        <input type="checkbox" id="disableBossReminderToday" v-model="disableBossReminderToday"/>
+      </label>
+    </div>
+
+    <div class="settings-table__cell">Прекратить напоминание о разломе на сегодня</div>
+    <div class="settings-table__cell">
+      <label class="custom-label">
+        <input type="checkbox" id="disableChaosReminderToday" v-model="disableChaosReminderToday"/>
+      </label>
     </div>
 
     <div class="settings-table__cell">Выбрать тему</div>
     <div class="settings-table__cell">
       <theme-select @change-theme="changeTheme" :current-theme="theme"/>
+    </div>
+
+    <div class="settings-table__cell">Размер шрифта</div>
+    <div class="settings-table__cell"><label class="custom-label settings-table__font-scale-label">
+      <input class="settings-table__font-scale-input" type="range" min="0.7" max="1.3" step="0.05" v-model="fontScale"
+             @input="updateFontScale"/>
+    </label>
+      <button class="button" @click="resetFontScale">Сбросить</button>
+    </div>
+
+    <div class="settings-table__cell">Настройки отображения вкладок</div>
+    <div class="settings-table__cell">
+      <label class="custom-label">
+        <input type="checkbox" id="tabVisibilityCubes" :checked="tabVisibility.cubes"
+               @change="({target}) => tabVisibility['cubes'] = target.checked">
+        <span>Кубы</span>
+      </label>
+      <label class="custom-label">
+        <input type="checkbox" id="tabVisibilityList" :checked="tabVisibility.checkList"
+               @change="({target}) => tabVisibility['checkList'] = target.checked">
+        <span>Чек-лист</span>
+      </label>
+      <label class="custom-label">
+        <input type="checkbox" id="tabVisibilityNotifications" :checked="tabVisibility.notification"
+               @change="({target}) => tabVisibility['notification'] = target.checked">
+        <span>Уведомления</span>
+      </label>
+      <label class="custom-label">
+        <input type="checkbox" id="tabVisibilityUtils" :checked="tabVisibility.tools"
+               @change="({target}) => tabVisibility['tools'] = target.checked">
+        <span>Инструменты</span>
+      </label>
+      <label class="custom-label">
+        <input type="checkbox" id="tabVisibilityGold" :checked="tabVisibility.calcRaidGold"
+               @change="({target}) => tabVisibility['calcRaidGold'] = target.checked">
+        <span>Золото с рейдов</span>
+      </label>
+      <label class="custom-label">
+        <input type="checkbox" id="tabVisibilityFAQ" :checked="tabVisibility.FAQ"
+               @change="({target}) => tabVisibility['FAQ'] = target.checked">
+        <span>FAQ</span>
+      </label>
     </div>
 
     <div class="settings-table__cell">Сворачивать приложение при нажатии на крестик</div>
@@ -218,17 +260,14 @@ async function generateLogAndOpenFolder() {
       </label>
     </div>
 
-    <div class="settings-table__cell">Размер шрифта</div>
-    <div class="settings-table__cell"><label class="custom-label settings-table__font-scale-label">
-      <input class="settings-table__font-scale-input" type="range" min="0.7" max="1.3" step="0.05" v-model="fontScale"
-             @input="updateFontScale"/>
-    </label>
-      <button class="button" @click="resetFontScale">Сбросить</button>
+    <div class="settings-table__cell">Сформировать лог и открыть папку</div>
+    <div class="settings-table__cell">
+      <button class="button" @click="generateLogAndOpenFolder">Сформировать лог</button>
     </div>
 
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
-      <button type="button" id="update-app" class="button" data-current-version="0.16.1" @click="updateApp">
+      <button type="button" id="update-app" class="button" data-current-version="0.16.2" @click="updateApp">
         Обновить приложение
       </button>
     </div>

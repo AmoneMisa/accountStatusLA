@@ -23,7 +23,7 @@ const props = defineProps({
   gsFilter: Object
 });
 
-const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String, 'refresh-character': String});
+const emit = defineEmits({'updateCharacter': null, 'showRaidSelector': String, 'update-character': String});
 let settings = inject('settings');
 const isSupport = ['Художница', 'Менестрель', 'Паладин'].includes(props.character.className);
 const draggedRaid = ref(null);
@@ -274,8 +274,8 @@ const isShowCharacter = computed(() => {
         <template #tooltip>Добавить активность</template>
       </tooltip>
       <tooltip>
-        <button type="button" id="refresh-character" class="button button_icon refresh-characters"
-                @click="emit('refresh-character', character.name)"><update class="icon update-icon" />
+        <button type="button" id="update-character" class="button button_icon update-characters"
+                @click="emit('update-character', character.name)"><update class="icon update-icon" />
         </button>
         <template #tooltip>Обновить персонажа</template>
       </tooltip>

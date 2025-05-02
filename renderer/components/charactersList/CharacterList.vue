@@ -12,7 +12,7 @@ import plus from "../../../src/svg/plus.svg";
 import minus from "../../../src/svg/minus.svg";
 import update from "../../../src/svg/update.svg";
 
-const emit = defineEmits(["showRaidSelector", "refresh-character-group", "refresh-character"]);
+const emit = defineEmits(["showRaidSelector", "update-character-group", "update-character"]);
 const props = defineProps({
   characterList: Array,
   characterSettings: Object,
@@ -423,7 +423,7 @@ const visibleCharactersCount = computed(() => {
                     <template #tooltip>Удалить группу</template>
                   </tooltip>
                   <tooltip>
-                    <button class="button button_icon" @click="emit('refresh-character-group', grouped[group])">
+                    <button class="button button_icon" @click="emit('update-character-group', grouped[group])">
                       <update class="icon update-icon"/>
                     </button>
                     <template #tooltip>Обновить группу</template>
@@ -449,7 +449,7 @@ const visibleCharactersCount = computed(() => {
                   :currentTag="currentTag"
                   :searchCharacter="searchCharacter"
                   :gsFilter="rangeGSCharacter"
-                  @refreshCharacter="(characterName) => emit('refresh-character', characterName)"
+                  @refreshCharacter="(characterName) => emit('update-character', characterName)"
               />
             </template>
 

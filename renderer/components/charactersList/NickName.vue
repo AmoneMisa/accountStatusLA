@@ -9,7 +9,7 @@ const props = defineProps({
   isEditMode: false
 })
 
-const emit = defineEmits(['refresh-characters', 'edit-characters', 'save-nickname', 'edit-nickname', 'reset-characters']);
+const emit = defineEmits(['update-characters', 'edit-characters', 'save-nickname', 'edit-nickname', 'reset-characters']);
 
 function saveNickname(newNickname) {
   emit('save-nickname', newNickname);
@@ -52,13 +52,13 @@ function editCharacters() {
     </div>
     <div id="controls" class="controls">
       <tooltip>
-        <button type="button" id="refresh-characters" class="button button_icon refresh-characters"
-                @click="emit('refresh-characters')"><update class="icon update-icon" />
+        <button type="button" id="update-characters" class="button button_icon update-characters"
+                @click="emit('update-characters')"><update class="icon update-icon" />
         </button>
         <template #tooltip>Обновить персонажей</template>
       </tooltip>
       <tooltip>
-        <button type="button" id="refresh-characters" class="button button_icon refresh-characters"
+        <button type="button" id="update-characters" class="button button_icon update-characters"
                 @click="emit('reset-characters')"><cross class="icon update-icon" />
         </button>
         <template #tooltip>Сбросить прогресс у всех персонажей</template>

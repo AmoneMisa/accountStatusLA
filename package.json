@@ -2,7 +2,7 @@
   "name": "accountstatusla",
   "author": "WhitesLove",
   "type": "module",
-  "version": "0.16.1",
+  "version": "0.16.2",
   "description": "The application, created by WhitesLove for personal usage for save and check characters status in Lost Ark game. Do not re-upload on another places without my permission. All rights reserved.",
   "main": "dist-electron/main.js",
   "scripts": {

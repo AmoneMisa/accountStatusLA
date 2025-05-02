@@ -15,20 +15,21 @@ const tabButtonsList = [
   {
     data: "main", name: "Активности"
   }, {
-    data: "table", name: "Кубы"
+    data: "cubes", name: "Кубы"
   }, {
-    data: "check-list", name: "Чек-лист"
+    data: "checkList", name: "Чек-лист"
   }, {
     data: "notification", name: "Уведомления"
   }, {
     data: "tools", name: "Инструменты"
   }, {
-    data: "calc-raid-gold", name: "Золото с рейдов"
+    data: "calcRaidGold", name: "Золото с рейдов"
   }, {
     data: "FAQ", name: "FAQ"
   }, {
     data: "settings", name: "Настройки"
-  }];
+  }
+];
 
 let settings = ref();
 provide('settings', settings);
@@ -71,9 +72,11 @@ provide('isShowLoader', isShowLoader);
   <custom-header/>
   <div class="wrapper">
     <div class="tabs">
-      <button type="button" class="tab-button" :class="{'active': currentTab === tab.data}"
-              v-for="tab in tabButtonsList" :key="tab.data" @click="changeTab(tab)">{{ tab.name }}
-      </button>
+      <template v-for="tab in tabButtonsList" :key="tab.data" >
+        <button v-if="tab.data === 'settings' || tab.data === 'main' || settings?.tabVisibility[tab.data]" type="button" class="tab-button" :class="{'active': currentTab === tab.data}"
+                @click="changeTab(tab)">{{ tab.name }}
+        </button>
+      </template>
     </div>
     <div class="main">
       <characters-list-tab v-if="currentTab === 'main'"/>

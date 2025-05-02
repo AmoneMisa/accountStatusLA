@@ -4,12 +4,14 @@ import NickName from "@/components/charactersList/NickName.vue";
 import RaidSelector from "@/components/charactersList/RaidSelector.vue";
 import {computed, inject, ref} from "vue";
 import {saveSettings} from "../../../utils/utils.js";
+import ConfirmPopup from "@/components/utils/ConfirmPopup.vue";
 
 const settings = inject("settings");
 const isShowLoader = inject("isShowLoader");
 
 const isEditMode = ref(false);
 const isShowRaidSelector = ref(false);
+const isShowConfirmPopup = ref(false);
 const currentChosenCharacter = ref({});
 
 const nickname = computed({
@@ -28,10 +30,10 @@ function toggleEditCharacters() {
 async function saveNickname(newNickname) {
   isEditMode.value = false;
   saveSettings({nickname: newNickname});
-  await refreshCharacters();
+  await updateCharacters();
 }
 
-async function refreshCharacters() {
+async function updateCharacters() {
   if (!nickname.value.length) {
     return;
   }
@@ -119,7 +121,7 @@ function showRaidSelector(characterName) {
   isShowRaidSelector.value = true;
 }
 
-async function refreshSingleCharacter(name) {
+async function updateSingleCharacter(name) {
   isShowLoader.value = true;
 
   const result = await window.electron.ipcRenderer.fetchCharacter(name);
@@ -137,7 +139,7 @@ async function refreshSingleCharacter(name) {
   isShowLoader.value = false;
 }
 
-async function refreshCharactersGroup(characters = []) {
+async function updateCharactersGroup(characters = []) {
   if (!Array.isArray(characters) || characters.length === 0) {
     return;
   }
@@ -180,8 +182,8 @@ function mergeCharactersPreferMaxGS(list) {
   <nick-name
       v-model="nickname"
       @saveNickname="saveNickname"
-      @refreshCharacters="refreshCharacters"
-      @resetCharacters="resetCharacters"
+      @updateCharacters="updateCharacters"
+      @resetCharacters="isShowConfirmPopup = true"
       @editCharacters="toggleEditCharacters"
       @editNickname="isEditMode = true"
       :isEditMode="isEditMode"
@@ -193,8 +195,8 @@ function mergeCharactersPreferMaxGS(list) {
       :groupOrder="groupOrder"
       :isEditMode="isEditMode"
       @showRaidSelector="showRaidSelector"
-      @refreshCharacter="refreshSingleCharacter"
-      @refreshCharacterGroup="refreshCharactersGroup"
+      @updateCharacter="updateSingleCharacter"
+      @updateCharacterGroup="updateCharactersGroup"
   />
 
   <button
@@ -211,6 +213,12 @@ function mergeCharactersPreferMaxGS(list) {
       @save="isShowRaidSelector = false"
       :character-name="currentChosenCharacter"
       @close="isShowRaidSelector = false"
+  />
+
+  <confirm-popup text="Ты уверен, что хочешь сбросить прогресс активностей у всех персонажей?"
+                 @closePopup="isShowConfirmPopup = false"
+                 @accept="resetCharacters"
+                 @reject="isShowConfirmPopup = false"
   />
 </template>
 
