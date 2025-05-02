@@ -310,6 +310,7 @@ const isShowCharacter = computed(() => {
   &:not(.view-mode) .character__icons {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
   }
 
   &.character_support.view-mode .character__info {
@@ -438,6 +439,9 @@ const isShowCharacter = computed(() => {
   .character__info {
     border-right: 1px solid var(--grey);
     grid-area: info;
+    flex-wrap: wrap;
+    flex-direction: row;
+    width: -webkit-fill-available;
   }
 
   .character__icons {

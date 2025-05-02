@@ -130,6 +130,24 @@ provide('isShowLoader', isShowLoader);
   --money: #f78fb3;
 }
 
+[data-theme="rainy-asphalt"] {
+  --dark-grey: #2f3136;
+  --middle-grey: #36393f;
+  --grey: #4f545c;
+  --light-grey: #b9bbbe;
+  --black: #202225;
+  --white: #ffffff;
+  --error: #f04747;
+  --gold: #faa61a;
+  --loader-border: #2f3136;
+  --loader-top: #7289da;
+  --support: #28da89;
+  --dd: #82d3ff;
+  --gs: #ffb07d;
+  --shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+  --inner-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
 [data-theme="light"] {
   --dark-grey: #e0e0e0;
   --middle-grey: #f0f0f0;
@@ -223,19 +241,19 @@ provide('isShowLoader', isShowLoader);
 [data-theme="gradient-dark"] {
   --dark-grey: #1a1a2e;
   --middle-grey: #16213e;
-  --grey: #0f3460;
-  --light-grey: #533483;
+  --grey: #812dc9;
+  --light-grey: #e3d0ff;
   --black: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
   --white: #eaeaea;
   --error: #ff3860;
-  --gold: #c0a304;
+  --gold: #668df6;
   --loader-border: #a29bfe;
   --loader-top: #f4d03f;
   --support: #8b78e6;
-  --dd: #6a89cc;
+  --dd: #7ea7ff;
   --gs: #f4c542;
-  --shadow: 0px 4px 10px rgba(255, 215, 0, 0.3);
-  --inner-shadow: inset 0 0 10px rgba(182, 176, 121, 0.48);
+  --shadow: 0px 4px 10px rgba(206, 28, 129, 0.3);
+  --inner-shadow: inset 0 0 10px rgba(206, 122, 171, 0.48);
 }
 
 [data-theme="rose"] {
@@ -654,6 +672,40 @@ input {
 
 input[type=number] {
   cursor: text;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: linear-gradient(to right, var(--dark-grey) 50%, var(--light-grey) 50%);
+  outline: none;
+  transition: background 0.2s ease-in;
+  max-width: -webkit-fill-available;
+  padding: 2px;
+}
+
+/* Стилизуем "ползунок" (thumb) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  background: var(--grey);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  border: none;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--grey);
+  cursor: pointer;
+  border: none;
 }
 
 .custom-label {

@@ -35,6 +35,7 @@ watch(theme, (newVal) => {
     <option value="orange">Апельсиновая</option>
     <option value="peach">Персиковая</option>
     <option value="raspberry">Малиновая</option>
+    <option value="rainy-asphalt">Мокрый асфальт</option>
   </select>
 </template>
 

@@ -285,6 +285,7 @@ async function generateLogAndOpenFolder() {
   margin-bottom: 10px;
   grid-template-areas: "a b";
   box-shadow: var(--shadow);
+  overflow: auto;
 }
 
 .settings-table__cell {
