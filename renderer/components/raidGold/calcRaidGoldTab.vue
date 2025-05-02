@@ -11,7 +11,7 @@ const characterSettings = computed(() => settings.value.characterSettings);
 const characterList = computed(() => settings.value.characterList);
 
 const goldCharacters = ref([]);
-const currentReceivers = ref([]);
+const currentReceivers = ref({});
 
 const totalGold = computed(() => {
   let earned = 0;
@@ -40,10 +40,24 @@ function getGoldFromRaid(charName, raid) {
     return {earned: 0, spent: 0, total: 0};
   }
 
-  if (!characterSettings.value?.[charName]?.goldReceiver
-      && !characterSettings.value?.[charName]?.legate
-      && !currentReceivers.value.includes(charName)) {
-    return {earned: 0, spent: 0, total: 0};
+  const isGoldReceiver =characterSettings.value?.[charName]?.goldReceiver;
+  const isLegate = characterSettings.value?.[charName]?.legate;
+  const hasReceiverInfo = currentReceivers.value.hasOwnProperty(charName);
+  const isReceiver = currentReceivers.value[charName];
+
+  if (!isGoldReceiver && !isLegate) {
+    if (!hasReceiverInfo) {
+      return { earned: 0, spent: 0, total: 0 };
+    }
+    if (!isReceiver) {
+      return { earned: 0, spent: 0, total: 0 };
+    }
+  }
+
+  if (isGoldReceiver || isLegate) {
+    if (hasReceiverInfo && !isReceiver) {
+      return { earned: 0, spent: 0, total: 0 };
+    }
   }
 
   let earned = 0, spent = 0;
@@ -72,16 +86,7 @@ function getGoldFromRaid(charName, raid) {
 }
 
 function toggleGoldCharacter([characterName, isReceiver]) {
-  if (isReceiver && !currentReceivers.value.includes(characterName)) {
-
-    if (goldCharacters.value.includes(characterName)) {
-      return;
-    }
-
-    currentReceivers.value.push(characterName);
-  } else if (currentReceivers.value.includes(characterName) && !isReceiver) {
-    currentReceivers.value.splice(currentReceivers.value.indexOf(characterName), 1);
-  }
+  currentReceivers.value[characterName] = isReceiver;
 }
 </script>
 
