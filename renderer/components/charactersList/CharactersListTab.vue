@@ -139,10 +139,12 @@ async function updateSingleCharacter(name) {
     return;
   }
 
-  const updated = characterList.value.filter(c => c.name !== name);
-  updated.push(result);
+  let updatedCharacter = characterList.value.find(c => c.name === name);
+  updatedCharacter.name = result.name;
+  updatedCharacter.gearScore = result.gearScore;
+  updatedCharacter.className = result.className;
 
-  saveCharacterList(updated);
+  saveCharacterList(characterList.value);
   isShowLoader.value = false;
 }
 

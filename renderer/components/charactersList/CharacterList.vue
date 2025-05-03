@@ -42,6 +42,7 @@ window.addEventListener("resize", (e) => {
 
 function buildGrouped() {
   const sorted = {};
+  console.log(props.characterList)
   props.characterList.forEach((char) => {
     const settings = props.characterSettings[char.name] || {};
     const group = settings.group || "Без группы";
