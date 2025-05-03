@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 const inputs = ref({
   blue: 0,
@@ -62,9 +63,12 @@ watch(inputs, calculate, { deep: true });
 
 <template>
   <div class="tools-container__item" id="craft-resources">
+    <tooltip>
     <div class="tools-container__item-name">
       Калькулятор Авидорских кристаллов судьбы
     </div>
+    <template #tooltip>Расчёт количества кристаллов, в зависимости от количества ресурсов в наличии</template>
+    </tooltip>
     <div class="tools-container__item-content">
       <div class="tools-container__item-label">
         Нужные синие ресурсы

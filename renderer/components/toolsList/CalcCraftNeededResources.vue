@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 const stackCount = ref(1);
 
@@ -20,9 +21,12 @@ const total = computed(() => {
 
 <template>
   <div class="tools-container__item" id="craft-needs">
-    <div class="tools-container__item-name">
-      Ресурсы для изготовления Авидорских кристаллов судьбы
-    </div>
+    <tooltip>
+      <div class="tools-container__item-name">
+        Ресурсы для изготовления Авидорских кристаллов судьбы
+      </div>
+      <template #tooltip>Расчёт количества ресурсов, необходимых для крафта n количества стаков кристаллов</template>
+    </tooltip>
     <div class="tools-container__item-content">
       <div class="tools-container__item-label">
         Количество стаков кристаллов (по 10 штук в стаке)
