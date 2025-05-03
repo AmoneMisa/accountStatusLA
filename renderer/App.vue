@@ -7,7 +7,7 @@ import CheckListTab from "@/components/checkList/CheckListTab.vue";
 import NotificationsTab from "@/components/notifications/NotificationsTab.vue";
 import SettingsTable from "@/components/settings/SettingsTable.vue";
 import ToolsTab from "@/components/toolsList/ToolsTab.vue";
-import {onMounted, provide, ref} from "vue";
+import {computed, onMounted, provide, ref} from "vue";
 import CalcRaidGoldTab from "@/components/raidGold/calcRaidGoldTab.vue";
 import FAQTab from "@/components/FAQ/FAQTab.vue";
 
@@ -33,6 +33,9 @@ const tabButtonsList = [
 
 let settings = ref();
 provide('settings', settings);
+
+const tabVisibility = computed(() => settings.value.tabVisibility
+    || {calcRaidGold: true, cubes: true, checkList: true, notification: true, tools: true, FAQ: true},);
 
 window.electron.ipcRenderer.on('init-settings', async (settings_) => {
   settings.value = settings_;
@@ -73,19 +76,19 @@ provide('isShowLoader', isShowLoader);
   <div class="wrapper">
     <div class="tabs">
       <template v-for="tab in tabButtonsList" :key="tab.data" >
-        <button v-if="tab.data === 'settings' || tab.data === 'main' || settings?.tabVisibility[tab.data]" type="button" class="tab-button" :class="{'active': currentTab === tab.data}"
+        <button v-if="tab.data === 'settings' || tab.data === 'main' || tabVisibility?.[tab.data]" type="button" class="tab-button" :class="{'active': currentTab === tab.data}"
                 @click="changeTab(tab)">{{ tab.name }}
         </button>
       </template>
     </div>
     <div class="main">
       <characters-list-tab v-if="currentTab === 'main'"/>
-      <cubes-tab v-if="currentTab === 'cubes' && settings?.tabVisibility[currentTab]"/>
-      <check-list-tab v-if="currentTab === 'checkList' && settings?.tabVisibility[currentTab]"/>
-      <notifications-tab v-if="currentTab === 'notification' && settings?.tabVisibility[currentTab]"/>
-      <tools-tab v-if="currentTab === 'tools' && settings?.tabVisibility[currentTab]"/>
-      <calc-raid-gold-tab v-if="currentTab === 'calcRaidGold' && settings?.tabVisibility[currentTab]"/>
-      <f-a-q-tab v-if="currentTab === 'FAQ' && settings?.tabVisibility[currentTab]"/>
+      <cubes-tab v-if="currentTab === 'cubes'"/>
+      <check-list-tab v-if="currentTab === 'checkList'"/>
+      <notifications-tab v-if="currentTab === 'notification'"/>
+      <tools-tab v-if="currentTab === 'tools'"/>
+      <calc-raid-gold-tab v-if="currentTab === 'calcRaidGold'"/>
+      <f-a-q-tab v-if="currentTab === 'FAQ'"/>
       <settings-table v-if="currentTab === 'settings'"/>
     </div>
     <div id="message" class="message"></div>
