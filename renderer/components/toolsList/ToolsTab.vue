@@ -88,12 +88,14 @@ import CalcCrystalPriceComparison from "@/components/toolsList/CalcCrystalPriceC
   flex-direction: column;
   font-size:  var(--font-tiny);
   align-items: center;
+  width: -webkit-fill-available;
 }
 
 .tools-container__item-input {
   max-width: 250px;
   margin-bottom: 10px;
   margin-top: 5px;
+  width: -webkit-fill-available;
 }
 
 .tools-container__item-content {

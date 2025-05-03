@@ -67,18 +67,18 @@ function toggleIcon(target, statusTitle) {
   target.closest(".character__icon").classList.toggle("inactive");
 
   if (!props.characterSettings) {
-      settings.value.characterSettings[props.character.name] = {};
+    settings.value.characterSettings[props.character.name] = {};
   }
 
-    saveSettings({
-      characterSettings: {
-        ...settings.value.characterSettings,
-        [props.character.name]: {
-          ...props.characterSettings || {},
-          [statusTitle]: props.characterSettings ? !props.characterSettings[statusTitle] : true
-        }
+  saveSettings({
+    characterSettings: {
+      ...settings.value.characterSettings,
+      [props.character.name]: {
+        ...props.characterSettings || {},
+        [statusTitle]: props.characterSettings ? !props.characterSettings[statusTitle] : true
       }
-    });
+    }
+  });
 
 
   emit('update-character', props.character.name);
@@ -149,7 +149,8 @@ const isShowCharacter = computed(() => {
   if (!(props.currentTag === 'none'
       || props.characterSettings[props.currentTag]
       || props.currentTag === 'sup' && isSupport
-      || props.currentTag === 'dd' && !isSupport)) {
+      || props.currentTag === 'dd' && !isSupport
+      ) && props.character.className !== props.currentTag) {
     return false;
   }
 
@@ -168,11 +169,11 @@ const isShowCharacter = computed(() => {
   <div v-if="isShowCharacter"
        class="character"
        :class="[isEditMode ? '' : 'view-mode', isSupport ? 'character_support' : 'character_dd']"
-       :data-name="character.name"
-       :data-gs="character.gearScore"
   >
     <tooltip v-if="!isEditMode">
-      <div class="character__cell character__drag" draggable="true"><burger class="icon burger-icon" /></div>
+      <div class="character__cell character__drag" draggable="true">
+        <burger class="icon burger-icon"/>
+      </div>
       <template #tooltip>Изменить порядок персонажей</template>
     </tooltip>
 
@@ -187,9 +188,9 @@ const isShowCharacter = computed(() => {
             :class="{ inactive: !characterSettings?.[icon], 'character__icon_edit': isEditMode }"
             @click="({target}) => toggleIcon(target, icon)"
         >
-          <crown class="icon crown-icon" v-if="icon === 'legate'" />
-          <coin class="icon coin-icon" v-if="icon === 'goldReceiver'" />
-          <heart class="icon heart-icon" v-if="icon === 'favorite'" />
+          <crown class="icon crown-icon" v-if="icon === 'legate'"/>
+          <coin class="icon coin-icon" v-if="icon === 'goldReceiver'"/>
+          <heart class="icon heart-icon" v-if="icon === 'favorite'"/>
         </div>
         <template #tooltip>
           {{ icon === 'legate' ? 'Легат' : icon === 'goldReceiver' ? 'Получатель голды' : 'Избранное' }}
@@ -203,7 +204,7 @@ const isShowCharacter = computed(() => {
             data-type="delete"
             @click="({target}) => toggleIcon(target, 'delete')"
         >
-          <cross class="icon cross-icon" />
+          <cross class="icon cross-icon"/>
         </div>
         <template #tooltip>Скрыть из списка</template>
       </tooltip>
@@ -230,14 +231,16 @@ const isShowCharacter = computed(() => {
           <div class="raid__header">
             <div class="raid__name">{{ raid }}</div>
             <tooltip>
-              <button class="remove-raid button button_icon" @click="removeRaid(raid)"><trash class="icon trash-icon" /></button>
+              <button class="remove-raid button button_icon" @click="removeRaid(raid)">
+                <trash class="icon trash-icon"/>
+              </button>
               <template #tooltip>Удалить рейд</template>
             </tooltip>
           </div>
           <tooltip>
             <button class="raid-status button button_icon" @click="toggleRaidStatus(raid)">
-              <checkArrow class="icon check-icon" v-if="characterSettings?.raidStatus?.[raid]" />
-              <cross class="icon cross-icon" v-else />
+              <checkArrow class="icon check-icon" v-if="characterSettings?.raidStatus?.[raid]"/>
+              <cross class="icon cross-icon" v-else/>
             </button>
             <template #tooltip>Рейд пройден</template>
           </tooltip>
@@ -250,14 +253,16 @@ const isShowCharacter = computed(() => {
             <div class="raid__header">
               <div class="raid__name">{{ raid }}</div>
               <tooltip>
-                <button class="remove-raid button button_icon" @click="removeRaid(raid)"><trash class="icon trash-icon" /></button>
+                <button class="remove-raid button button_icon" @click="removeRaid(raid)">
+                  <trash class="icon trash-icon"/>
+                </button>
                 <template #tooltip>Удалить рейд</template>
               </tooltip>
             </div>
             <tooltip>
               <button class="raid-status button button_icon" @click="toggleRaidStatus(raid)">
-                <checkArrow class="icon check-icon" v-if="characterSettings?.raidStatus?.[raid]" />
-                <cross class="icon cross-icon" v-else />
+                <checkArrow class="icon check-icon" v-if="characterSettings?.raidStatus?.[raid]"/>
+                <cross class="icon cross-icon" v-else/>
               </button>
               <template #tooltip>Пройдено ли</template>
             </tooltip>
@@ -269,13 +274,14 @@ const isShowCharacter = computed(() => {
     <div class="character__cell character__actions" v-if="!isEditMode">
       <tooltip>
         <button class="button button_icon add-raid" @click="emit('show-raid-selector', character.name)">
-          <plus />
+          <plus/>
         </button>
         <template #tooltip>Добавить активность</template>
       </tooltip>
       <tooltip>
         <button type="button" id="update-character" class="button button_icon update-characters"
-                @click="emit('update-character', character.name)"><update class="icon update-icon" />
+                @click="emit('update-character', character.name)">
+          <update class="icon update-icon"/>
         </button>
         <template #tooltip>Обновить персонажа</template>
       </tooltip>

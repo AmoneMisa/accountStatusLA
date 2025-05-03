@@ -290,7 +290,35 @@ const visibleCharactersCount = computed(() => {
   }
 
   return counter;
-})
+});
+
+const availableClasses = computed(() => {
+  const classes = [];
+
+  for (let character of props.characterList) {
+    if (props.characterSettings?.[character.name]?.delete) {
+      continue;
+    }
+
+    if (classes.find(obj => obj.value === character.className || obj.label === character.className)) {
+      continue;
+    }
+
+    classes.push({value: character.className, label:character.className});
+  }
+
+  return classes;
+});
+
+const tagOptions = [
+  { label: 'Все', value: 'none' },
+  { label: 'ДД', value: 'dd' },
+  { label: 'Сап', value: 'sup' },
+  { label: 'Легат', value: 'legate' },
+  { label: 'Избранные', value: 'favorite' },
+  { label: 'Золото получатели', value: 'goldReceiver' }
+];
+
 </script>
 
 <template>
@@ -336,23 +364,14 @@ const visibleCharactersCount = computed(() => {
       <div class="group-tags__col">
         <div class="group-tags__title">Фильтр персонажей</div>
         <div class="group-tags__list">
-          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'none'}"
-               @click="currentTag = 'none'">Все
-          </div>
-          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'dd'}"
-               @click="currentTag = 'dd'">ДД
-          </div>
-          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'sup'}"
-               @click="currentTag = 'sup'">Сап
-          </div>
-          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'legate'}"
-               @click="currentTag = 'legate'">Легат
-          </div>
-          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'favorite'}"
-               @click="currentTag = 'favorite'">Избранные
-          </div>
-          <div class="group-tags__list-item" :class="{'group-tags__list-item_current': currentTag === 'goldReceiver'}"
-               @click="currentTag = 'goldReceiver'">Золото получатели
+          <div
+              v-for="tag in [...tagOptions, ...availableClasses]"
+              :key="tag.value"
+              class="group-tags__list-item"
+              :class="{ 'group-tags__list-item_current': currentTag === tag.value }"
+              @click="currentTag = tag.value"
+          >
+            {{ tag.label }}
           </div>
         </div>
       </div>
@@ -585,6 +604,11 @@ const visibleCharactersCount = computed(() => {
 .group-tags__list {
   display: flex;
   font-size: var(--font-tiny);
+}
+
+.group-tags__list {
+ flex-wrap: wrap;
+  gap: 5px;
 }
 
 .group-filters__list-item,
