@@ -23,50 +23,35 @@ const need = computed(() => ({
 }));
 
 const conversion = ref([]);
-
-const inputTotalWhite = computed(() => {
-  return inputs.value.white + Math.floor(inputs.value.extraBlue / 5) * 50;
-});
-
-const inputTotalDust = computed(() => {
-  const surplusWhite = Math.max(0, inputTotalWhite.value - need.value.white);
-  return Math.floor(surplusWhite / 100) * 80 + Math.floor(inputs.value.dust / 10) * 10;
-});
-
-const inputTotalBlue = computed(() => {
-  const surplusDust = inputTotalDust.value;
-  return inputs.value.blue + Math.floor(surplusDust / 80) * 10;
-});
+const additionalBlue = ref(0);
+const additionalWhite = ref(0);
 
 function calculate() {
-  const maxBlue = inputTotalBlue.value / COST.blue;
-  const maxGreen = inputs.value.green / COST.green;
-  const maxWhite = inputTotalWhite.value / COST.white;
+  const dustToBlueRate = 80;
+  const extraToWhiteRate = 5;
+  const whiteFromExtra = Math.floor(inputs.value.extraBlue / extraToWhiteRate) * 50;
 
-  inputs.value.targetCrystals = Math.floor(Math.min(maxBlue, maxGreen, maxWhite));
+  additionalWhite.value = whiteFromExtra;
+  const totalWhite = inputs.value.white + additionalWhite.value;
+
+  const usedDust = Math.floor(inputs.value.dust / dustToBlueRate) * dustToBlueRate;
+  const blue = (usedDust / dustToBlueRate) * 10;
+  additionalBlue.value = blue;
+
+  const totalBlue = inputs.value.blue + additionalBlue.value;
+
+  const maxBlue = Math.floor(totalBlue / COST.blue);
+  const maxGreen = Math.floor(inputs.value.green / COST.green);
+  const maxWhite = Math.floor(totalWhite / COST.white);
+
+  inputs.value.targetCrystals = Math.min(maxBlue, maxGreen, maxWhite);
 
   const conv = [];
-
-  const usedWhite = Math.max(0, inputTotalWhite.value - need.value.white);
-  const usedDust = Math.floor((Math.floor(usedWhite / 100) * 80 + Math.floor(inputs.value.dust / 10) * 10) / 80) * 80;
-  const blueFromDust = usedDust / 80 * 10;
-
-  if (inputs.value.extraBlue >= 5) {
-    const usedExtraBlue = Math.floor(inputs.value.extraBlue / 5) * 5;
-    const whites = usedExtraBlue * 10;
-    if (whites > need.value.white - inputs.value.white) {
-      conv.push(`${usedExtraBlue} ненужных синих → ${whites} белых`);
-    }
+  if (whiteFromExtra > 0) {
+    conv.push(`${Math.floor(inputs.value.extraBlue / extraToWhiteRate) * extraToWhiteRate} ненужных синих → ${whiteFromExtra} белых`);
   }
-
-  if (usedWhite >= 100) {
-    const usedWhiteRounded = Math.floor(usedWhite / 100) * 100;
-    const dust = usedWhiteRounded / 100 * 80;
-    conv.push(`${usedWhiteRounded} белых → ${dust} пыли`);
-  }
-
-  if (usedDust >= 80) {
-    conv.push(`${usedDust} пыли → ${blueFromDust} синих ресурсов`);
+  if (usedDust > 0) {
+    conv.push(`${usedDust} пыли → ${blue} синих ресурсов`);
   }
 
   conversion.value = conv;
@@ -83,23 +68,23 @@ watch(inputs, calculate, { deep: true });
     <div class="tools-container__item-content">
       <div class="tools-container__item-label">
         Нужные синие ресурсы
-        <input v-model.number="inputs.blue" type="number" min="0" class="tools-container__item-input"/>
+        <input v-model.number="inputs.blue" type="number" min="0" class="tools-container__item-input" />
       </div>
       <div class="tools-container__item-label">
         Зелёные ресурсы
-        <input v-model.number="inputs.green" type="number" min="0" class="tools-container__item-input"/>
+        <input v-model.number="inputs.green" type="number" min="0" class="tools-container__item-input" />
       </div>
       <div class="tools-container__item-label">
         Белые ресурсы
-        <input v-model.number="inputs.white" type="number" min="0" class="tools-container__item-input"/>
+        <input v-model.number="inputs.white" type="number" min="0" class="tools-container__item-input" />
       </div>
       <div class="tools-container__item-label">
         Пыль
-        <input v-model.number="inputs.dust" type="number" min="0" class="tools-container__item-input"/>
+        <input v-model.number="inputs.dust" type="number" min="0" class="tools-container__item-input" />
       </div>
       <div class="tools-container__item-label">
         Ненужные синие ресурсы
-        <input v-model.number="inputs.extraBlue" type="number" min="0" class="tools-container__item-input"/>
+        <input v-model.number="inputs.extraBlue" type="number" min="0" class="tools-container__item-input" />
       </div>
       <div class="tools-container__item-message" v-if="inputs.targetCrystals > 0">
         Ресурсов достаточно, чтобы создать {{ inputs.targetCrystals }} стаков кристаллов.
