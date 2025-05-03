@@ -267,7 +267,7 @@ async function generateLogAndOpenFolder() {
 
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
-      <button type="button" id="update-app" class="button" data-current-version="0.17" @click="updateApp">
+      <button type="button" id="update-app" class="button" data-current-version="0.17.1" @click="updateApp">
         Обновить приложение
       </button>
     </div>
