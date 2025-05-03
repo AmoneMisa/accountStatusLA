@@ -6,6 +6,8 @@ import CalcBet from "@/components/toolsList/CalcBet.vue";
 import CalcCards from "@/components/toolsList/CalcCards.vue";
 import CalcAuctionSum from "@/components/toolsList/CalcAuctionSum.vue";
 import CalcCommission from "@/components/toolsList/CalcCommission.vue";
+import CalcCraftResources from "@/components/toolsList/CalcCraftResources.vue";
+import CalcCraftNeededResources from "@/components/toolsList/CalcCraftNeededResources.vue";
 </script>
 
 <template>
@@ -19,6 +21,8 @@ import CalcCommission from "@/components/toolsList/CalcCommission.vue";
       <calc-cards />
       <calc-auction-sum />
       <calc-commission />
+      <calc-craft-resources />
+      <calc-craft-needed-resources />
     </div>
   </div>
 </template>
