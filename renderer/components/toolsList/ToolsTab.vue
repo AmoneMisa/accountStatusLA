@@ -8,6 +8,7 @@ import CalcAuctionSum from "@/components/toolsList/CalcAuctionSum.vue";
 import CalcCommission from "@/components/toolsList/CalcCommission.vue";
 import CalcCraftResources from "@/components/toolsList/CalcCraftResources.vue";
 import CalcCraftNeededResources from "@/components/toolsList/CalcCraftNeededResources.vue";
+import CalcCrystalPriceComparison from "@/components/toolsList/CalcCrystalPriceComparison.vue";
 </script>
 
 <template>
@@ -23,6 +24,7 @@ import CalcCraftNeededResources from "@/components/toolsList/CalcCraftNeededReso
       <calc-commission />
       <calc-craft-resources />
       <calc-craft-needed-resources />
+      <calc-crystal-price-comparison />
     </div>
   </div>
 </template>
@@ -85,6 +87,7 @@ import CalcCraftNeededResources from "@/components/toolsList/CalcCraftNeededReso
   display: flex;
   flex-direction: column;
   font-size:  var(--font-tiny);
+  align-items: center;
 }
 
 .tools-container__item-input {

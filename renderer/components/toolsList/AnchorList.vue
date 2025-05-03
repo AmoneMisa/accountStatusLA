@@ -12,6 +12,7 @@
     <div class="tools-container__anchor-item"><a href="#calc-commission">Рассчитать комиссию</a></div>
     <div class="tools-container__anchor-item"><a href="#craft-resources">Рассчитать крафт</a></div>
     <div class="tools-container__anchor-item"><a href="#craft-needs">Рассчитать ресурсы</a></div>
+    <div class="tools-container__anchor-item"><a href="#crystal-price-comparison">Голда vs Чёрные кристаллы</a></div>
   </nav>
 </template>
 
