@@ -204,8 +204,8 @@ function mergeCharactersPreferMaxGS(list) {
       :groupOrder="groupOrder"
       :isEditMode="isEditMode"
       @showRaidSelector="showRaidSelector"
-      @updateCharacter="updateSingleCharacter"
       @updateCharacterGroup="updateCharactersGroup"
+      @fetchCharacter="updateSingleCharacter"
   />
 
   <button

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import {ref, computed, watch} from 'vue';
 import Tooltip from "@/components/utils/Tooltip.vue";
 
 const inputs = ref({
@@ -58,38 +58,43 @@ function calculate() {
   conversion.value = conv;
 }
 
-watch(inputs, calculate, { deep: true });
+watch(inputs, calculate, {deep: true});
 </script>
 
 <template>
   <div class="tools-container__item" id="craft-resources">
     <tooltip>
-    <div class="tools-container__item-name">
-      Калькулятор Авидорских кристаллов судьбы
-    </div>
-    <template #tooltip>Расчёт количества кристаллов, в зависимости от количества ресурсов в наличии</template>
+      <div class="tools-container__item-name">
+        Калькулятор Авидорских кристаллов судьбы
+      </div>
+      <template #tooltip>Расчёт количества кристаллов, в зависимости от количества ресурсов в наличии</template>
     </tooltip>
     <div class="tools-container__item-content">
       <div class="tools-container__item-label">
         Нужные синие ресурсы
-        <input v-model.number="inputs.blue" type="number" min="0" class="tools-container__item-input" />
+        <input v-model.number="inputs.blue" type="number" min="0" class="tools-container__item-input"/>
       </div>
       <div class="tools-container__item-label">
         Зелёные ресурсы
-        <input v-model.number="inputs.green" type="number" min="0" class="tools-container__item-input" />
+        <input v-model.number="inputs.green" type="number" min="0" class="tools-container__item-input"/>
       </div>
       <div class="tools-container__item-label">
         Белые ресурсы
-        <input v-model.number="inputs.white" type="number" min="0" class="tools-container__item-input" />
+        <input v-model.number="inputs.white" type="number" min="0" class="tools-container__item-input"/>
       </div>
       <div class="tools-container__item-label">
         Пыль
-        <input v-model.number="inputs.dust" type="number" min="0" class="tools-container__item-input" />
+        <input v-model.number="inputs.dust" type="number" min="0" class="tools-container__item-input"/>
       </div>
+
       <div class="tools-container__item-label">
-        Ненужные синие ресурсы
-        <input v-model.number="inputs.extraBlue" type="number" min="0" class="tools-container__item-input" />
+        <tooltip>
+          Ненужные синие ресурсы
+          <template #tooltip>Только для камня и дерева</template>
+        </tooltip>
+        <input v-model.number="inputs.extraBlue" type="number" min="0" class="tools-container__item-input"/>
       </div>
+
       <div class="tools-container__item-message" v-if="inputs.targetCrystals > 0">
         Ресурсов достаточно, чтобы создать {{ inputs.targetCrystals }} стаков кристаллов.
         <ul>

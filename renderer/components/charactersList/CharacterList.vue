@@ -12,7 +12,7 @@ import plus from "../../../src/svg/plus.svg";
 import minus from "../../../src/svg/minus.svg";
 import update from "../../../src/svg/update.svg";
 
-const emit = defineEmits(["show-raid-selector", "update-character-group", "update-character"]);
+const emit = defineEmits(["show-raid-selector", "update-character-group", "update-character", "fetch-character"]);
 const props = defineProps({
   characterList: Array,
   characterSettings: Object,
@@ -42,7 +42,6 @@ window.addEventListener("resize", (e) => {
 
 function buildGrouped() {
   const sorted = {};
-  console.log(props.characterList)
   props.characterList.forEach((char) => {
     const settings = props.characterSettings[char.name] || {};
     const group = settings.group || "Без группы";
@@ -469,6 +468,7 @@ const tagOptions = [
                   :searchCharacter="searchCharacter"
                   :gsFilter="rangeGSCharacter"
                   @updateCharacter="(characterName) => emit('update-character', characterName)"
+                  @fetchCharacter="(characterName) => emit('fetch-character', characterName)"
               />
             </template>
 

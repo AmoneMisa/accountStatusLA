@@ -42,6 +42,8 @@ import CalcCrystalPriceComparison from "@/components/toolsList/CalcCrystalPriceC
   flex: 15%;
   font-size:  var(--font-small);
   height: -webkit-fill-available;
+  position: sticky;
+  top: 0;
 }
 
 .tools-container__anchor-menu-title {
@@ -81,6 +83,7 @@ import CalcCrystalPriceComparison from "@/components/toolsList/CalcCrystalPriceC
   font-size:  var(--font-small);
   margin-bottom: 10px;
   margin-top: 10px;
+  text-align: center;
 }
 
 .tools-container__item-label {
@@ -92,7 +95,8 @@ import CalcCrystalPriceComparison from "@/components/toolsList/CalcCrystalPriceC
 }
 
 .tools-container__item-input {
-  max-width: 250px;
+  max-width: 260px;
+  min-width: 250px;
   margin-bottom: 10px;
   margin-top: 5px;
   width: -webkit-fill-available;
