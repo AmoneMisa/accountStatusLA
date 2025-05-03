@@ -34,7 +34,7 @@ const tabButtonsList = [
 let settings = ref();
 provide('settings', settings);
 
-const tabVisibility = computed(() => settings.value.tabVisibility
+const tabVisibility = computed(() => settings.value?.tabVisibility
     || {calcRaidGold: true, cubes: true, checkList: true, notification: true, tools: true, FAQ: true},);
 
 window.electron.ipcRenderer.on('init-settings', async (settings_) => {

@@ -38,7 +38,7 @@ const autoStart = computed({
   set: () => settings.value.autoStart = !settings.value.autoStart
 });
 const tabVisibility = computed({
-  get: () => settings.value.tabVisibility || {calcRaidGold: true, cubes: true, checkList: true, notification: true, tools: true, FAQ: true},
+  get: () => settings.value?.tabVisibility || {calcRaidGold: true, cubes: true, checkList: true, notification: true, tools: true, FAQ: true},
   set: (value) => settings.value.tabVisibility[value] = !settings.value.tabVisibility[value]
 });
 
