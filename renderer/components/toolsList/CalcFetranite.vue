@@ -1,65 +1,13 @@
+<script src="../../../../../Desktop/index.js"></script>
 <script setup>
 import romb from "../../../src/svg/romb.svg";
-import {ref, computed, watch} from "vue";
 
-const state = ref({
-  A: Array(10).fill(null),
-  B: Array(10).fill(null),
-  C: Array(10).fill(null),
-  chance: 0.75
-});
-
-const target = ref({
-  A: 0,
-  B: 0,
-  C: 0
-});
-
-const computedChance = computed(() => {
-  const all = [...state.value.A, ...state.value.B, ...state.value.C];
-  let chance = 0.75;
-
-  for (const cell of all) {
-    if (cell === true) {
-      chance = Math.max(0.25, chance - 0.1);
-    } else if (cell === false) {
-      chance = Math.min(0.75, chance + 0.1);
-    }
-  }
-
-  return chance;
-});
-
-const rowKeys = ['A', 'B', 'C'];
-
-function countSuccess(row) {
-  return state.value[row].filter(v => v === true).length;
-}
-function countTotal(row) {
-  return state.value[row].filter(v => v !== null).length;
-}
-
-function markCell(row, index, type) {
-  if (type === 'left') {
-    state.value[row][index] = true;
-  } else if (type === 'right') {
-    state.value[row][index] = false;
-  } else if (type === 'reset') {
-    state.value[row][index] = null;
-  }
-}
-
-function handleClick(e, row, index) {
-  if (e.detail === 2) {
-    markCell(row, index, 'reset');
-  } else if (e.button === 2) {
-    markCell(row, index, 'right');
-  } else {
-    markCell(row, index, 'left');
-  }
-}
-
-function State(currentA, totalA, currentB, totalB, currentC, totalC, chance) {
+function State(
+    currentA, totalA,
+    currentB, totalB,
+    currentC, totalC,
+    chance
+) {
   this.currentA = currentA;
   this.totalA = totalA;
   this.currentB = currentB;
@@ -78,25 +26,30 @@ function State(currentA, totalA, currentB, totalB, currentC, totalC, chance) {
   };
 
   this.isValid = function () {
-    return this.totalA <= 10 && this.totalB <= 10 && this.totalC <= 10;
-  };
+    return this.totalA <= 10
+        && this.totalB <= 10
+        && this.totalC <= 10;
+  }
 
   this.toBest = function () {
     return new State(
-        this.currentA + (10 - this.totalA), 10,
-        this.currentB + (10 - this.totalB), 10,
-        this.currentC, 10,
+        this.currentA + (10 - this.totalA),
+        10,
+        this.currentB + (10 - this.totalB),
+        10,
+        this.currentC,
+        10,
         0.75
     );
   };
 
-  const variantsChanges = {
+  let variantsChanges = {
     'A+': {currentA: 1, totalA: 1, chance: -0.1},
     'A-': {totalA: 1, chance: 0.1},
     'B+': {currentB: 1, totalB: 1, chance: -0.1},
     'B-': {totalB: 1, chance: 0.1},
     'C+': {currentC: 1, totalC: 1, chance: -0.1},
-    'C-': {totalC: 1, chance: 0.1}
+    'C-': {totalC: 1, chance: 0.1},
   };
 
   this.withChange = function (change) {
@@ -109,7 +62,7 @@ function State(currentA, totalA, currentB, totalB, currentC, totalC, chance) {
         this.totalC + (change.totalC || 0),
         Math.max(0.25, Math.min(0.75, this.chance + (change.chance || 0)))
     );
-  };
+  }
 
   this.variant = function (variantType) {
     return this.withChange(variantsChanges[variantType]);
@@ -118,104 +71,102 @@ function State(currentA, totalA, currentB, totalB, currentC, totalC, chance) {
   this.variants = function () {
     return Object.keys(variantsChanges).reduce((acc, variantType) => {
       acc[variantType] = this.variant(variantType);
+
       return acc;
-    }, {});
-  };
+    }, {})
+  }
 }
 
 function Calculator(targets, cache) {
   this.targets = targets;
-  this.cache = cache || new Map();
 
-  this.isReach = function (state) {
-    return this.targets.some(target =>
-        target.minA <= state.currentA &&
-        target.minB <= state.currentB &&
-        state.currentC <= target.maxC
-    );
+  if (!cache) {
+    cache = new Map();
+  }
+
+  this.cache = cache;
+
+  /**
+   * @param {State} state
+   * @returns {boolean}
+   */
+  this.isReach = function isReach(state) {
+    for (const target of this.targets) {
+      if (target.minA <= state.currentA
+          && target.minB <= state.currentB
+          && state.currentC <= target.maxC) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
+  /**
+   * @param {State} state
+   * @returns {boolean}
+   */
   this.isReachable = function (state) {
     return this.isReach(state.toBest());
   };
 
   this.chanceReach = function (state) {
-    const key = state.getKey();
+    let key = state.getKey();
+
     if (!this.cache.has(key)) {
       this.cache.set(key, this.chanceReachWithoutCache(state));
     }
-    return this.cache.get(key);
-  };
 
+    return this.cache.get(key);
+  }
+
+  /**
+   * @param {State} state
+   * @returns {number}
+   */
   this.chanceReachWithoutCache = function (state) {
-    if (!state.isValid()) return 0;
-    if (this.isReach(state)) return 1;
-    if (!this.isReachable(state)) return 0;
+    if (!state.isValid()) {
+      return 0;
+    } else if (this.isReach(state)) {
+      return 1;
+    } else if (!this.isReachable(state)) {
+      return 0;
+    }
+
     return Math.max(...Object.values(this.variantsChances(state)));
   };
 
   this.variantsChances = function (state) {
-    const variants = state.variants();
-    return ['A', 'B', 'C'].reduce((acc, type) => {
-      acc[type] = this.variantChance(
+    let variants = state.variants();
+
+    return ['A', 'B', 'C'].reduce((acc, variantType) => {
+      acc[variantType] = this.variantChance(
           state.chance,
-          variants[`${type}+`],
-          variants[`${type}-`]
+          variants[`${variantType}+`],
+          variants[`${variantType}-`]
       );
+
       return acc;
     }, {});
-  };
+  }
 
   this.variantChance = function (chance, plusState, minusState) {
     return this.chanceReach(plusState) * chance + this.chanceReach(minusState) * (1 - chance);
   };
 }
 
-const calculator = new Calculator([
+let calculator = new Calculator([
   {minA: 9, minB: 7, maxC: 4},
   {minA: 7, minB: 9, maxC: 4},
   {minA: 10, minB: 6, maxC: 4},
   {minA: 6, minB: 10, maxC: 4}
 ]);
-
-const chanceResult = ref(null);
-const variantChances = ref({});
-const bestRow = ref(null);
-
-function recalculate() {
-  const s = new State(
-      countSuccess('A'), countTotal('A'),
-      countSuccess('B'), countTotal('B'),
-      countSuccess('C'), countTotal('C'),
-      computedChance.value
-  );
-  chanceResult.value = calculator.chanceReach(s);
-  const allChances = calculator.variantsChances(s);
-
-  const filtered = Object.fromEntries(
-      Object.entries(allChances).filter(([row]) => countSuccess(row) < target.value[row])
-  );
-
-  variantChances.value = filtered;
-  bestRow.value = Object.keys(filtered).reduce((a, b) =>
-      filtered[a] > filtered[b] ? a : b, Object.keys(filtered)[0]
-  );
-}
-
-function reset() {
-  state.value = {
-    A: Array(10).fill(null),
-    B: Array(10).fill(null),
-    C: Array(10).fill(null),
-    chance: 0.75
-  };
-  chanceResult.value = null;
-  variantChances.value = {};
-  bestRow.value = null;
-}
-
-watch(state, recalculate, {deep: true});
-watch(target, recalculate, {deep: true});
+let stateState = new State(0, 0, 0, 0, 0, 0, 0.75);
+let start = performance.now();
+console.log(calculator.chanceReach(stateState));
+console.log(calculator.variantsChances(stateState));
+console.log(performance.now() - start);
+console.log(calculator.cache.size);
 </script>
 
 <template>
