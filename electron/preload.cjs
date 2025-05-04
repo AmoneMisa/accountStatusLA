@@ -13,5 +13,7 @@ contextBridge.exposeInMainWorld('electron', {
         backupConfig: () => ipcRenderer.invoke('backup-config'),
         restoreConfigFromBackup: () => ipcRenderer.invoke('restore-config-from-backup'),
         generateLog: () => ipcRenderer.invoke('generate-log'),
+        saveCacheJson: (data) => ipcRenderer.invoke('save-cache-json', data),
+        loadCacheJson: () => ipcRenderer.invoke('load-cache-json'),
     }
 });

@@ -422,6 +422,29 @@ function resetReminderSettingsIfNeeded() {
     }
 }
 
+const getCurrentCachePath = () => {
+    const settings = loadAppDataSettings();
+    return settings.savePath
+        ? path.join(settings.savePath, 'fetranite_simulations.json')
+        : path.join(app.getPath('userData'), 'fetranite_simulations.json');
+};
+
+ipcMain.handle('save-cache-json', async (_, data) => {
+    const filePath = getCurrentCachePath();
+    await fs.promises.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    return filePath;
+});
+
+ipcMain.handle('load-cache-json', async () => {
+    const filePath = getCurrentCachePath();
+    try {
+        const data = await fs.promises.readFile(filePath, 'utf-8');
+        return JSON.parse(data);
+    } catch (error) {
+        return null;
+    }
+});
+
 const getCurrentConfigPath = () => {
     const settings = loadAppDataSettings();
     return settings.savePath

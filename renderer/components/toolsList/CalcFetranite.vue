@@ -4,21 +4,39 @@ import plus from "../../../src/svg/plus.svg";
 import minus from "../../../src/svg/minus.svg";
 import trash from "../../../src/svg/trash.svg";
 
-import {ref, computed} from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import Tooltip from "@/components/utils/Tooltip.vue";
 
-const CACHE_KEY = 'fetranite_simulation_cache';
+const cache = ref(new Map());
 
-function loadCache() {
-  const storedCache = localStorage.getItem(CACHE_KEY);
-  if (storedCache) {
-    return new Map(JSON.parse(storedCache));
+async function loadCacheFromFile() {
+  const data = await window.electron.ipcRenderer.loadCacheJson();
+  if (data) {
+    cache.value = new Map(data);
+    console.log('✅ Кэш загружен:', cache.value.size, 'записей');
+  } else {
+    console.log('⚠️ Кэш не найден, используется пустой');
+    cache.value = new Map();
   }
-  return new Map();
+
+  calculator.value = new Calculator([
+    {minA: 9, minB: 7, maxC: 4},
+    {minA: 7, minB: 9, maxC: 4},
+    {minA: 10, minB: 6, maxC: 4},
+    {minA: 6, minB: 10, maxC: 4}
+  ], cache.value);
 }
 
-function saveCache(cache) {
-  localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+loadCacheFromFile();
+
+async function saveCacheToFile(cache) {
+  const data = Array.from(cache.entries());
+  try {
+    const filePath = await window.electron.ipcRenderer.saveCacheJson(data);
+    console.log(`✅ Файл сохранён по пути: ${filePath}`);
+  } catch (e) {
+    console.error('Ошибка сохранения файла:', e);
+  }
 }
 
 const state = ref({
@@ -169,13 +187,12 @@ function Calculator(targets, cache) {
   };
 }
 
-const cache = loadCache();
 const calculator = new Calculator([
   {minA: 9, minB: 7, maxC: 4},
   {minA: 7, minB: 9, maxC: 4},
   {minA: 10, minB: 6, maxC: 4},
   {minA: 6, minB: 10, maxC: 4}
-], cache);
+]);
 
 const result = computed(() => {
   const s = new State(
@@ -188,12 +205,11 @@ const result = computed(() => {
   const reachChance = calculator.chanceReach(s);
   const variants = calculator.variantsChances(s);
 
-  saveCache(calculator.cache);
+  if (cache.value.values().length < 1) {
+    saveCacheToFile(calculator.cache);
+  }
 
-  return {
-    reachChance,
-    variants
-  };
+  return {reachChance, variants};
 });
 
 function markCell(row, status) {
@@ -210,11 +226,11 @@ const bestOption = computed(() => {
   let bestKey = [result.value.variants["A"]];
 
   for (const [key, bestChance] of Object.entries(result.value.variants)) {
-    best = Math.max(best, bestChance);
+
 
     if (best < bestChance) {
-      bestKey.slice(0, bestKey.length - 1);
-      bestKey.push(key);
+      best = Math.max(best, bestChance);
+      bestKey = [key];
     }
 
     if (best === bestChance) {
@@ -267,7 +283,7 @@ const bestOption = computed(() => {
           </tooltip>
         </div>
         <div>
-          {{ (result.variants[rowKey] * 100).toFixed(2) }}%
+          {{ (result.variants[rowKey] * 100).toFixed(5) }}%
         </div>
       </div>
     </div>
@@ -277,7 +293,7 @@ const bestOption = computed(() => {
         Текущий шанс: <strong>{{ (computedChance * 100).toFixed(0) }}%</strong>
       </div>
       <div class="tools-container__item-message">
-        Максимальный шанс достижения цели: <strong>{{ (result.reachChance * 100).toFixed(2) }}%</strong>
+        Максимальный шанс достижения цели: <strong>{{ (result.reachChance * 100).toFixed(5) }}%</strong>
       </div>
     </div>
   </div>
