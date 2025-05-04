@@ -9,6 +9,7 @@ import CalcCommission from "@/components/toolsList/CalcCommission.vue";
 import CalcCraftResources from "@/components/toolsList/CalcCraftResources.vue";
 import CalcCraftNeededResources from "@/components/toolsList/CalcCraftNeededResources.vue";
 import CalcCrystalPriceComparison from "@/components/toolsList/CalcCrystalPriceComparison.vue";
+import CalcFetranite from "@/components/toolsList/CalcFetranite.vue";
 </script>
 
 <template>
@@ -25,6 +26,7 @@ import CalcCrystalPriceComparison from "@/components/toolsList/CalcCrystalPriceC
       <calc-craft-resources />
       <calc-craft-needed-resources />
       <calc-crystal-price-comparison />
+      <calc-fetranite />
     </div>
   </div>
 </template>
