@@ -7,6 +7,20 @@ import trash from "../../../src/svg/trash.svg";
 import {ref, computed} from 'vue';
 import Tooltip from "@/components/utils/Tooltip.vue";
 
+const CACHE_KEY = 'fetranite_simulation_cache';
+
+function loadCache() {
+  const storedCache = localStorage.getItem(CACHE_KEY);
+  if (storedCache) {
+    return new Map(JSON.parse(storedCache));
+  }
+  return new Map();
+}
+
+function saveCache(cache) {
+  localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+}
+
 const state = ref({
   A: Array(10).fill(null),
   B: Array(10).fill(null),
@@ -155,12 +169,13 @@ function Calculator(targets, cache) {
   };
 }
 
+const cache = loadCache();
 const calculator = new Calculator([
   {minA: 9, minB: 7, maxC: 4},
   {minA: 7, minB: 9, maxC: 4},
   {minA: 10, minB: 6, maxC: 4},
   {minA: 6, minB: 10, maxC: 4}
-]);
+], cache);
 
 const result = computed(() => {
   const s = new State(
@@ -169,9 +184,15 @@ const result = computed(() => {
       current.value.currentC, current.value.totalC,
       computedChance.value
   );
+
+  const reachChance = calculator.chanceReach(s);
+  const variants = calculator.variantsChances(s);
+
+  saveCache(calculator.cache);
+
   return {
-    reachChance: calculator.chanceReach(s),
-    variants: calculator.variantsChances(s)
+    reachChance,
+    variants
   };
 });
 
@@ -189,13 +210,16 @@ const bestOption = computed(() => {
   let bestKey = [result.value.variants["A"]];
 
   for (const [key, bestChance] of Object.entries(result.value.variants)) {
-    if (best < bestChance || best === bestChance) {
-      bestKey.pop();
+    best = Math.max(best, bestChance);
+
+    if (best < bestChance) {
+      bestKey.slice(0, bestKey.length - 1);
       bestKey.push(key);
     }
 
-    console.log(best, bestChance, key);
-    best = Math.max(best, bestChance);
+    if (best === bestChance) {
+      bestKey.push(key);
+    }
   }
 
   return bestKey;
