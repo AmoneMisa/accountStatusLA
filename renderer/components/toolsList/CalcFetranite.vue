@@ -2,12 +2,76 @@
 import romb from "../../../src/svg/romb.svg";
 import plus from "../../../src/svg/plus.svg";
 import minus from "../../../src/svg/minus.svg";
-import trash from "../../../src/svg/trash.svg";
 
-import {ref, computed, onMounted} from 'vue';
+import {computed, ref} from 'vue';
 import Tooltip from "@/components/utils/Tooltip.vue";
 
 const cache = ref(new Map());
+
+function Calculator(targets, cache) {
+  this.targets = targets;
+  this.cache = cache || new Map();
+
+  this.isReach = function (state) {
+    return this.targets.some(target =>
+        target.minA <= state.currentA &&
+        target.minB <= state.currentB &&
+        state.currentC <= target.maxC
+    );
+  };
+
+  /**
+   * @param {State} state
+   * @returns {boolean}
+   */
+  this.isReachable = function (state) {
+    return this.isReach(state.toBest());
+  };
+
+  this.chanceReach = function (state) {
+    const key = state.getKey();
+    if (!this.cache.has(key)) {
+      this.cache.set(key, this.chanceReachWithoutCache(state));
+    }
+
+    return this.cache.get(key);
+  };
+
+  /**
+   * @param {State} state
+   * @returns {number}
+   */
+  this.chanceReachWithoutCache = function (state) {
+    if (!state.isValid()) return 0;
+    if (this.isReach(state)) return 1;
+    if (!this.isReachable(state)) return 0;
+    return Math.max(...Object.values(this.variantsChances(state)));
+  };
+
+  this.variantsChances = function (state) {
+    const variants = state.variants();
+    return ['A', 'B', 'C'].reduce((acc, variantType) => {
+      acc[variantType] = this.variantChance(
+          state.chance,
+          variants[`${variantType}+`],
+          variants[`${variantType}-`]
+      );
+
+      return acc;
+    }, {});
+  };
+
+  this.variantChance = function (chance, plusState, minusState) {
+    return this.chanceReach(plusState) * chance + this.chanceReach(minusState) * (1 - chance);
+  };
+}
+
+let calculator = new Calculator([
+  {minA: 9, minB: 7, maxC: 4},
+  {minA: 7, minB: 9, maxC: 4},
+  {minA: 10, minB: 6, maxC: 4},
+  {minA: 6, minB: 10, maxC: 4}
+]);
 
 async function loadCacheFromFile() {
   const data = await window.electron.ipcRenderer.loadCacheJson();
@@ -19,7 +83,7 @@ async function loadCacheFromFile() {
     cache.value = new Map();
   }
 
-  calculator.value = new Calculator([
+  calculator = new Calculator([
     {minA: 9, minB: 7, maxC: 4},
     {minA: 7, minB: 9, maxC: 4},
     {minA: 10, minB: 6, maxC: 4},
@@ -45,16 +109,6 @@ const state = ref({
   C: Array(10).fill(null),
 });
 
-const computedChance = computed(() => {
-  let chance = 0.75;
-  const sequence = [...state.value.A, ...state.value.B, ...state.value.C];
-  for (const cell of sequence) {
-    if (cell === true) chance = Math.max(0.25, chance - 0.1);
-    else if (cell === false) chance = Math.min(0.75, chance + 0.1);
-  }
-  return chance;
-});
-
 const current = computed(() => ({
   currentA: state.value.A.filter(v => v === true).length,
   totalA: state.value.A.filter(v => v !== null).length,
@@ -63,6 +117,13 @@ const current = computed(() => ({
   currentC: state.value.C.filter(v => v === true).length,
   totalC: state.value.C.filter(v => v !== null).length,
 }));
+
+const mainState = ref(new State(
+    current.value.currentA, current.value.totalA,
+    current.value.currentB, current.value.totalB,
+    current.value.currentC, current.value.totalC,
+    0.75
+));
 
 function State(currentA, totalA, currentB, totalB, currentC, totalC, chance) {
   this.currentA = currentA;
@@ -129,81 +190,9 @@ function State(currentA, totalA, currentB, totalB, currentC, totalC, chance) {
   };
 }
 
-function Calculator(targets, cache) {
-  this.targets = targets;
-  this.cache = cache || new Map();
-
-  this.isReach = function (state) {
-    return this.targets.some(target =>
-        target.minA <= state.currentA &&
-        target.minB <= state.currentB &&
-        state.currentC <= target.maxC
-    );
-  };
-
-  /**
-   * @param {State} state
-   * @returns {boolean}
-   */
-  this.isReachable = function (state) {
-    return this.isReach(state.toBest());
-  };
-
-  this.chanceReach = function (state) {
-    const key = state.getKey();
-    if (!this.cache.has(key)) {
-      this.cache.set(key, this.chanceReachWithoutCache(state));
-    }
-
-    return this.cache.get(key);
-  };
-
-  /**
-   * @param {State} state
-   * @returns {number}
-   */
-  this.chanceReachWithoutCache = function (state) {
-    if (!state.isValid()) return 0;
-    if (this.isReach(state)) return 1;
-    if (!this.isReachable(state)) return 0;
-    return Math.max(...Object.values(this.variantsChances(state)));
-  };
-
-  this.variantsChances = function (state) {
-    const variants = state.variants();
-    return ['A', 'B', 'C'].reduce((acc, variantType) => {
-      acc[variantType] = this.variantChance(
-          state.chance,
-          variants[`${variantType}+`],
-          variants[`${variantType}-`]
-      );
-
-      return acc;
-    }, {});
-  };
-
-  this.variantChance = function (chance, plusState, minusState) {
-    return this.chanceReach(plusState) * chance + this.chanceReach(minusState) * (1 - chance);
-  };
-}
-
-const calculator = new Calculator([
-  {minA: 9, minB: 7, maxC: 4},
-  {minA: 7, minB: 9, maxC: 4},
-  {minA: 10, minB: 6, maxC: 4},
-  {minA: 6, minB: 10, maxC: 4}
-]);
-
 const result = computed(() => {
-  const s = new State(
-      current.value.currentA, current.value.totalA,
-      current.value.currentB, current.value.totalB,
-      current.value.currentC, current.value.totalC,
-      computedChance.value
-  );
-
-  const reachChance = calculator.chanceReach(s);
-  const variants = calculator.variantsChances(s);
+  const reachChance = calculator.chanceReach(mainState.value);
+  const variants = calculator.variantsChances(mainState.value);
 
   if (cache.value.values().length < 1) {
     saveCacheToFile(calculator.cache);
@@ -214,11 +203,20 @@ const result = computed(() => {
 
 function markCell(row, status) {
   const index = state.value[row].findIndex(v => v === null);
-  if (index !== -1) state.value[row][index] = status;
+  if (index !== -1) {
+    mainState.value = mainState.value.variant(`${row}${status ? '+' : '-'}`);
+    state.value[row][index] = status;
+  }
 }
 
-function resetRow(row) {
-  state.value[row] = Array(10).fill(null);
+function reset() {
+  Object.keys(state.value).map(key => state.value[key] = Array(10).fill(null));
+  mainState.value = new State(
+      current.value.currentA, current.value.totalA,
+      current.value.currentB, current.value.totalB,
+      current.value.currentC, current.value.totalC,
+      0.75
+  );
 }
 
 const bestOption = computed(() => {
@@ -226,8 +224,6 @@ const bestOption = computed(() => {
   let bestKey = [result.value.variants["A"]];
 
   for (const [key, bestChance] of Object.entries(result.value.variants)) {
-
-
     if (best < bestChance) {
       best = Math.max(best, bestChance);
       bestKey = [key];
@@ -241,14 +237,25 @@ const bestOption = computed(() => {
   return bestKey;
 });
 
+const computedChance = computed(() => mainState.value.chance);
+const chanceReach = computed(() => calculator.chanceReach(mainState.value));
+const variantsChances = computed(() => calculator.variantsChances(mainState.value));
 </script>
 
 <template>
   <div class="tools-container__item" id="stone-chance-calculator">
+    <tooltip>
     <div class="tools-container__item-name">
       Калькулятор фетранита
     </div>
-
+      <template #tooltip>Калькулятор рассчитан на заточку 9-7, 10-6</template>
+    </tooltip>
+    <tooltip>
+      <button class="tools-container__button button" @click="reset">
+        Сбросить
+      </button>
+      <template #tooltip>Сбросить</template>
+    </tooltip>
     <div class="fetranite-state">
       <div v-for="(row, rowKey) in state" :key="rowKey" class="fetranite-state__row">
         <div
@@ -275,15 +282,9 @@ const bestOption = computed(() => {
             </button>
             <template #tooltip>Неудача</template>
           </tooltip>
-          <tooltip>
-            <button class="button button_icon trash-icon" @click="resetRow(rowKey)">
-              <trash/>
-            </button>
-            <template #tooltip>Сбросить</template>
-          </tooltip>
         </div>
         <div>
-          {{ (result.variants[rowKey] * 100).toFixed(5) }}%
+          {{ (variantsChances[rowKey] * 100).toFixed(5) }}%
         </div>
       </div>
     </div>
@@ -293,7 +294,7 @@ const bestOption = computed(() => {
         Текущий шанс: <strong>{{ (computedChance * 100).toFixed(0) }}%</strong>
       </div>
       <div class="tools-container__item-message">
-        Максимальный шанс достижения цели: <strong>{{ (result.reachChance * 100).toFixed(5) }}%</strong>
+        Максимальный шанс достижения цели: <strong>{{ (chanceReach * 100).toFixed(5) }}%</strong>
       </div>
     </div>
   </div>
@@ -353,6 +354,9 @@ const bestOption = computed(() => {
   .minus-icon {
     color: var(--error);
   }
+}
 
+.tools-container__button {
+  margin-bottom: 20px;
 }
 </style>
