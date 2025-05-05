@@ -2,6 +2,7 @@
 import ThemeSelect from "@/components/settings/ThemeSelect.vue";
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject} from "vue";
+import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
 
 let settings = inject('settings');
 const savePath = computed(() => settings.value.savePath);
@@ -54,6 +55,7 @@ function resetFontScale() {
 }
 
 function save() {
+  console.log(minimizeOnClose.value)
   saveSettings({
     savePath: savePath.value,
     theme: theme.value,
@@ -149,6 +151,16 @@ async function generateLogAndOpenFolder() {
   document.getElementById("message").classList.add("active");
   setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
 }
+
+const tabCheckboxes = [
+  { id: 'tabVisibilityCubes', modelKey: 'cubes', label: 'Кубы' },
+  { id: 'tabVisibilityList', modelKey: 'checkList', label: 'Чек-лист' },
+  { id: 'tabVisibilityNotifications', modelKey: 'notification', label: 'Уведомления' },
+  { id: 'tabVisibilityUtils', modelKey: 'tools', label: 'Инструменты' },
+  { id: 'tabVisibilityGold', modelKey: 'calcRaidGold', label: 'Золото с рейдов' },
+  { id: 'tabVisibilityFAQ', modelKey: 'FAQ', label: 'FAQ' }
+];
+
 </script>
 
 <template>
@@ -179,16 +191,12 @@ async function generateLogAndOpenFolder() {
 
     <div class="settings-table__cell">Прекратить напоминание о полевом боссе на сегодня</div>
     <div class="settings-table__cell">
-      <label class="custom-label">
-        <input type="checkbox" id="disableBossReminderToday" v-model="disableBossReminderToday"/>
-      </label>
+      <customCheckbox id="disableBossReminderToday" v-model="disableBossReminderToday" :checked="disableBossReminderToday"/>
     </div>
 
     <div class="settings-table__cell">Прекратить напоминание о разломе на сегодня</div>
     <div class="settings-table__cell">
-      <label class="custom-label">
-        <input type="checkbox" id="disableChaosReminderToday" v-model="disableChaosReminderToday"/>
-      </label>
+      <customCheckbox id="disableChaosReminderToday" v-model="disableChaosReminderToday" :checked="disableChaosReminderToday"/>
     </div>
 
     <div class="settings-table__cell">Выбрать тему</div>
@@ -197,7 +205,8 @@ async function generateLogAndOpenFolder() {
     </div>
 
     <div class="settings-table__cell">Размер шрифта</div>
-    <div class="settings-table__cell"><label class="custom-label settings-table__font-scale-label">
+    <div class="settings-table__cell">
+      <label class="custom-label settings-table__font-scale-label">
       <input class="settings-table__font-scale-input" type="range" min="0.7" max="1.3" step="0.05" v-model="fontScale"
              @input="updateFontScale"/>
     </label>
@@ -206,58 +215,34 @@ async function generateLogAndOpenFolder() {
 
     <div class="settings-table__cell">Настройки отображения вкладок</div>
     <div class="settings-table__cell settings-table__cell_tabs">
-      <label class="custom-label">
-        <input type="checkbox" id="tabVisibilityCubes" :checked="tabVisibility.cubes"
-               @change="({target}) => tabVisibility['cubes'] = target.checked">
-        <span>Кубы</span>
-      </label>
-      <label class="custom-label">
-        <input type="checkbox" id="tabVisibilityList" :checked="tabVisibility.checkList"
-               @change="({target}) => tabVisibility['checkList'] = target.checked">
-        <span>Чек-лист</span>
-      </label>
-      <label class="custom-label">
-        <input type="checkbox" id="tabVisibilityNotifications" :checked="tabVisibility.notification"
-               @change="({target}) => tabVisibility['notification'] = target.checked">
-        <span>Уведомления</span>
-      </label>
-      <label class="custom-label">
-        <input type="checkbox" id="tabVisibilityUtils" :checked="tabVisibility.tools"
-               @change="({target}) => tabVisibility['tools'] = target.checked">
-        <span>Инструменты</span>
-      </label>
-      <label class="custom-label">
-        <input type="checkbox" id="tabVisibilityGold" :checked="tabVisibility.calcRaidGold"
-               @change="({target}) => tabVisibility['calcRaidGold'] = target.checked">
-        <span>Золото с рейдов</span>
-      </label>
-      <label class="custom-label">
-        <input type="checkbox" id="tabVisibilityFAQ" :checked="tabVisibility.FAQ"
-               @change="({target}) => tabVisibility['FAQ'] = target.checked">
-        <span>FAQ</span>
-      </label>
+      <customCheckbox
+          v-for="item in tabCheckboxes"
+          :key="item.id"
+          :id="item.id"
+          :checked="tabVisibility[item.modelKey]"
+          @change="({target}) => tabVisibility[item.modelKey] = target.checked"
+          :text="item.label"
+      />
     </div>
 
     <div class="settings-table__cell">Сворачивать приложение при нажатии на крестик</div>
-    <div class="settings-table__cell"><label class="custom-label">
-      <input type="checkbox" id="minimizeOnClose" v-model="minimizeOnClose"></label>
+    <div class="settings-table__cell">
+      <customCheckbox id="minimizeOnClose" v-model="minimizeOnClose" :checked="minimizeOnClose"/>
     </div>
 
     <div class="settings-table__cell">Запоминать размер окна при закрытии</div>
-    <div class="settings-table__cell"><label class="custom-label">
-      <input type="checkbox" id="rememberWindowSize" v-model="rememberWindowSize"></label>
+    <div class="settings-table__cell">
+      <customCheckbox id="rememberWindowSize" v-model="rememberWindowSize" :checked="rememberWindowSize"/>
     </div>
 
     <div class="settings-table__cell">Запоминать расположение окна при закрытии</div>
-    <div class="settings-table__cell"><label class="custom-label">
-      <input type="checkbox" id="rememberWindowPosition" v-model="rememberWindowPosition"></label>
+    <div class="settings-table__cell">
+      <customCheckbox id="rememberWindowPosition" v-model="rememberWindowPosition" :checked="rememberWindowPosition"/>
     </div>
 
     <div class="settings-table__cell">Автозапуск при старте Windows</div>
     <div class="settings-table__cell">
-      <label class="custom-label">
-        <input type="checkbox" id="rememberWindowPosition" v-model="autoStart">
-      </label>
+      <customCheckbox id="autoStart" v-model="autoStart" :checked="autoStart"/>
     </div>
 
     <div class="settings-table__cell">Сформировать лог и открыть папку</div>
@@ -267,7 +252,7 @@ async function generateLogAndOpenFolder() {
 
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
-      <button type="button" id="update-app" class="button" data-current-version="0.17.1" @click="updateApp">
+      <button type="button" id="update-app" class="button" data-current-version="0.18" @click="updateApp">
         Обновить приложение
       </button>
     </div>

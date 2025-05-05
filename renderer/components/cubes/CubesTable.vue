@@ -2,6 +2,7 @@
 import {computed, inject, reactive, ref} from 'vue';
 import {saveSettings} from '../../../utils/utils.js';
 import ShareSnippet from "@/components/utils/ShareSnippet.vue";
+import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
 
 const columnNames = ['3.1', '3.2', '3.3', '3.4', '3.5', '4.1', '4.2'];
 
@@ -62,20 +63,16 @@ const saveCubesSettings = () => {
 <template>
   <div id="cubes-table">
     <div class="cubes-table__settings">
-      <label
+      <customCheckbox
           v-for="col in columnNames"
           :key="col"
-          class="cubes-table__settings-item custom-label"
-      >
-        Вкл. {{ col }}
-        <input
-            type="checkbox"
-            v-model="cubesSettings[col]"
-            :data-name="col"
-            class="cubes-table__settings-input"
-            @change="saveCubesSettings"
-        />
-      </label>
+          :text="`Вкл. ${col}`"
+          labelClass="cubes-table__settings-item"
+          v-model="cubesSettings[col]"
+          :data-name="col"
+          class="cubes-table__settings-input"
+          @change="saveCubesSettings"
+      />
     </div>
 
     <share-snippet>

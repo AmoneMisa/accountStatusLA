@@ -2,6 +2,7 @@
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject, ref, watchEffect} from "vue";
 import cross from "../../../src/svg/cross.svg";
+import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
 
 const props = defineProps({
   characterName: ""
@@ -50,10 +51,14 @@ watchEffect(() => {
       </button>
       <div>Выбери активность для персонажа: <i>{{ characterName }}</i>.</div>
       <div class="raid-selector__list">
-        <label v-for="raid in raids" class="raid-selector__label custom-label">
-          <input :value="raid" type="checkbox" class="raid-selector__checkbox" :checked="currentOptions.includes(raid)" @change="({target}) => setChosenOption(raid, target.checked)">
-          <span>{{ raid }}</span>
-        </label>
+        <customCheckbox
+            v-for="raid in raids"
+            label-class="raid-selector__label"
+            class="raid-selector__checkbox"
+            :value="raid"
+            :text="raid"
+            :checked="currentOptions.includes(raid)"
+            @change="({target}) => setChosenOption(raid, target.checked)"/>
       </div>
       <button id="apply-raids" class="apply-button button" @click="applyRaidSelection(characterName)">Применить</button>
     </div>
@@ -67,8 +72,6 @@ watchEffect(() => {
   max-width: calc(50% - 10px);
 
   &:nth-child(even) {
-    justify-content: flex-end;
-
     span {
       width: -webkit-fill-available;
     }

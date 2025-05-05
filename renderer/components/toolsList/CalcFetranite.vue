@@ -239,6 +239,9 @@ watch(cache, () => saveCacheToFile(cache.value), {deep: true});
       </button>
       <template #tooltip>Сбросить</template>
     </tooltip>
+    <div>
+
+    </div>
     <div class="fetranite-state">
       <div v-for="(row, rowKey) in state" :key="rowKey" class="fetranite-state__row">
         <div

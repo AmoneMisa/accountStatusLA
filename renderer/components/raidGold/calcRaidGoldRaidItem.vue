@@ -5,6 +5,7 @@ import {computed, inject} from "vue";
 import coin from "../../../src/svg/coin.svg";
 import money from "../../../src/svg/money.svg";
 import chest from "../../../src/svg/chest.svg";
+import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
 
 defineProps({
   raid: String,
@@ -81,23 +82,24 @@ function toggleRaid(charName, raid) {
 </script>
 
 <template>
-  <div class="calc-raid-gold__raid-name"><label class="custom-label calc-raid-gold__label">
-    <span>{{ raid }}</span>
-    <input type="checkbox"
-           class="calc-raid-gold__checkbox"
-           :checked="!getRaidGoldStatus(character.name, raid)"
-           @change="toggleRaid(character.name, raid)"/>
-  </label>
+  <div class="calc-raid-gold__raid-name">
+    <customCheckbox
+      :text="raid"
+      class="calc-raid-gold__checkbox"
+      label-class="calc-raid-gold__label"
+      checked="!getRaidGoldStatus(character.name, raid)"
+      @change="toggleRaid(character.name, raid)"
+    />
   </div>
   <div v-for="(phase, index) in raidGold[raid]" :key="index" class="calc-raid-gold__phase">
     <div> Фаза {{ index + 1 }}: {{ phase.золото }} золота</div>
-    <label class="custom-label calc-raid-gold__label">
-      <span>Сундук ({{ phase["сундук"] }} золота)</span>
-      <input type="checkbox"
-             class="calc-raid-gold__checkbox"
-             :checked="getChestStatus(character.name, raid, index)"
-             @change="(elem) => toggleChest(character.name, raid, index, elem)"/>
-    </label>
+    <customCheckbox
+        :text="`Сундук (${phase['сундук']} золота)`"
+        class="calc-raid-gold__checkbox"
+        label-class="calc-raid-gold__label"
+        :checked="getChestStatus(character.name, raid, index)"
+        @change="(elem) => toggleChest(character.name, raid, index, elem)"
+    />
   </div>
 
   <div class="calc-raid-gold__raid-total">
