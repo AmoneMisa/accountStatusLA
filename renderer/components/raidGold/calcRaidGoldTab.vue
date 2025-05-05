@@ -40,7 +40,7 @@ function getGoldFromRaid(charName, raid) {
     return {earned: 0, spent: 0, total: 0};
   }
 
-  const isGoldReceiver =characterSettings.value?.[charName]?.goldReceiver;
+  const isGoldReceiver = characterSettings.value?.[charName]?.goldReceiver;
   const isLegate = characterSettings.value?.[charName]?.legate;
   const hasReceiverInfo = currentReceivers.value.hasOwnProperty(charName);
   const isReceiver = currentReceivers.value[charName];

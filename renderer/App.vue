@@ -729,6 +729,11 @@ input[type="range"]::-moz-range-thumb {
   transition: all 0.2s ease;
   position: relative;
   cursor: pointer;
+  order: 1;
+}
+
+.custom-label span {
+  order: 2;
 }
 
 .custom-label input[type="checkbox"]:checked {
@@ -939,6 +944,7 @@ input[type=number]::-webkit-inner-spin-button {
     bottom: 0;
     left: 0;
     right: 0;
+    z-index: -1;
   }
 }
 

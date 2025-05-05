@@ -3,8 +3,10 @@ import romb from "../../../src/svg/romb.svg";
 import plus from "../../../src/svg/plus.svg";
 import minus from "../../../src/svg/minus.svg";
 
-import {computed, ref} from 'vue';
+import {computed, onMounted, ref, watch} from 'vue';
 import Tooltip from "@/components/utils/Tooltip.vue";
+
+import _ from "lodash";
 
 const cache = ref(new Map());
 
@@ -62,16 +64,11 @@ function Calculator(targets, cache) {
   };
 
   this.variantChance = function (chance, plusState, minusState) {
-    return this.chanceReach(plusState) * chance + this.chanceReach(minusState) * (1 - chance);
+    return _.round(this.chanceReach(plusState) * chance + this.chanceReach(minusState) * (1 - chance), 6);
   };
 }
 
-let calculator = new Calculator([
-  {minA: 9, minB: 7, maxC: 4},
-  {minA: 7, minB: 9, maxC: 4},
-  {minA: 10, minB: 6, maxC: 4},
-  {minA: 6, minB: 10, maxC: 4}
-]);
+const calculator = ref();
 
 async function loadCacheFromFile() {
   const data = await window.electron.ipcRenderer.loadCacheJson();
@@ -83,7 +80,7 @@ async function loadCacheFromFile() {
     cache.value = new Map();
   }
 
-  calculator = new Calculator([
+  calculator.value = new Calculator([
     {minA: 9, minB: 7, maxC: 4},
     {minA: 7, minB: 9, maxC: 4},
     {minA: 10, minB: 6, maxC: 4},
@@ -91,9 +88,9 @@ async function loadCacheFromFile() {
   ], cache.value);
 }
 
-loadCacheFromFile();
+onMounted(() => loadCacheFromFile());
 
-async function saveCacheToFile(cache) {
+const saveCacheToFile = _.debounce(async function (cache) {
   const data = Array.from(cache.entries());
   try {
     const filePath = await window.electron.ipcRenderer.saveCacheJson(data);
@@ -101,7 +98,7 @@ async function saveCacheToFile(cache) {
   } catch (e) {
     console.error('Ошибка сохранения файла:', e);
   }
-}
+}, 10);
 
 const state = ref({
   A: Array(10).fill(null),
@@ -109,19 +106,10 @@ const state = ref({
   C: Array(10).fill(null),
 });
 
-const current = computed(() => ({
-  currentA: state.value.A.filter(v => v === true).length,
-  totalA: state.value.A.filter(v => v !== null).length,
-  currentB: state.value.B.filter(v => v === true).length,
-  totalB: state.value.B.filter(v => v !== null).length,
-  currentC: state.value.C.filter(v => v === true).length,
-  totalC: state.value.C.filter(v => v !== null).length,
-}));
-
 const mainState = ref(new State(
-    current.value.currentA, current.value.totalA,
-    current.value.currentB, current.value.totalB,
-    current.value.currentC, current.value.totalC,
+    0, 0,
+    0, 0,
+    0, 0,
     0.75
 ));
 
@@ -173,7 +161,7 @@ function State(currentA, totalA, currentB, totalB, currentC, totalC, chance) {
         this.totalB + (change.totalB || 0),
         this.currentC + (change.currentC || 0),
         this.totalC + (change.totalC || 0),
-        Math.max(0.25, Math.min(0.75, this.chance + (change.chance || 0)))
+        _.round(Math.max(0.25, Math.min(0.75, this.chance + (change.chance || 0))), 2)
     );
   };
 
@@ -190,17 +178,6 @@ function State(currentA, totalA, currentB, totalB, currentC, totalC, chance) {
   };
 }
 
-const result = computed(() => {
-  const reachChance = calculator.chanceReach(mainState.value);
-  const variants = calculator.variantsChances(mainState.value);
-
-  if (cache.value.values().length < 1) {
-    saveCacheToFile(calculator.cache);
-  }
-
-  return {reachChance, variants};
-});
-
 function markCell(row, status) {
   const index = state.value[row].findIndex(v => v === null);
   if (index !== -1) {
@@ -212,18 +189,26 @@ function markCell(row, status) {
 function reset() {
   Object.keys(state.value).map(key => state.value[key] = Array(10).fill(null));
   mainState.value = new State(
-      current.value.currentA, current.value.totalA,
-      current.value.currentB, current.value.totalB,
-      current.value.currentC, current.value.totalC,
+      0, 0,
+      0, 0,
+      0, 0,
       0.75
   );
 }
 
+const computedChance = computed(() => mainState.value.chance);
+const chanceReach = computed(() => {
+  return calculator.value?.chanceReach(mainState.value) || 0;
+});
+const variantsChances = computed(() => {
+  return calculator.value?.variantsChances(mainState.value) || {"A": 0, "B": 0, "C": 0};
+});
+
 const bestOption = computed(() => {
   let best = 0;
-  let bestKey = [result.value.variants["A"]];
+  let bestKey = [variantsChances.value["A"]];
 
-  for (const [key, bestChance] of Object.entries(result.value.variants)) {
+  for (const [key, bestChance] of Object.entries(variantsChances.value)) {
     if (best < bestChance) {
       best = Math.max(best, bestChance);
       bestKey = [key];
@@ -237,9 +222,7 @@ const bestOption = computed(() => {
   return bestKey;
 });
 
-const computedChance = computed(() => mainState.value.chance);
-const chanceReach = computed(() => calculator.chanceReach(mainState.value));
-const variantsChances = computed(() => calculator.variantsChances(mainState.value));
+watch(cache, () => saveCacheToFile(cache.value), {deep: true});
 </script>
 
 <template>
@@ -284,17 +267,17 @@ const variantsChances = computed(() => calculator.variantsChances(mainState.valu
           </tooltip>
         </div>
         <div>
-          {{ (variantsChances[rowKey] * 100).toFixed(5) }}%
+          {{ (variantsChances[rowKey] * 100) }}%
         </div>
       </div>
     </div>
 
     <div class="tools-container__item-content">
       <div class="tools-container__item-message">
-        Текущий шанс: <strong>{{ (computedChance * 100).toFixed(0) }}%</strong>
+        Текущий шанс: <strong>{{ (computedChance * 100) }}%</strong>
       </div>
       <div class="tools-container__item-message">
-        Максимальный шанс достижения цели: <strong>{{ (chanceReach * 100).toFixed(5) }}%</strong>
+        Максимальный шанс достижения цели: <strong>{{ (chanceReach * 100) }}%</strong>
       </div>
     </div>
   </div>

@@ -431,7 +431,7 @@ const getCurrentCachePath = () => {
 
 ipcMain.handle('save-cache-json', async (_, data) => {
     const filePath = getCurrentCachePath();
-    await fs.promises.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    await fs.promises.writeFile(filePath, JSON.stringify(data), 'utf-8');
     return filePath;
 });
 

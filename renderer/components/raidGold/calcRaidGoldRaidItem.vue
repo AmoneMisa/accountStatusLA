@@ -18,17 +18,16 @@ function getChestStatus(charName, raid, phaseIndex) {
   return characterSettings.value?.[charName]?.phases?.[raid]?.[phaseIndex]?.chestBought || false;
 }
 
-function toggleChest(charName, raid, phaseIndex, elem) {
+function toggleChest(charName, raid, phaseIndex) {
   if (!characterSettings.value[charName].hasOwnProperty("phases")) {
     characterSettings.value[charName].phases = {};
-    characterSettings.value[charName].phases[raid] = {};
-    characterSettings.value[charName].phases[raid][phaseIndex] = {chestBought: elem.target.checked};
-  } else if (!characterSettings.value[charName].phases.hasOwnProperty(raid)) {
-    characterSettings.value[charName].phases[raid] = {};
-    characterSettings.value[charName].phases[raid][phaseIndex] = {chestBought: elem.target.checked};
-  } else {
-    characterSettings.value[charName].phases[raid][phaseIndex] = {chestBought: elem.target.checked};
   }
+
+  if (!characterSettings.value[charName].phases.hasOwnProperty(raid)) {
+    characterSettings.value[charName].phases[raid] = {};
+  }
+
+  characterSettings.value[charName].phases[raid][phaseIndex] = {chestBought: getChestStatus(charName, raid, phaseIndex)};
 
   saveSettings({characterSettings: characterSettings.value});
 }
@@ -63,7 +62,7 @@ function getRaidGoldStatus(charName, raid) {
   return characterSettings.value?.[charName]?.phases?.[raid]?.disabled || false;
 }
 
-function toggleRaid(charName, raid, elem) {
+function toggleRaid(charName, raid) {
   if (!characterSettings.value[charName]) {
     characterSettings.value[charName] = {};
   }
@@ -76,24 +75,24 @@ function toggleRaid(charName, raid, elem) {
     characterSettings.value[charName].phases[raid] = {};
   }
 
-  characterSettings.value[charName].phases[raid].disabled = elem.target.checked;
+  characterSettings.value[charName].phases[raid].disabled = !getRaidGoldStatus(charName, raid);
   saveSettings({characterSettings: characterSettings.value});
 }
 </script>
 
 <template>
-  <div class="calc-raid-gold__raid-name">{{ raid }} <label class="custom-label calc-raid-gold__label">
-    Без золота
+  <div class="calc-raid-gold__raid-name"><label class="custom-label calc-raid-gold__label">
+    <span>{{ raid }}</span>
     <input type="checkbox"
            class="calc-raid-gold__checkbox"
-           :checked="getRaidGoldStatus(character.name, raid)"
-           @change="(elem) => toggleRaid(character.name, raid, elem)"/>
+           :checked="!getRaidGoldStatus(character.name, raid)"
+           @change="toggleRaid(character.name, raid)"/>
   </label>
   </div>
-  <div v-for="(phase, index) in raidGold[raid]" :key="index">
+  <div v-for="(phase, index) in raidGold[raid]" :key="index" class="calc-raid-gold__phase">
     <div> Фаза {{ index + 1 }}: {{ phase.золото }} золота</div>
     <label class="custom-label calc-raid-gold__label">
-      Сундук ({{ phase["сундук"] }} золота)
+      <span>Сундук ({{ phase["сундук"] }} золота)</span>
       <input type="checkbox"
              class="calc-raid-gold__checkbox"
              :checked="getChestStatus(character.name, raid, index)"
@@ -102,9 +101,18 @@ function toggleRaid(charName, raid, elem) {
   </div>
 
   <div class="calc-raid-gold__raid-total">
-    <div class="calc-raid-gold__raid-total-item"><coin class="icon icon_very-small coin-icon" /> Получено: {{ getGoldFromRaid(character.name, raid).earned }}</div>
-    <div class="calc-raid-gold__raid-total-item"><chest class="icon icon_very-small chest-icon" />  Потрачено на сундуки: {{ getGoldFromRaid(character.name, raid).spent }}</div>
-    <div class="calc-raid-gold__raid-total-item"><money class="icon icon_very-small money-icon" />  Всего: {{ getGoldFromRaid(character.name, raid).total }}</div>
+    <div class="calc-raid-gold__raid-total-item">
+      <coin class="icon icon_very-small coin-icon"/>
+      Получено: {{ getGoldFromRaid(character.name, raid).earned }}
+    </div>
+    <div class="calc-raid-gold__raid-total-item">
+      <chest class="icon icon_very-small chest-icon"/>
+      Потрачено на сундуки: {{ getGoldFromRaid(character.name, raid).spent }}
+    </div>
+    <div class="calc-raid-gold__raid-total-item">
+      <money class="icon icon_very-small money-icon"/>
+      Всего: {{ getGoldFromRaid(character.name, raid).total }}
+    </div>
   </div>
 </template>
 
@@ -113,11 +121,17 @@ function toggleRaid(charName, raid, elem) {
   font-size: var(--font-body);
   font-weight: bold;
   margin-bottom: 10px;
+  display: flex;
+  gap: 3px;
+  align-items: center;
 }
 
 .calc-raid-gold__raid-total {
   text-align: right;
   margin-top: 10px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--grey);
 }
 
 .calc-raid-gold__raid-total-item {
@@ -125,5 +139,11 @@ function toggleRaid(charName, raid, elem) {
   justify-content: flex-end;
   gap: 5px;
   margin-bottom: 5px;
+}
+
+.calc-raid-gold__phase {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>
