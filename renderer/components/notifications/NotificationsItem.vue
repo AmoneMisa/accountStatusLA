@@ -3,6 +3,7 @@ import {computed, inject} from "vue";
 import {saveSettings} from "../../../utils/utils.js";
 import Tooltip from "@/components/utils/Tooltip.vue";
 import trash from "../../../src/svg/trash.svg";
+import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
 
 const props = defineProps({
   notification: Object,
@@ -51,22 +52,20 @@ function onDelete() {
     <div class="notification-item__cell">
       Частота: {{ notification.frequency }} мин
     </div>
-    <label class="custom-label notification-item__cell">
-      Вкл. уведомления
-      <input
-          type="checkbox"
-          class="notification-item__checkbox"
-          v-model="notification.enable"
-          @change="onToggle"
-      />
-    </label>
+    <customCheckbox
+        text="Вкл. уведомления"
+        class="notification-item__checkbox"
+        v-model="notification.enable"
+        @change="onToggle"
+        label-class="notification-item__cell"
+    />
     <div class="notification-item__controls">
       <tooltip>
         <button
             class="notification-item__delete button button_icon"
             @click="onDelete"
         >
-          <trash class="icon trash-icon" />
+          <trash class="icon trash-icon"/>
         </button>
         <template #tooltip>Удалить напоминание</template>
       </tooltip>
