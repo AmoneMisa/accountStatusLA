@@ -56,8 +56,14 @@ const decrement = (charName, col) => {
 };
 
 function saveCubesSettings() {
+  console.log("save", cubesSettings.value);
   saveSettings({cubesSettings: cubesSettings.value});
 }
+
+watch(cubesSettings, (newValue) => {
+  settings.value.cubesSettings = newValue; // добавь это
+  saveSettings({ cubesSettings: newValue });
+}, { deep: true });
 </script>
 
 <template>
@@ -69,10 +75,8 @@ function saveCubesSettings() {
           :text="`Вкл. ${col}`"
           labelClass="cubes-table__settings-item"
           v-model="cubesSettings[col]"
-          :checked="cubesSettings[col]"
           :data-name="col"
           class="cubes-table__settings-input"
-          @change="saveCubesSettings"
       />
     </div>
 
