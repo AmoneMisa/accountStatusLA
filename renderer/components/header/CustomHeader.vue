@@ -93,8 +93,8 @@ import pinIcon from "../../../src/svg/pin.svg";
 
 .title-bar__title {
   margin-left: 5px;
-  font-family: Caveat, serif;
-  font-size: var(--font-h2);;
+  font-family: var(--font-family-decorative), serif;
+  font-size: var(--font-h2);
   -webkit-app-region: drag;
 }
 

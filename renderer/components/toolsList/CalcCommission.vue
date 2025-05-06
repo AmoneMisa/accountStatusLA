@@ -21,7 +21,7 @@ function calc() {
 
 <template>
   <div class="tools-container__item" id="calc-commission">
-    <tooltip>
+    <tooltip has-icon="true">
     <div class="tools-container__item-name">Калькулятор комиссии перевода
     </div>
       <template #tooltip>Расчёт суммы для перевода с учётом комиссии 5%</template>

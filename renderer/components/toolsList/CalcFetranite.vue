@@ -227,18 +227,15 @@ watch(cache, () => saveCacheToFile(cache.value), {deep: true});
 
 <template>
   <div class="tools-container__item" id="stone-chance-calculator">
-    <tooltip>
-    <div class="tools-container__item-name">
-      Калькулятор фетранита
-    </div>
+    <tooltip has-icon="true">
+      <div class="tools-container__item-name">
+        Калькулятор фетранита
+      </div>
       <template #tooltip>Калькулятор рассчитан на заточку 9-7, 10-6</template>
     </tooltip>
-    <tooltip>
-      <button class="tools-container__button button" @click="reset">
-        Сбросить
-      </button>
-      <template #tooltip>Сбросить</template>
-    </tooltip>
+    <button class="tools-container__button button" @click="reset">
+      Сбросить
+    </button>
     <div>
 
     </div>

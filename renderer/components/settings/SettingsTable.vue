@@ -3,12 +3,18 @@ import ThemeSelect from "@/components/settings/ThemeSelect.vue";
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject} from "vue";
 import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
+import FontsSelect from "@/components/settings/FontsSelect.vue";
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 let settings = inject('settings');
 const savePath = computed(() => settings.value.savePath);
 const theme = computed({
   get: () => settings.value.theme,
   set: (newValue) => settings.value.theme = newValue
+});
+const font = computed({
+  get: () => settings.value.font,
+  set: (newValue) => settings.value.font = newValue
 });
 const minimizeOnClose = computed({
   get: () => settings.value.minimizeOnClose,
@@ -39,7 +45,14 @@ const autoStart = computed({
   set: () => settings.value.autoStart = !settings.value.autoStart
 });
 const tabVisibility = computed({
-  get: () => settings.value?.tabVisibility || {calcRaidGold: true, cubes: true, checkList: true, notification: true, tools: true, FAQ: true},
+  get: () => settings.value?.tabVisibility || {
+    calcRaidGold: true,
+    cubes: true,
+    checkList: true,
+    notification: true,
+    tools: true,
+    FAQ: true
+  },
   set: (value) => settings.value.tabVisibility[value] = !settings.value.tabVisibility[value]
 });
 
@@ -59,6 +72,7 @@ function save() {
   saveSettings({
     savePath: savePath.value,
     theme: theme.value,
+    font: font.value,
     minimizeOnClose: minimizeOnClose.value,
     rememberWindowSize: rememberWindowSize.value,
     rememberWindowPosition: rememberWindowPosition.value,
@@ -127,6 +141,24 @@ function changeTheme(newTheme) {
   saveSettings({theme: newTheme});
 }
 
+function changeFont(fontName) {
+  document.documentElement.style.setProperty('--font-family', fontName);
+  document.getElementById("message").innerText = "Шрифт изменён";
+  document.getElementById("message").classList.add("active");
+  setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
+  font.value = fontName;
+  saveSettings({font: fontName});
+}
+
+function resetFont() {
+  document.documentElement.style.setProperty('--font-family', "Arial");
+  document.getElementById("message").innerText = "Шрифт изменён";
+  document.getElementById("message").classList.add("active");
+  setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
+  font.value = "Arial";
+  saveSettings({font: "Arial"});
+}
+
 async function openConfigFolder() {
   await window.electron.ipcRenderer.openConfigFolder();
 }
@@ -153,12 +185,12 @@ async function generateLogAndOpenFolder() {
 }
 
 const tabCheckboxes = [
-  { id: 'tabVisibilityCubes', modelKey: 'cubes', label: 'Кубы' },
-  { id: 'tabVisibilityList', modelKey: 'checkList', label: 'Чек-лист' },
-  { id: 'tabVisibilityNotifications', modelKey: 'notification', label: 'Уведомления' },
-  { id: 'tabVisibilityUtils', modelKey: 'tools', label: 'Инструменты' },
-  { id: 'tabVisibilityGold', modelKey: 'calcRaidGold', label: 'Золото с рейдов' },
-  { id: 'tabVisibilityFAQ', modelKey: 'FAQ', label: 'FAQ' }
+  {id: 'tabVisibilityCubes', modelKey: 'cubes', label: 'Кубы'},
+  {id: 'tabVisibilityList', modelKey: 'checkList', label: 'Чек-лист'},
+  {id: 'tabVisibilityNotifications', modelKey: 'notification', label: 'Уведомления'},
+  {id: 'tabVisibilityUtils', modelKey: 'tools', label: 'Инструменты'},
+  {id: 'tabVisibilityGold', modelKey: 'calcRaidGold', label: 'Золото с рейдов'},
+  {id: 'tabVisibilityFAQ', modelKey: 'FAQ', label: 'FAQ'}
 ];
 
 </script>
@@ -191,12 +223,14 @@ const tabCheckboxes = [
 
     <div class="settings-table__cell">Прекратить напоминание о полевом боссе на сегодня</div>
     <div class="settings-table__cell">
-      <customCheckbox id="disableBossReminderToday" v-model="disableBossReminderToday" :checked="disableBossReminderToday"/>
+      <customCheckbox id="disableBossReminderToday" v-model="disableBossReminderToday"
+                      :checked="disableBossReminderToday"/>
     </div>
 
     <div class="settings-table__cell">Прекратить напоминание о разломе на сегодня</div>
     <div class="settings-table__cell">
-      <customCheckbox id="disableChaosReminderToday" v-model="disableChaosReminderToday" :checked="disableChaosReminderToday"/>
+      <customCheckbox id="disableChaosReminderToday" v-model="disableChaosReminderToday"
+                      :checked="disableChaosReminderToday"/>
     </div>
 
     <div class="settings-table__cell">Выбрать тему</div>
@@ -204,12 +238,26 @@ const tabCheckboxes = [
       <theme-select @change-theme="changeTheme" :current-theme="theme"/>
     </div>
 
+    <div class="settings-table__cell">
+      <tooltip has-icon="true">Выбрать шрифт
+        <template #tooltip>Подгружаются из списка системных шрифтов. Не каждый шрифт поддерживает кириллицу.</template>
+      </tooltip>
+    </div>
+    <div class="settings-table__cell">
+      <fonts-select @change-font="changeFont" :current-font="font"/>
+    </div>
+
+    <div class="settings-table__cell">Сбросить шрифт по умолчанию</div>
+    <div class="settings-table__cell">
+      <button class="button" @click="resetFont">Сбросить</button>
+    </div>
+
     <div class="settings-table__cell">Размер шрифта</div>
     <div class="settings-table__cell">
       <label class="custom-label settings-table__font-scale-label">
-      <input class="settings-table__font-scale-input" type="range" min="0.7" max="1.3" step="0.05" v-model="fontScale"
-             @input="updateFontScale"/>
-    </label>
+        <input class="settings-table__font-scale-input" type="range" min="0.7" max="1.3" step="0.05" v-model="fontScale"
+               @input="updateFontScale"/>
+      </label>
       <button class="button" @click="resetFontScale">Сбросить</button>
     </div>
 

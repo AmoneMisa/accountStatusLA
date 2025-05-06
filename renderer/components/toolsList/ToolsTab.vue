@@ -50,7 +50,7 @@ import CalcFetranite from "@/components/toolsList/CalcFetranite.vue";
 
 .tools-container__anchor-menu-title {
   font-size: var(--font-h2);
-  font-family: Caveat, serif;
+  font-family: var(--font-family-decorative), serif;
   color: var(--gold);
   margin-bottom: 25px;
 }
@@ -77,7 +77,7 @@ import CalcFetranite from "@/components/toolsList/CalcFetranite.vue";
   margin: 0 auto 10px auto;
   text-align: center;
   font-size: var(--font-h1);
-  font-family: Caveat, serif;
+  font-family: var(--font-family-decorative), serif;
   color: var(--light-grey);
 }
 

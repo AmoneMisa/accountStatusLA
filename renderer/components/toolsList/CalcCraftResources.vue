@@ -63,7 +63,7 @@ watch(inputs, calculate, {deep: true});
 
 <template>
   <div class="tools-container__item" id="craft-resources">
-    <tooltip>
+    <tooltip has-icon="true">
       <div class="tools-container__item-name">
         Калькулятор Авидорских кристаллов судьбы
       </div>
@@ -88,7 +88,7 @@ watch(inputs, calculate, {deep: true});
       </div>
 
       <div class="tools-container__item-label">
-        <tooltip>
+        <tooltip has-icon="true">
           Ненужные синие ресурсы
           <template #tooltip>Только для камня и дерева</template>
         </tooltip>

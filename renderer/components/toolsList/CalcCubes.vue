@@ -91,7 +91,7 @@ function clear() {
 
 <template>
   <div class="tools-container__item calc-cubes" id="calc-cubes">
-    <tooltip>
+    <tooltip has-icon="true">
     <div class="tools-container__item-name">
       Рассчитать количество кубов для получения камня определённого уровня
     </div>

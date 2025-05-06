@@ -33,7 +33,7 @@ function calc() {
 
 <template>
   <div class="tools-container__item calc-auction-sum" id="calc-auction-sum">
-    <tooltip>
+    <tooltip has-icon="true">
     <div class="tools-container__item-name">
       Выгода на человека при покупке на аукционе
     </div>

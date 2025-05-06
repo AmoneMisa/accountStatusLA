@@ -10,6 +10,11 @@ import ToolsTab from "@/components/toolsList/ToolsTab.vue";
 import {computed, onMounted, provide, ref} from "vue";
 import CalcRaidGoldTab from "@/components/raidGold/calcRaidGoldTab.vue";
 import FAQTab from "@/components/FAQ/FAQTab.vue";
+import {logError} from "../utils/errors.js";
+
+window.addEventListener('error', (e) => {
+  logError(e);
+});
 
 const tabButtonsList = [
   {
@@ -101,8 +106,15 @@ provide('isShowLoader', isShowLoader);
 </template>
 
 <style lang="scss">
+@font-face {
+  font-family: 'Caveat';
+  src: url('@/fonts/Caveat-VariableFont_wght.ttf') format('truetype');
+}
+
 :root {
   --font-scale: 1;
+  --font-family: Arial;
+  --font-family-decorative: Caveat;
 
   --font-h1: calc(22px * var(--font-scale));
   --font-h2: calc(18px * var(--font-scale));
@@ -457,13 +469,8 @@ provide('isShowLoader', isShowLoader);
   --inner-shadow: inset 0 0 10px rgba(255, 117, 143, 0.3);
 }
 
-@font-face {
-  font-family: 'Caveat';
-  src: url('@/fonts/Caveat-VariableFont_wght.ttf') format('truetype');
-}
-
 body {
-  font-family: Arial, sans-serif;
+  font-family: var(--font-family), sans-serif;
   background: var(--black);
   color: var(--white);
   -webkit-app-region: drag; /* Позволяет перемещать окно */
@@ -618,6 +625,7 @@ body {
 
 input, button, select, textarea, a, .popup, .button, label {
   -webkit-app-region: no-drag;
+  font-family: var(--font-family), sans-serif;
 }
 
 a {
@@ -660,7 +668,7 @@ option:checked {
 }
 
 i {
-  font-family: Caveat, serif;
+  font-family: var(--font-family-decorative), serif;
   color: var(--gold);
   font-style: initial;
 }

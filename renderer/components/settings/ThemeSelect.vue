@@ -41,6 +41,7 @@ watch(theme, (newVal) => {
 
 <style scoped lang="scss">
 .theme-select {
-  max-height: 150px;
+  max-height: 60px;
+  margin-bottom: initial;
 }
 </style>

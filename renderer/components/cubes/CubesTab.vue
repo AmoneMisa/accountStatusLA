@@ -1,5 +1,4 @@
 <script setup>
-
 import CubesTable from "@/components/cubes/CubesTable.vue";
 </script>
 

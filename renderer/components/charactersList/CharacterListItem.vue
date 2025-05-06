@@ -321,13 +321,13 @@ const isShowCharacter = computed(() => {
 
   &.character_support.view-mode .character__info {
     color: var(--support);
-    font-family: Caveat, serif;
+    font-family: var(--font-family-decorative), serif;
     font-size: var(--font-body);
   }
 
   &.character_dd.view-mode .character__info {
     color: var(--dd);
-    font-family: Caveat, serif;
+    font-family: var(--font-family-decorative), serif;
     font-size: var(--font-body);
   }
 

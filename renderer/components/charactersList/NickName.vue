@@ -29,7 +29,7 @@ function editCharacters() {
 <template>
   <div class="main-header">
     <div class="nickname-block">
-      <tooltip>
+      <tooltip has-icon="true">
         <div id="nickname" class="nickname-block__nickname">
           <input v-show="isEditMode" type="text" id="nickname-input" placeholder="Введите ник" autofocus
                  v-model="model"/>

@@ -1,5 +1,10 @@
 <script setup>
 import {nextTick, onBeforeUnmount, onMounted, ref} from 'vue';
+import info from "../../../src/svg/info.svg";
+
+defineProps({
+  hasIcon: false
+})
 
 const show = ref(false);
 const wrapper = ref(null);
@@ -63,6 +68,9 @@ onBeforeUnmount(() => {
       @mouseenter="onShow"
       @mouseleave="onHide"
   >
+    <span v-if="hasIcon" class="tooltip-icon">
+      <info class="icon" />
+    </span>
     <slot />
     <teleport to="body">
       <div
@@ -79,7 +87,7 @@ onBeforeUnmount(() => {
 
 <style scoped lang="scss">
 .tooltip-wrapper {
-  display: inline-block;
+  display: flex;
   position: relative;
 }
 
@@ -96,5 +104,14 @@ onBeforeUnmount(() => {
   max-width: 300px;
   word-break: break-word;
   white-space: break-spaces;
+}
+
+.tooltip-icon {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+  color: var(--light-grey);
+  margin-right: 3px;
 }
 </style>

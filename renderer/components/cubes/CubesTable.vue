@@ -1,5 +1,5 @@
 <script setup>
-import {computed, inject, reactive, ref} from 'vue';
+import {computed, inject, reactive, ref, watch} from 'vue';
 import {saveSettings} from '../../../utils/utils.js';
 import ShareSnippet from "@/components/utils/ShareSnippet.vue";
 import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
@@ -10,7 +10,7 @@ let settings = inject('settings');
 const characterList = computed(() => settings.value.characterList);
 const characterSettings = computed(() => settings.value.characterSettings);
 const tableData = computed(() => settings.value.tableData || {});
-const cubesSettings = computed(() => settings.value.cubesSettings || {});
+const cubesSettings = ref(settings.value.cubesSettings || {});
 
 columnNames.forEach(col => {
   if (!cubesSettings.value) {
@@ -55,9 +55,9 @@ const decrement = (charName, col) => {
   updateValue(charName, col, Math.max(0, getCellValue(charName, col) - 1));
 };
 
-const saveCubesSettings = () => {
+function saveCubesSettings() {
   saveSettings({cubesSettings: cubesSettings.value});
-};
+}
 </script>
 
 <template>
@@ -69,6 +69,7 @@ const saveCubesSettings = () => {
           :text="`Вкл. ${col}`"
           labelClass="cubes-table__settings-item"
           v-model="cubesSettings[col]"
+          :checked="cubesSettings[col]"
           :data-name="col"
           class="cubes-table__settings-input"
           @change="saveCubesSettings"

@@ -21,7 +21,7 @@ const total = computed(() => {
 
 <template>
   <div class="tools-container__item" id="craft-needs">
-    <tooltip>
+    <tooltip has-icon="true">
       <div class="tools-container__item-name">
         Ресурсы для изготовления Авидорских кристаллов судьбы
       </div>

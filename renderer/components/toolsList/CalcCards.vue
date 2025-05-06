@@ -49,7 +49,7 @@ const resultHTML = ref('');
 
 <template>
   <div class="tools-container__item calc-cards">
-    <tooltip>
+    <tooltip has-icon="true">
     <div class="tools-container__item-name">
       Расчёт недостающих карт в колоде
     </div>

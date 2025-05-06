@@ -37,7 +37,7 @@ const result = computed(() => {
 
 <template>
   <div class="tools-container__item" id="crystal-price-comparison">
-    <tooltip>
+    <tooltip has-icon="true">
       <div class="tools-container__item-name">
         Что дешевле: чёрные кристаллы или золото?
       </div>

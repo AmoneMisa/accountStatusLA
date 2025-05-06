@@ -10,7 +10,7 @@ const customNotifications = computed(() => settings.value.customNotifications);
 </script>
 
 <template>
-  <tooltip>
+  <tooltip has-icon="true">
   <h1 class="title">Список напоминаний</h1>
   <template #tooltip>Напоминания приходят в центр уведомлений Windows</template>
   </tooltip>

@@ -3,7 +3,7 @@ import path from 'path';
 import {getCharacterPage, getClassName, getGearScore, parseLostArkProfile} from "../utils/parser.js";
 import {changeSettingsPath, getToolsInfo, loadAppDataSettings, loadSettings, saveSettings} from "../utils/storage.js";
 import fs from "fs";
-import {DateTime, Settings} from "luxon";
+import {DateTime} from "luxon";
 import {createWindow, setMainWindow} from "../mainProcess/mainWindow.js";
 import {capitalize} from "../utils/utils.js";
 import applySettings from "../mainProcess/applySettings.js";
@@ -11,6 +11,7 @@ import {resetDailyActivities, resetWeeklyActivities} from "../mainProcess/resetA
 import semver from 'semver';
 import schedule from "node-schedule";
 import {getErrorLog} from "../utils/errors.js";
+import * as fontList from "font-list";
 
 process.env.DIST = path.join(import.meta.dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged
@@ -445,6 +446,15 @@ ipcMain.handle('load-cache-json', async () => {
     }
 });
 
+ipcMain.handle('get-system-fonts', async () => {
+    try {
+        return await fontList.getFonts();
+    } catch (err) {
+        console.error('Ошибка получения шрифтов:', err);
+        return [];
+    }
+});
+
 const getCurrentConfigPath = () => {
     const settings = loadAppDataSettings();
     return settings.savePath
@@ -495,7 +505,9 @@ ipcMain.handle('restore-config-from-backup', async () => {
 ipcMain.handle('generate-log', async () => {
     try {
         const logDir = path.join(app.getPath('userData'), 'logs');
-        if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, {recursive: true});
+        if (!fs.existsSync(logDir)) {
+            fs.mkdirSync(logDir, {recursive: true});
+        }
         const logFile = path.join(logDir, `log-${Date.now()}.txt`);
 
         const settingsDump = JSON.stringify(loadSettings(), null, 2);

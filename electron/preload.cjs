@@ -15,5 +15,6 @@ contextBridge.exposeInMainWorld('electron', {
         generateLog: () => ipcRenderer.invoke('generate-log'),
         saveCacheJson: (data) => ipcRenderer.invoke('save-cache-json', data),
         loadCacheJson: () => ipcRenderer.invoke('load-cache-json'),
+        getSystemFonts: () => ipcRenderer.invoke('get-system-fonts'),
     }
 });

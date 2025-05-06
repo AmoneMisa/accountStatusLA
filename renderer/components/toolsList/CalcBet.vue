@@ -21,7 +21,7 @@ function calc() {
 
 <template>
   <div class="tools-container__item calc-bet" id="calc-bet">
-    <tooltip>
+    <tooltip has-icon="true">
     <div class="tools-container__item-name">
       Рассчитать оптимальную ставку для аукциона
     </div>
