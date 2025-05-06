@@ -61,7 +61,7 @@ function saveCubesSettings() {
 }
 
 watch(cubesSettings, (newValue) => {
-  settings.value.cubesSettings = newValue; // добавь это
+  settings.value.cubesSettings = newValue;
   saveSettings({ cubesSettings: newValue });
 }, { deep: true });
 </script>
