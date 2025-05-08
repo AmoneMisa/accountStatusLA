@@ -17,45 +17,140 @@ const COST = {
   white: 86
 };
 
-const need = computed(() => ({
-  blue: inputs.value.targetCrystals * COST.blue,
-  green: inputs.value.targetCrystals * COST.green,
-  white: inputs.value.targetCrystals * COST.white
-}));
+const need = computed({
+  get: () => {
+    return {
+      blue: inputs.value.targetCrystals * COST.blue,
+      green: inputs.value.targetCrystals * COST.green,
+      white: inputs.value.targetCrystals * COST.white
+    }
+  },
+  set: (newValue) => {
+    return {
+      blue: newValue * COST.blue,
+      green: newValue * COST.green,
+      white: newValue * COST.white
+    }
+  }
+});
 
 const conversion = ref([]);
 const additionalBlue = ref(0);
 const additionalWhite = ref(0);
 
 function calculate() {
-  const dustToBlueRate = 80;
-  const extraToWhiteRate = 5;
-  const whiteFromExtra = Math.floor(inputs.value.extraBlue / extraToWhiteRate) * 50;
+  // Копии ресурсов
+  let blue = inputs.value.blue;
+  let green = inputs.value.green;
+  let white = inputs.value.white;
+  let dust = inputs.value.dust;
+  let extraBlue = inputs.value.extraBlue;
 
-  additionalWhite.value = whiteFromExtra;
-  const totalWhite = inputs.value.white + additionalWhite.value;
+  const conversionMap = new Map();
+  const addConversion = (text, times = 1) => {
+    if (conversionMap.has(text)) {
+      conversionMap.set(text, conversionMap.get(text) + times);
+    } else {
+      conversionMap.set(text, times);
+    }
+  };
 
-  const usedDust = Math.floor(inputs.value.dust / dustToBlueRate) * dustToBlueRate;
-  const blue = (usedDust / dustToBlueRate) * 10;
-  additionalBlue.value = blue;
+  let crafted = 0;
 
-  const totalBlue = inputs.value.blue + additionalBlue.value;
-
-  const maxBlue = Math.floor(totalBlue / COST.blue);
-  const maxGreen = Math.floor(inputs.value.green / COST.green);
-  const maxWhite = Math.floor(totalWhite / COST.white);
-
-  inputs.value.targetCrystals = Math.min(maxBlue, maxGreen, maxWhite);
-
-  const conv = [];
-  if (whiteFromExtra > 0) {
-    conv.push(`${Math.floor(inputs.value.extraBlue / extraToWhiteRate) * extraToWhiteRate} ненужных синих → ${whiteFromExtra} белых`);
+  // Ненужные синие → белые (до начала симуляции)
+  const usedExtraBlue = Math.floor(extraBlue / 5) * 5;
+  const whiteFromExtra = (usedExtraBlue / 5) * 50;
+  white += whiteFromExtra;
+  extraBlue -= usedExtraBlue;
+  if (usedExtraBlue > 0) {
+    addConversion(`5 ненужных синих → 50 белых`, usedExtraBlue / 5);
   }
-  if (usedDust > 0) {
-    conv.push(`${usedDust} пыли → ${blue} синих ресурсов`);
+
+  while (true) {
+    if (blue >= COST.blue && green >= COST.green && white >= COST.white) {
+      blue -= COST.blue;
+      green -= COST.green;
+      white -= COST.white;
+      crafted++;
+      continue;
+    }
+
+    let didSomething = false;
+
+    // Пыль → синие
+    if (blue < COST.blue && dust >= 100) {
+      const need = Math.ceil((COST.blue - blue) / 10);
+      const times = Math.min(Math.floor(dust / 100), need);
+      dust -= times * 100;
+      blue += times * 10;
+      addConversion(`100 пыли → 10 синих ресурсов`, times);
+      didSomething = true;
+      continue;
+    }
+
+    // Пыль → зелёные
+    if (green < COST.green && dust >= 100) {
+      const need = Math.ceil((COST.green - green) / 50);
+      const times = Math.min(Math.floor(dust / 100), need);
+      dust -= times * 100;
+      green += times * 50;
+      addConversion(`100 пыли → 50 зелёных ресурсов`, times);
+      didSomething = true;
+      continue;
+    }
+
+    // Белые → пыль
+    if ((blue < COST.blue || green < COST.green) && white >= 100) {
+      const times = Math.floor(white / 100);
+      white -= times * 100;
+      dust += times * 80;
+      addConversion(`100 белых → 80 пыли`, times);
+      didSomething = true;
+      continue;
+    }
+
+    // Зелёные → белые
+    if (white < COST.white && green >= 25) {
+      const times = Math.floor(green / 25);
+      green -= times * 25;
+      white += times * 50;
+      addConversion(`25 зелёных → 50 белых`, times);
+      didSomething = true;
+      continue;
+    }
+
+    // Ненужные синие → белые (внутри цикла)
+    if (white < COST.white && extraBlue >= 5) {
+      const times = Math.floor(extraBlue / 5);
+      extraBlue -= times * 5;
+      white += times * 50;
+      addConversion(`5 ненужных синих → 50 белых`, times);
+      didSomething = true;
+      continue;
+    }
+
+    if (!didSomething) break;
   }
 
-  conversion.value = conv;
+  // Вывод результата
+  inputs.value.targetCrystals = crafted;
+  additionalBlue.value = 0;
+  additionalWhite.value = 0;
+
+  // Сгруппированные конверсии для отображения
+  conversion.value = Array.from(conversionMap.entries()).map(([text, times]) => {
+    const match = text.match(/(\d+)\s+(.+?)\s+→\s+(\d+)\s+(.+)/);
+    if (!match) return text;
+    const [, fromCount, fromUnit, toCount, toUnit] = match;
+    return `${fromCount * times} ${fromUnit} → ${toCount * times} ${toUnit}`;
+  });
+
+  // Для отображения потребностей
+  need.value = {
+    blue: crafted * COST.blue,
+    green: crafted * COST.green,
+    white: crafted * COST.white
+  };
 }
 
 watch(inputs, calculate, {deep: true});

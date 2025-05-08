@@ -30,8 +30,8 @@ function toggleGoldCharacter(target, characterName) {
         <button
             :class="{'inactive': !characterSettings?.goldReceiver && !characterSettings?.legate}"
             class="button button_icon"
-                @click.stop="({target}) => toggleGoldCharacter(target, character.name)">
-          <cross class="icon cross-icon" />
+            @click.stop="({target}) => toggleGoldCharacter(target, character.name)">
+          <cross class="icon cross-icon"/>
         </button>
         <template #tooltip>Убрать персонажа из общего расчёта золота</template>
       </tooltip>

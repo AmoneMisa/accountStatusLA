@@ -1,13 +1,14 @@
 <script setup>
 import raidGold from "@/raidGold.js";
 import {saveSettings} from "../../../utils/utils.js";
-import {computed, inject} from "vue";
+import {computed, inject, ref} from "vue";
 import coin from "../../../src/svg/coin.svg";
 import money from "../../../src/svg/money.svg";
 import chest from "../../../src/svg/chest.svg";
 import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
+import CalcGoldPhaseItem from "@/components/raidGold/CalcGoldPhaseItem.vue";
 
-defineProps({
+const props = defineProps({
   raid: String,
   character: Object
 });
@@ -15,28 +16,10 @@ defineProps({
 let settings = inject('settings');
 const characterSettings = computed(() => settings.value.characterSettings);
 
-function getChestStatus(charName, raid, phaseIndex) {
-  return characterSettings.value?.[charName]?.phases?.[raid]?.[phaseIndex]?.chestBought || false;
-}
-
-function toggleChest(charName, raid, phaseIndex) {
-  if (!characterSettings.value[charName].hasOwnProperty("phases")) {
-    characterSettings.value[charName].phases = {};
-  }
-
-  if (!characterSettings.value[charName].phases.hasOwnProperty(raid)) {
-    characterSettings.value[charName].phases[raid] = {};
-  }
-
-  characterSettings.value[charName].phases[raid][phaseIndex] = {chestBought: getChestStatus(charName, raid, phaseIndex)};
-
-  saveSettings({characterSettings: characterSettings.value});
-}
-
-function getGoldFromRaid(charName, raid) {
+const getGoldFromRaid = computed(() => {
   let earned = 0, spent = 0;
-  const phases = raidGold[raid] || [];
-  const savedPhases = characterSettings.value?.[charName]?.phases?.[raid] || {};
+  const phases = raidGold[props.raid] || [];
+  const savedPhases = characterSettings.value?.[props.character.name]?.phases?.[props.raid] || {};
 
   phases.forEach((phase, index) => {
     const bought = savedPhases[index]?.chestBought;
@@ -57,7 +40,11 @@ function getGoldFromRaid(charName, raid) {
   });
 
   return {earned, spent, total: earned - spent};
-}
+});
+
+const isDisabledGoldRaidStatus = computed(() => {
+  return characterSettings.value?.[props.character.name]?.phases?.[props.raid]?.disabled || false;
+});
 
 function getRaidGoldStatus(charName, raid) {
   return characterSettings.value?.[charName]?.phases?.[raid]?.disabled || false;
@@ -87,33 +74,26 @@ function toggleRaid(charName, raid) {
       :text="raid"
       class="calc-raid-gold__checkbox"
       label-class="calc-raid-gold__label"
-      checked="!getRaidGoldStatus(character.name, raid)"
+      :checked="!isDisabledGoldRaidStatus"
       @change="toggleRaid(character.name, raid)"
     />
   </div>
   <div v-for="(phase, index) in raidGold[raid]" :key="index" class="calc-raid-gold__phase">
-    <div> Фаза {{ index + 1 }}: {{ phase.золото }} золота</div>
-    <customCheckbox
-        :text="`Сундук (${phase['сундук']} золота)`"
-        class="calc-raid-gold__checkbox"
-        label-class="calc-raid-gold__label"
-        :checked="getChestStatus(character.name, raid, index)"
-        @change="(elem) => toggleChest(character.name, raid, index, elem)"
-    />
+    <calc-gold-phase-item :character-name="character.name" :index="index" :phase="phase" :raid="raid" />
   </div>
 
   <div class="calc-raid-gold__raid-total">
     <div class="calc-raid-gold__raid-total-item">
       <coin class="icon icon_very-small coin-icon"/>
-      Получено: {{ getGoldFromRaid(character.name, raid).earned }}
+      Получено: {{ getGoldFromRaid.earned }}
     </div>
     <div class="calc-raid-gold__raid-total-item">
       <chest class="icon icon_very-small chest-icon"/>
-      Потрачено на сундуки: {{ getGoldFromRaid(character.name, raid).spent }}
+      Потрачено на сундуки: {{ getGoldFromRaid.spent }}
     </div>
     <div class="calc-raid-gold__raid-total-item">
       <money class="icon icon_very-small money-icon"/>
-      Всего: {{ getGoldFromRaid(character.name, raid).total }}
+      Всего: {{ getGoldFromRaid.total }}
     </div>
   </div>
 </template>

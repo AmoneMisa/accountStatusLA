@@ -94,7 +94,8 @@ function toggleGoldCharacter([characterName, isReceiver]) {
   <div class="calc-raid-gold">
     <calc-raid-gold-item v-for="character in characterList"
                          :key="character.name"
-                         :character="character" :character-settings="characterSettings[character.name]"
+                         :character="character"
+                         :character-settings="characterSettings[character.name]"
                          :gold-characters="goldCharacters"
                          @toggleGoldReceiver="toggleGoldCharacter"
     />
