@@ -70,7 +70,8 @@ function calculate() {
 
     const dustAvailable = (
         Math.floor(excess.green / 50) * 80 +
-        Math.floor(excess.white / 100) * 80
+        Math.floor(excess.white / 100) * 80 +
+        inputsClone.dust
     );
 
     if (dustAvailable >= dustNeeded) {
