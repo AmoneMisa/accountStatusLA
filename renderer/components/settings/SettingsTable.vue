@@ -68,7 +68,6 @@ function resetFontScale() {
 }
 
 function save() {
-  console.log(minimizeOnClose.value)
   saveSettings({
     savePath: savePath.value,
     theme: theme.value,
