@@ -53,7 +53,7 @@ async function checkForUpdates(mainWindow = mainWindow) {
 
                     if (exeAsset) {
                         const downloadUrl = exeAsset.browser_download_url;
-                        mainWindow.webContents.send('update-available', { latestVersion, downloadUrl });
+                        mainWindow.webContents.send('update-available', {latestVersion, downloadUrl});
 
                         const updateNotification = new Notification({
                             title: 'Доступно обновление!',
@@ -108,7 +108,11 @@ app.on('ready', async () => {
             click: () => mainWindow.webContents.send('clear-nickname')
         },
         {type: 'separator'},
-        {label: 'Выход', click: () => app.quit()}
+        {
+            label: 'Выход', click: () => {
+                app.exit();
+            }
+        }
     ]);
     tray.setContextMenu(contextMenu);
     tray.setToolTip('Lost Ark Character Manager');
@@ -231,7 +235,7 @@ ipcMain.handle('fetch-character', async (_, name) => {
             className
         };
     } catch (error) {
-        return { error: error.message };
+        return {error: error.message};
     }
 });
 
