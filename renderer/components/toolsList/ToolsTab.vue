@@ -114,5 +114,6 @@ import CalcFetranite from "@/components/toolsList/CalcFetranite.vue";
   margin-top: 10px;
   margin-bottom: 10px;
   font-size:  var(--font-small);
+  width: -webkit-fill-available;
 }
 </style>
