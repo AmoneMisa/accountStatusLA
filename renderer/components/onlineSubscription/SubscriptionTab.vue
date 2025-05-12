@@ -1,10 +1,12 @@
 <script setup>
 import Tooltip from "@/components/utils/Tooltip.vue";
 import OnlineModule from "../../../utils/OnlineModule.js";
-import {inject, ref, toRaw} from "vue";
+import {computed, inject, ref, toRaw} from "vue";
 import {saveSettings} from "../../../utils/utils.js";
 import heart from "../../../src/svg/heart.svg";
 import {DateTime} from "luxon";
+import UserRaidTable from "@/components/onlineSubscription/UserRaidTable.vue";
+import _ from "lodash";
 
 let settings = inject('settings');
 
@@ -28,11 +30,17 @@ let user = ref({});
     user.value = res.data;
     saveSettings({UUID: user.value._id});
   }
+
+  if (!_.isEqual(user.value.characterSettings, settings.value.characterSettings)
+      || !_.isEqual(user.value.characterList, settings.value.characterList)) {
+    const res = await online.update(user.value._id);
+    user.value = res.data;
+  }
 })();
 
 let users = ref([]);
 (async function () {
-  const res = await online.getUsers(user.value._id);
+  const res = await online.getUsers(settings.value?.UUID || user.value?._id);
   users.value = res.data;
 })();
 
@@ -45,6 +53,41 @@ function format(date) {
       ? dt.toLocal().toFormat('HH:mm - dd.MM.yyyy')
       : 'Invalid date';
 }
+
+let localSubs = ref(settings.value.online?.subs || []);
+
+function toggleSub(nickname) {
+  const index = localSubs.value.indexOf(nickname);
+  if (index === -1) {
+    localSubs.value.push(nickname);
+  } else {
+    localSubs.value.splice(index, 1);
+  }
+
+  saveSettings({
+    online: {
+      subs: localSubs.value
+    }
+  });
+}
+
+let filter = ref('all'); // 'all' | 'subs'
+
+const filteredUsers = computed(() =>
+    filter.value === 'subs'
+        ? users.value.filter(u => localSubs.value.includes(u.nickname))
+        : users.value
+);
+
+let selectedUser = ref(null);
+
+function selectUser(user) {
+  selectedUser.value = user;
+}
+
+function goBack() {
+  selectedUser.value = null;
+}
 </script>
 
 <template>
@@ -53,17 +96,42 @@ function format(date) {
       <h1 class="title">Подписки</h1>
       <template #tooltip>Список всех доступных пользователей для подписки</template>
     </tooltip>
-    <div v-if="users" class="online-subs__list">
-      <div v-for="_user in users" :key="_user.nickname" class="online-subs__list-item">
+    <div class="group-filters">
+      <div class="group-filters__list">
+        <div :class="{ 'group-filters__list-item_current': filter === 'all' }" class="group-filters__list-item"
+             @click="filter = 'all'">Все
+        </div>
+        <div :class="{ 'group-filters__list-item_current': filter === 'subs' }" class="group-filters__list-item"
+             @click="filter = 'subs'">Только подписки
+        </div>
+      </div>
+    </div>
+
+    <div v-if="selectedUser">
+      <button @click="goBack" class="button">← Назад</button>
+      <UserRaidTable :user="selectedUser"/>
+    </div>
+
+    <div v-if="filteredUsers.length && !selectedUser" class="online-subs__list">
+      <div v-for="_user in filteredUsers" :key="_user.nickname" class="online-subs__list-item"
+           @click="selectUser(_user)">
         <span class="online-subs__list-item-nickname">{{ _user.nickname }}</span>
-        <span class="online-subs__list-item-update">Последнее обновление: {{ _user?.lastUpdateAt ? format(_user?.lastUpdateAt) : format(_user?.createdAt) }}</span>
+        <span class="online-subs__list-item-update">Последнее обновление: {{
+            _user?.lastUpdateAt ? format(_user?.lastUpdateAt) : format(_user?.createdAt)
+          }}</span>
         <tooltip class="online-subs__button">
-          <button type="button" class="button button_icon">
+          <button type="button"
+                  class="button button_icon online-subs__button"
+                  :class="{ 'online-subs__button_active': localSubs.includes(_user.nickname) }"
+                  @click.stop="toggleSub(_user.nickname)">
             <heart class="icon heart-icon"/>
           </button>
-          <template #tooltip>Подписаться на пользователя</template>
+          <template #tooltip>{{ localSubs.includes(_user.nickname) ? 'Отписаться' : 'Подписаться' }}</template>
         </tooltip>
       </div>
+    </div>
+    <div v-else-if="filteredUsers.length < 1" class="online-subs__list">
+      Пока ещё нет доступных пользователей
     </div>
   </div>
 </template>
@@ -90,6 +158,12 @@ function format(date) {
   padding: 10px;
   border-radius: 5px;
   position: relative;
+  transition: .35s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
 .online-subs__list-item-nickname {
@@ -98,7 +172,18 @@ function format(date) {
 
 .online-subs__button {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 0;
+  right: 0;
+
+  .heart-icon {
+    filter: grayscale(1);
+    transition: .3s ease;
+  }
+
+  &_active {
+    .heart-icon {
+      filter: none;
+    }
+  }
 }
 </style>

@@ -14,10 +14,10 @@ export default class {
     }
 
     getUsers = async (id) => {
-        return await axios.post(`http://localhost:3001/api/users/all`, {id});
+        return await axios.get(`http://localhost:3001/api/users/all?exclude=${id}`);
     }
 
     update = async (id) => {
-        return await axios.put(`http://localhost:3001/api/users/update/${id}`);
+        return await axios.put(`http://localhost:3001/api/users/update/${id}`, {nickname: this.nickname, settings: this.settings});
     }
 }
