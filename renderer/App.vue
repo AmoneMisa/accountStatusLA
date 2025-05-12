@@ -11,6 +11,7 @@ import {computed, onMounted, provide, ref} from "vue";
 import CalcRaidGoldTab from "@/components/raidGold/calcRaidGoldTab.vue";
 import FAQTab from "@/components/FAQ/FAQTab.vue";
 import {logError} from "../utils/errors.js";
+import SubscriptionTab from "@/components/onlineSubscription/SubscriptionTab.vue";
 
 window.addEventListener('error', (e) => {
   logError(e);
@@ -31,6 +32,8 @@ const tabButtonsList = [
     data: "calcRaidGold", name: "Золото с рейдов"
   }, {
     data: "FAQ", name: "FAQ"
+  }, {
+    data: "online", name: "Подписки"
   }, {
     data: "settings", name: "Настройки"
   }
@@ -94,6 +97,7 @@ provide('isShowLoader', isShowLoader);
       <tools-tab v-if="currentTab === 'tools'"/>
       <calc-raid-gold-tab v-if="currentTab === 'calcRaidGold'"/>
       <f-a-q-tab v-if="currentTab === 'FAQ'"/>
+      <subscription-tab v-if="currentTab === 'online'"/>
       <settings-table v-if="currentTab === 'settings'"/>
     </div>
     <div id="message" class="message"></div>
@@ -482,7 +486,7 @@ body {
 .icon {
   max-width: 28px;
   max-height: 28px;
-  width: -webkit-fill-available;
+  width: 100%;
 
   &_small {
     max-width: 20px;

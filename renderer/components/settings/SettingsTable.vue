@@ -189,6 +189,7 @@ const tabCheckboxes = [
   {id: 'tabVisibilityNotifications', modelKey: 'notification', label: 'Уведомления'},
   {id: 'tabVisibilityUtils', modelKey: 'tools', label: 'Инструменты'},
   {id: 'tabVisibilityGold', modelKey: 'calcRaidGold', label: 'Золото с рейдов'},
+  {id: 'tabVisibilityOnline', modelKey: 'online', label: 'Подписки'},
   {id: 'tabVisibilityFAQ', modelKey: 'FAQ', label: 'FAQ'}
 ];
 
@@ -299,7 +300,7 @@ const tabCheckboxes = [
 
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
-      <button type="button" id="update-app" class="button" data-current-version="0.18" @click="updateApp">
+      <button type="button" id="update-app" class="button" data-current-version="0.18.1" @click="updateApp">
         Обновить приложение
       </button>
     </div>
