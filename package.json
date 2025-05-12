@@ -27,15 +27,15 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
-    "electron": "^35.1.2",
+    "electron": "^36.2.0",
     "electron-builder": "^26.0.12",
     "sass": "^1.86.0",
-    "vite": "6.2.6",
+    "vite": "6.3.5",
     "vite-plugin-electron": "^0.29.0",
     "vue": "^3.5.13"
   },
   "build": {
-    "appId": "com.example.yourapp",
+    "appId": "com.whiteslove.accountstatusla",
     "productName": "Lost Ark Character Manager",
     "directories": {
       "output": "build-electron"
