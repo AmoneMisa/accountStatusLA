@@ -1,4 +1,5 @@
 import axios from "axios";
+const API_PATH = import.meta.env.VITE_API_PATH;
 
 export default class {
     constructor(nickname, settings) {
@@ -6,18 +7,18 @@ export default class {
         this.settings = settings;
     }
     register = async () => {
-        return await axios.post("http://localhost:3001/api/users/register", {nickname: this.nickname, settings: this.settings});
+        return await axios.post(`${API_PATH}/register`, {nickname: this.nickname, settings: this.settings});
     }
 
     getUser = async (id) => {
-        return await axios.get(`http://localhost:3001/api/users/${id}`);
+        return await axios.get(`${API_PATH}/${id}`);
     }
 
     getUsers = async (id) => {
-        return await axios.get(`http://localhost:3001/api/users/all?exclude=${id}`);
+        return await axios.get(`${API_PATH}/all?exclude=${id}`);
     }
 
     update = async (id) => {
-        return await axios.put(`http://localhost:3001/api/users/update/${id}`, {nickname: this.nickname, settings: this.settings});
+        return await axios.put(`${API_PATH}/update/${id}`, {nickname: this.nickname, settings: this.settings});
     }
 }
