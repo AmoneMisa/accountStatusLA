@@ -14,11 +14,23 @@ export default class {
         return await axios.get(`${API_PATH}/${id}`);
     }
 
+    getUserByInviteKey = async (inviteKey) => {
+        return await axios.get(`${API_PATH}/key/${inviteKey}`);
+    }
+
+    getSubscribers = async (inviteKey) => {
+        return await axios.get(`${API_PATH}/subscribers/${inviteKey}`);
+    }
+
     getUsers = async (id) => {
         return await axios.get(`${API_PATH}/all?exclude=${id}`);
     }
 
     update = async (id) => {
         return await axios.put(`${API_PATH}/update/${id}`, {nickname: this.nickname, settings: this.settings});
+    }
+
+    resetInviteKey = async (id) => {
+        return await axios.put(`${API_PATH}/resetInviteKey/${id}`);
     }
 }

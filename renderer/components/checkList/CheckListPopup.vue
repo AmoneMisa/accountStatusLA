@@ -24,8 +24,8 @@ function saveTask() {
 }
 
 const close = () => {
-  closePopup(); // локальный метод
-  emit('closePopup'); // эмитим в родителя
+  closePopup();
+  emit('closePopup');
 };
 </script>
 
