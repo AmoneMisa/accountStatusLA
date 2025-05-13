@@ -17,7 +17,8 @@ let settings = inject('settings');
 const characterSettings = computed(() => settings.value.characterSettings);
 
 const getGoldFromRaid = computed(() => {
-  let earned = 0, spent = 0;
+  let earned = 0;
+  let spent = 0;
   const phases = raidGold[props.raid] || [];
   const savedPhases = characterSettings.value?.[props.character.name]?.phases?.[props.raid] || {};
 
@@ -32,8 +33,10 @@ const getGoldFromRaid = computed(() => {
     } else {
       if (bought) {
         earned += phase["золото"];
+        earned += (phase["привязанное"] || 0);
         spent += phase["сундук"];
       } else {
+        earned += (phase["привязанное"] || 0);
         earned += phase["золото"];
       }
     }

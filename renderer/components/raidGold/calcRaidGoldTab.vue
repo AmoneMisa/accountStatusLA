@@ -16,6 +16,7 @@ const currentReceivers = ref({});
 const totalGold = computed(() => {
   let earned = 0;
   let spent = 0;
+  let bound = 0;
 
   for (const char of characterList.value) {
     if (goldCharacters.value.includes(char.name)) {
@@ -29,15 +30,17 @@ const totalGold = computed(() => {
     for (const raid of characterSettings.value?.[char.name]?.raids || []) {
       const g = getGoldFromRaid(char.name, raid);
       earned += g.earned;
+      earned += g.bound;
+      bound += g.bound;
       spent += g.spent;
     }
   }
-  return {earned, spent, total: earned - spent};
+  return {earned, spent, total: earned - spent, bound};
 });
 
 function getGoldFromRaid(charName, raid) {
   if (!characterSettings.value?.[charName]?.raidStatus?.[raid]) {
-    return {earned: 0, spent: 0, total: 0};
+    return {earned: 0, spent: 0, total: 0, bound: 0};
   }
 
   const isGoldReceiver = characterSettings.value?.[charName]?.goldReceiver;
@@ -47,20 +50,22 @@ function getGoldFromRaid(charName, raid) {
 
   if (!isGoldReceiver && !isLegate) {
     if (!hasReceiverInfo) {
-      return { earned: 0, spent: 0, total: 0 };
+      return { earned: 0, spent: 0, total: 0, bound: 0 };
     }
     if (!isReceiver) {
-      return { earned: 0, spent: 0, total: 0 };
+      return { earned: 0, spent: 0, total: 0, bound: 0 };
     }
   }
 
   if (isGoldReceiver || isLegate) {
     if (hasReceiverInfo && !isReceiver) {
-      return { earned: 0, spent: 0, total: 0 };
+      return { earned: 0, spent: 0, total: 0, bound: 0 };
     }
   }
 
-  let earned = 0, spent = 0;
+  let earned = 0;
+  let bound = 0;
+  let spent = 0;
   const phases = raidGold[raid] || [];
   const savedPhases = characterSettings.value?.[charName]?.phases?.[raid] || {};
 
@@ -75,14 +80,18 @@ function getGoldFromRaid(charName, raid) {
     } else {
       if (bought) {
         earned += phase["золото"];
+        earned += (phase["привязанное"] || 0);
+        bound += (phase["привязанное"] || 0);
         spent += phase["сундук"];
       } else {
+        bound += (phase["привязанное"] || 0);
+        earned += (phase["привязанное"] || 0);
         earned += phase["золото"];
       }
     }
   });
 
-  return {earned, spent, total: earned - spent};
+  return {earned, spent, total: earned - spent, bound};
 }
 
 function toggleGoldCharacter([characterName, isReceiver]) {
@@ -104,6 +113,10 @@ function toggleGoldCharacter([characterName, isReceiver]) {
     <div class="calc-raid-gold__total-item">
       <coin class="icon icon_very-small coin-icon"/>
       Общая сумма золота: {{ totalGold.earned }}
+    </div>
+    <div class="calc-raid-gold__total-item">
+      <coin class="icon icon_very-small coin-icon"/>
+      Из них привязанное: {{ totalGold.bound }}
     </div>
     <div class="calc-raid-gold__total-item">
       <chest class="icon icon_very-small chest-icon"/>
