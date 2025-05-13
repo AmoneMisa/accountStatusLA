@@ -300,7 +300,7 @@ const tabCheckboxes = [
 
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
-      <button type="button" id="update-app" class="button" data-current-version="1.0.0" @click="updateApp">
+      <button type="button" id="update-app" class="button" data-current-version="1.1.0" @click="updateApp">
         Обновить приложение
       </button>
     </div>

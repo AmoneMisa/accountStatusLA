@@ -57,6 +57,25 @@ window.electron.ipcRenderer.on('update-settings', (settings_) => {
   settings.value = settings_;
 });
 
+window.electron.ipcRenderer.on('update-downloaded', () => {
+  const message = document.getElementById("message");
+  message.innerText = `Обновление загружено. Нажмите для установки.`;
+  message.classList.add("active");
+
+  const installButton = document.createElement("button");
+  installButton.innerText = "Установить сейчас";
+  installButton.style.marginLeft = "10px";
+  installButton.onclick = () => {
+    window.electron.ipcRenderer.invoke("install-update-now");
+  };
+
+  message.appendChild(installButton);
+
+  setTimeout(() => {
+    message.classList.remove("active");
+  }, 10000);
+});
+
 onMounted(async () => {
   settings.value = await window.electron.ipcRenderer.invoke('load-settings');
 });

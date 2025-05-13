@@ -1,4 +1,7 @@
 import {app, dialog, ipcMain, Menu, net, Notification, shell, Tray} from 'electron';
+
+const isPortable = process.argv.includes('--portable');
+
 import path from 'path';
 import {getCharacterPage, getClassName, getGearScore, parseLostArkProfile} from "../utils/parser.js";
 import {changeSettingsPath, getToolsInfo, loadAppDataSettings, loadSettings, saveSettings} from "../utils/storage.js";
@@ -78,6 +81,33 @@ async function checkForUpdates(mainWindow = mainWindow) {
     } catch (error) {
         mainWindow.webContents.send('update-error', error.message);
     }
+}
+
+// Далее, перед использованием autoUpdater:
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { autoUpdater } = require('electron-updater');
+
+// Подключи автообновление только если не portable:
+if (!isPortable) {
+    autoUpdater.autoDownload = true;
+    autoUpdater.autoInstallOnAppQuit = false;
+
+    autoUpdater.on('update-available', (info) => {
+        mainWindow.webContents.send('update-available', info);
+    });
+
+    autoUpdater.on('update-not-available', () => {
+        mainWindow.webContents.send('update-not-found');
+    });
+
+    autoUpdater.on('update-downloaded', () => {
+        mainWindow.webContents.send('update-downloaded');
+    });
+
+    autoUpdater.on('error', (error) => {
+        mainWindow.webContents.send('update-error', error.message);
+    });
 }
 
 app.on('ready', async () => {
@@ -328,8 +358,19 @@ ipcMain.handle('change-settings-path', async (event, newPath) => {
     return changeSettingsPath(newPath);
 });
 
-ipcMain.handle('check-for-updates', async (event) => {
-    await checkForUpdates(mainWindow);
+ipcMain.handle('check-for-updates', async () => {
+    if (isPortable) {
+        // Старое поведение — ручное обновление
+        await checkForUpdates(mainWindow);
+    } else {
+        await autoUpdater.checkForUpdates();
+    }
+});
+
+ipcMain.handle('install-update-now', () => {
+    if (!isPortable) {
+        autoUpdater.quitAndInstall();
+    }
 });
 
 ipcMain.handle('is-newer-version', async (_, current, latest) => {

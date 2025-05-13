@@ -2,7 +2,7 @@
   "name": "accountstatusla",
   "author": "WhitesLove",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "The application, created by WhitesLove for personal usage for save and check characters status in Lost Ark game. Do not re-upload on another places without my permission. All rights reserved.",
   "main": "dist-electron/main.js",
   "scripts": {
@@ -10,12 +10,15 @@
     "dist": "electron-builder --win portable",
     "dev": "vite",
     "build": "vite build",
-    "electron": "electron ."
+    "electron": "electron .",
+    "release": "electron-builder --win --publish always",
+    "portable": "electron-builder --win portable --publish always"
   },
   "private": true,
   "dependencies": {
     "axios": "^1.8.4",
     "dotenv": "^16.5.0",
+    "electron-updater": "^6.6.2",
     "font-list": "^1.5.1",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
@@ -44,10 +47,31 @@
       "dist/**/*",
       "dist-electron/**/*"
     ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "AmoneMisa",
+        "repo": "accountStatusLA"
+      }
+    ],
     "win": {
       "icon": "electron-builder/icon.ico",
-      "target": "portable",
-      "artifactName": "${productName}.exe"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true
     }
   }
 }
