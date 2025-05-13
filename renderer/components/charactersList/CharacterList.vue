@@ -128,7 +128,9 @@ function onCharacterDrop(event) {
 function onDropToEmptyGroup(group) {
   const name = draggedCharacter.value;
   const fromGroup = draggedFromGroup.value;
-  if (!name || !fromGroup) return;
+  if (!name || !fromGroup) {
+    return;
+  }
 
   const character = grouped.value[fromGroup].find((c) => c.name === name);
   grouped.value[fromGroup] = grouped.value[fromGroup].filter((c) => c.name !== name);

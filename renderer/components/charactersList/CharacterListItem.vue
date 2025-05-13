@@ -1,6 +1,6 @@
 <script setup>
 import {saveSettings} from "../../../utils/utils.js";
-import {computed, inject, ref} from "vue";
+import {computed, inject, ref, toRaw} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 
 import checkArrow from "../../../src/svg/check.svg";
@@ -12,6 +12,8 @@ import plus from "../../../src/svg/plus.svg";
 import trash from "../../../src/svg/trash.svg";
 import burger from "../../../src/svg/burger.svg";
 import update from "../../../src/svg/update.svg";
+import _ from "lodash";
+import OnlineModule from "../../../utils/OnlineModule.js";
 
 const props = defineProps({
   character: Object,
@@ -84,7 +86,35 @@ function toggleIcon(target, statusTitle) {
   emit('update-character', props.character.name);
 }
 
-function toggleRaidStatus(raid) {
+async function updateOnlineProfile () {
+  const online = new OnlineModule(settings.value.nickname, toRaw(Object.assign(settings.value.characterSettings, {characterList: settings.value.characterList})));
+
+  let user;
+  
+  if (settings.value.UUID) {
+    try {
+      const res = await online.getUser(settings.value.UUID);
+      user = res.data;
+    } catch (e) {
+      console.warn("User not found. Try to register:", e);
+      const res = await online.register();
+      user = res.data;
+      saveSettings({UUID: user._id});
+    }
+  } else {
+    const res = await online.register();
+    user = res.data;
+    saveSettings({UUID: user._id});
+  }
+
+  console.log(user);
+  if (!_.isEqual(user.characterSettings, settings.value.characterSettings)
+      || !_.isEqual(user.characterList, settings.value.characterList)) {
+    await online.update(user._id);
+  }
+}
+
+async function toggleRaidStatus(raid) {
   props.characterSettings.raidStatus = props.characterSettings.raidStatus || {};
   props.characterSettings.raidStatus[raid] = !props.characterSettings.raidStatus[raid];
 
@@ -101,6 +131,8 @@ function toggleRaidStatus(raid) {
     }
   });
   emit('update-character', props.character.name);
+
+  await updateOnlineProfile();
 }
 
 function removeRaid(raid) {
