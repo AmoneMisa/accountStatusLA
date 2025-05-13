@@ -3,7 +3,7 @@
   "author": "WhitesLove",
   "type": "module",
   "version": "1.1.0",
-  "description": "The application, created by WhitesLove for personal usage for save and check characters status in Lost Ark game. Do not re-upload on another places without my permission. All rights reserved.",
+  "description": "Manage characters status in Lost Ark",
   "main": "dist-electron/main.js",
   "scripts": {
     "start": "chcp 65001 && npm run build && npm run electron",
@@ -11,8 +11,8 @@
     "dev": "vite",
     "build": "vite build",
     "electron": "electron .",
-    "release": "electron-builder --win --publish always",
-    "portable": "electron-builder --win portable --publish always"
+    "release": "dotenv electron-builder --win nsis --publish always",
+    "portable": "dotenv electron-builder --win portable --publish always"
   },
   "private": true,
   "dependencies": {
@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
+    "dotenv-cli": "^8.0.0",
     "electron": "^36.2.0",
     "electron-builder": "^26.0.12",
     "sass": "^1.86.0",
@@ -45,7 +46,8 @@
     },
     "files": [
       "dist/**/*",
-      "dist-electron/**/*"
+      "dist-electron/**/*",
+      "extra/delete.exe"
     ],
     "publish": [
       {
@@ -59,19 +61,26 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
-      ],
-      "artifactName": "${productName}-${version}-${ext == 'exe' && target === 'portable' ? 'portable' : 'installer'}.${ext}"
+      ]
     },
     "nsis": {
-      "oneClick": true,
+      "oneClick": false,
       "perMachine": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "${productName}-${version}-setup.exe"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-portable.${ext}"
     }
   }
 }
