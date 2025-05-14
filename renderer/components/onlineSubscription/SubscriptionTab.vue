@@ -1,13 +1,12 @@
 <script setup>
 import Tooltip from "@/components/utils/Tooltip.vue";
 import OnlineModule from "../../../utils/OnlineModule.js";
-import {computed, inject, ref, toRaw} from "vue";
+import {inject, ref, toRaw} from "vue";
 import {saveSettings} from "../../../utils/utils.js";
-import heart from "../../../src/svg/heart.svg";
-import {DateTime} from "luxon";
 import UserRaidTable from "@/components/onlineSubscription/UserRaidTable.vue";
 import _ from "lodash";
 import CopyWrapper from "@/components/utils/CopyWrapper.vue";
+import UserCard from "@/components/onlineSubscription/UserCard.vue";
 
 let settings = inject('settings');
 
@@ -52,27 +51,11 @@ async function resetKey() {
   saveSettings({inviteKey: user.value.inviteKey});
 }
 
-let users = ref([]);
-(async function () {
-  const res = await online.getUsers(settings.value?.UUID || user.value?._id);
-  users.value = res.data;
-})();
-
 let subs = ref([]);
 (async function () {
   const res = await online.getSubscribers(settings.value?.inviteKey || user.value?.inviteKey);
   subs.value = res.data;
 })();
-
-function format(date) {
-  const dt = typeof date === 'string'
-      ? DateTime.fromISO(date)
-      : DateTime.fromJSDate(date);
-
-  return dt.isValid
-      ? dt.toLocal().toFormat('HH:mm - dd.MM.yyyy')
-      : 'Invalid date';
-}
 
 let localSubs = ref(settings.value.online?.subs || []);
 
@@ -92,11 +75,27 @@ function toggleSub(inviteKey) {
 }
 
 let filter = ref('all'); // 'all' | 'subs'
-const filteredUsers = computed(() =>
-    filter.value === 'all'
-        ? users.value.filter(u => localSubs.value.includes(u.inviteKey))
-        : users.value
-);
+let filteredUsers = ref([]); // 'all' | 'subs'
+const filterUsers = async () => {
+  let subUsers = [];
+  for (let inviteKey of settings.value.online.subs) {
+    let sub;
+    const res = await online.getUserByInviteKey(inviteKey);
+
+    if (res.status !== 200) {
+      continue;
+    }
+
+    sub = res.data;
+    subUsers.push(sub);
+  }
+
+  filteredUsers.value = filter.value === 'all'
+      ? subUsers.filter(u => localSubs.value.includes(u.inviteKey))
+      : subUsers;
+};
+
+await filterUsers();
 
 let selectedUser = ref(null);
 
@@ -108,12 +107,15 @@ function goBack() {
   selectedUser.value = null;
 }
 
+const foundedUser = ref({});
+
 async function searchUser(inviteKey) {
   if (inviteKey.length !== 12) {
     return;
   }
 
-  return await online.getUserByInviteKey(inviteKey);
+  const res = await online.getUserByInviteKey(inviteKey);
+  foundedUser.value = res.data;
 }
 </script>
 
@@ -125,7 +127,9 @@ async function searchUser(inviteKey) {
     </tooltip>
     <div class="online-subs__row">
       <div v-if="user.inviteKey || settings.inviteKey" class="online-subs__invite-key">
-        <div class="online-subs__invite-key-code">Твой код приглашения: <copy-wrapper>{{ user.inviteKey || settings.inviteKey }}</copy-wrapper></div>
+        <div class="online-subs__invite-key-code">Твой код приглашения:
+          <copy-wrapper>{{ user.inviteKey || settings.inviteKey }}</copy-wrapper>
+        </div>
         <div class="online-subs__invite-key-button-wrapper">
           <button class="button" @click="resetKey">Сбросить код</button>
         </div>
@@ -155,43 +159,32 @@ async function searchUser(inviteKey) {
       <UserRaidTable :user="selectedUser"/>
     </div>
 
-    <div v-if="filteredUsers.length && !selectedUser && filter === 'all'" class="online-subs__list">
-      <div v-for="_user in filteredUsers" :key="_user.nickname" class="online-subs__list-item"
-           @click="selectUser(_user)">
-        <span class="online-subs__list-item-nickname">{{ _user.nickname }}</span>
-        <span class="online-subs__list-item-update">Последнее обновление: {{
-            _user?.lastUpdateAt ? format(_user?.lastUpdateAt) : format(_user?.createdAt)
-          }}</span>
-        <tooltip class="online-subs__button">
-          <button type="button"
-                  class="button button_icon online-subs__button"
-                  :class="{ 'online-subs__button_active': localSubs.includes(_user.inviteKey) }"
-                  @click.stop="toggleSub(_user.inviteKey)">
-            <heart class="icon heart-icon"/>
-          </button>
-          <template #tooltip>{{ localSubs.includes(_user.inviteKey) ? 'Отписаться' : 'Подписаться' }}</template>
-        </tooltip>
-      </div>
+    <div v-if="foundedUser.hasOwnProperty('inviteKey') && filter === 'all'" class="online-subs__list">
+      <user-card :user="foundedUser"
+                 :is-subscribed="localSubs.includes(foundedUser.inviteKey)"
+                 @select="selectUser(foundedUser)"
+                 @toggle="toggleSub"
+      />
+    </div>
+    <div v-if="!foundedUser.hasOwnProperty('inviteKey') && filteredUsers.length && !selectedUser && filter === 'all'"
+         class="online-subs__list">
+      <user-card v-for="_user in filteredUsers"
+                 :key="_user.nickname"
+                 :user="_user"
+                 @click="selectUser(_user)"
+                 :is-subscribed="localSubs.includes(_user.inviteKey)"
+                 @toggle="toggleSub"
+      />
     </div>
     <div v-else-if="subs.length && !selectedUser && filter === 'subs'" class="online-subs__list">
-      <div v-for="_user in subs" :key="_user.nickname" class="online-subs__list-item"
-           @click="selectUser(_user)">
-        <span class="online-subs__list-item-nickname">{{ _user.nickname }}</span>
-        <span class="online-subs__list-item-update">Последнее обновление: {{
-            _user?.lastUpdateAt ? format(_user?.lastUpdateAt) : format(_user?.createdAt)
-          }}</span>
-        <tooltip class="online-subs__button">
-          <button type="button"
-                  class="button button_icon online-subs__button"
-                  :class="{ 'online-subs__button_active': localSubs.includes(_user.inviteKey) }"
-                  @click.stop="toggleSub(_user.inviteKey)">
-            <heart class="icon heart-icon"/>
-          </button>
-          <template #tooltip>{{ localSubs.includes(_user.inviteKey) ? 'Отписаться' : 'Подписаться' }}</template>
-        </tooltip>
-      </div>
+      <user-card v-for="_user in subs"
+                 :key="_user.nickname"
+                 :user="_user"
+                 :is-subscribed="localSubs.includes(_user.inviteKey)"
+                 @click="selectUser(_user)"
+                 @toggle="toggleSub"
+      />
     </div>
-
   </div>
 </template>
 
@@ -221,47 +214,6 @@ async function searchUser(inviteKey) {
 
   .label {
     font-size: var(--font-small);
-  }
-}
-
-.online-subs__list-item {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 15px;
-  border: 1px solid var(--grey);
-  box-shadow: var(--shadow);
-  max-width: 300px;
-  font-size: var(--font-small);
-  padding: 10px;
-  border-radius: 5px;
-  position: relative;
-  transition: .35s ease;
-  cursor: pointer;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-}
-
-.online-subs__list-item-nickname {
-  color: var(--gold);
-}
-
-.online-subs__button {
-  position: absolute;
-  top: 0;
-  right: 0;
-
-  .heart-icon {
-    filter: grayscale(1);
-    transition: .3s ease;
-  }
-
-  &_active {
-    .heart-icon {
-      filter: none;
-    }
   }
 }
 

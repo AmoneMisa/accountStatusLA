@@ -52,7 +52,7 @@ import pinIcon from "../../../src/svg/pin.svg";
 <template>
   <div class="header">
     <div id="title-bar" class="title-bar">
-      <div id="title" class="title-bar__title">Lost Ark Character Manager v. beta-1.2.0</div>
+      <div id="title" class="title-bar__title">Lost Ark Character Manager v. beta-1.2.1</div>
       <div id="window-controls" class="window-controls">
         <tooltip>
           <button id="alwaysUpTop" class="window-controls__button button button_control"

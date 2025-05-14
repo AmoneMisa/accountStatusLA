@@ -116,7 +116,9 @@ provide('isShowLoader', isShowLoader);
       <tools-tab v-if="currentTab === 'tools'"/>
       <calc-raid-gold-tab v-if="currentTab === 'calcRaidGold'"/>
       <f-a-q-tab v-if="currentTab === 'FAQ'"/>
-      <subscription-tab v-if="currentTab === 'online'"/>
+      <suspense>
+        <subscription-tab v-if="currentTab === 'online'"/>
+      </suspense>
       <settings-table v-if="currentTab === 'settings'"/>
     </div>
     <div id="message" class="message"></div>
