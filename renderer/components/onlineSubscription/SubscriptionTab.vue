@@ -1,7 +1,7 @@
 <script setup>
 import Tooltip from "@/components/utils/Tooltip.vue";
 import OnlineModule from "../../../utils/OnlineModule.js";
-import {inject, ref, toRaw} from "vue";
+import {computed, inject, ref, toRaw} from "vue";
 import {saveSettings} from "../../../utils/utils.js";
 import UserRaidTable from "@/components/onlineSubscription/UserRaidTable.vue";
 import _ from "lodash";
@@ -10,12 +10,21 @@ import UserCard from "@/components/onlineSubscription/UserCard.vue";
 
 let settings = inject('settings');
 
-const online = new OnlineModule(settings.value.nickname, toRaw(Object.assign(settings.value.characterSettings, {characterList: settings.value.characterList})));
+const onlineSettings = computed(() => {
+  return toRaw(Object.assign({}, settings.value?.characterSettings, {
+    characterList: settings.value?.characterList,
+    online: {
+      subs: settings.value?.online?.subs || []
+    }
+  }));
+});
+
+const online = new OnlineModule(settings.value.nickname, onlineSettings.value);
 
 let user = ref({});
 let inviteKey = ref("");
 
-(async function () {
+async function getUser() {
   if (settings.value.UUID) {
     try {
       const res = await online.getUser(settings.value.UUID);
@@ -32,8 +41,17 @@ let inviteKey = ref("");
     saveSettings({UUID: user.value._id});
   }
 
-  if (!_.isEqual(user.value.characterSettings, settings.value.characterSettings)
-      || !_.isEqual(user.value.characterList, settings.value.characterList)) {
+  const userCharacterSettingsKeys = Object.keys(user.value.settings).filter(key => {
+    return key !== "online";
+  });
+  const userCharacterSettingsObj = {};
+
+  for (const userSettingsKey of userCharacterSettingsKeys) {
+    userCharacterSettingsObj[userSettingsKey] = JSON.parse(JSON.stringify(user.value.settings[userSettingsKey]));
+  }
+
+  if (!_.isEqual(userCharacterSettingsObj, JSON.parse(JSON.stringify(settings.value?.characterSettings)))
+      || !_.isEqual(user.value?.settings?.online?.subs, settings.value?.online?.subs)) {
     const res = await online.update(user.value._id);
     user.value = res.data;
   }
@@ -43,7 +61,9 @@ let inviteKey = ref("");
     user.value.inviteKey = res.data.inviteKey;
     saveSettings({inviteKey: user.value.inviteKey});
   }
-})();
+}
+
+await getUser();
 
 async function resetKey() {
   const res = await online.resetInviteKey(user.value._id);
@@ -70,8 +90,6 @@ function createSubsProperty() {
 createSubsProperty();
 
 let localSubs = ref(settings.value?.online?.subs || []);
-
-
 
 function toggleSub(inviteKey) {
   const index = localSubs.value.indexOf(inviteKey);
@@ -113,8 +131,9 @@ await filterUsers();
 
 let selectedUser = ref(null);
 
-function selectUser(user) {
-  selectedUser.value = user;
+async function selectUser(user) {
+  const res = await online.getUser(user._id);
+  selectedUser.value = res.data;
 }
 
 function goBack() {

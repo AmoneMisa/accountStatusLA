@@ -11,9 +11,9 @@ const props = defineProps({
 });
 
 const characterList = computed(() => {
-  const all = props.user.settings.characterList || [];
+  const all = props.user?.settings?.characterList || [];
   return all.filter(char => {
-    const meta = props.user.settings[char.name];
+    const meta = props.user?.settings[char.name];
     return meta && !meta.delete;
   });
 });

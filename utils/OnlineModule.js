@@ -27,6 +27,7 @@ export default class {
     }
 
     update = async (id) => {
+        console.log(this.settings)
         return await axios.put(`${API_PATH}/update/${id}`, {nickname: this.nickname, settings: this.settings});
     }
 
