@@ -57,7 +57,21 @@ let subs = ref([]);
   subs.value = res.data;
 })();
 
+function createSubsProperty() {
+  if (!settings.value.hasOwnProperty('online')) {
+    settings.value.online = {};
+  }
+
+  if (!settings.value.online.hasOwnProperty('subs')) {
+    settings.value.online.subs = [];
+  }
+}
+
+createSubsProperty();
+
 let localSubs = ref(settings.value?.online?.subs || []);
+
+
 
 function toggleSub(inviteKey) {
   const index = localSubs.value.indexOf(inviteKey);
