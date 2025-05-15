@@ -57,7 +57,7 @@ let subs = ref([]);
   subs.value = res.data;
 })();
 
-let localSubs = ref(settings.value.online?.subs || []);
+let localSubs = ref(settings.value?.online?.subs || []);
 
 function toggleSub(inviteKey) {
   const index = localSubs.value.indexOf(inviteKey);
@@ -78,7 +78,7 @@ let filter = ref('all'); // 'all' | 'subs'
 let filteredUsers = ref([]); // 'all' | 'subs'
 const filterUsers = async () => {
   let subUsers = [];
-  for (let inviteKey of settings.value.online.subs) {
+  for (let inviteKey of localSubs.value) {
     let sub;
     const res = await online.getUserByInviteKey(inviteKey);
 
