@@ -504,17 +504,26 @@ body {
   font-size: var(--font-body);
 }
 
+.error {
+  color: var(--error) !important;
+  padding-bottom: 2px;
+  text-decoration: underline var(--error);
+}
+
 .icon {
   max-width: 28px;
+  min-width: 28px;
   max-height: 28px;
   width: 100%;
 
   &_small {
     max-width: 20px;
+    min-width: 16px;
   }
 
   &_very-small {
    max-width: 16px;
+    min-width: 12px;
   }
 }
 

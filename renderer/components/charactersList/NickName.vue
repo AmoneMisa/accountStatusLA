@@ -12,6 +12,14 @@ const props = defineProps({
 const emit = defineEmits(['update-characters', 'edit-characters', 'save-nickname', 'edit-nickname', 'reset-characters']);
 
 function saveNickname(newNickname) {
+  if (newNickname.length < 4) {
+    const message = document.getElementById("message");
+    message.innerText = `Обновление загружено. Нажмите для установки.`;
+    message.classList.add("active");
+    setTimeout(() => document.getElementById("message").classList.remove("active"), 3500);
+    return;
+  }
+
   emit('save-nickname', newNickname);
 }
 
@@ -33,7 +41,7 @@ function editCharacters() {
         <div id="nickname" class="nickname-block__nickname">
           <input v-show="isEditMode" type="text" id="nickname-input" placeholder="Введите ник" autofocus
                  v-model="model"/>
-          <span v-show="!isEditMode">Ваш ник: {{ model }}</span>
+          <span v-show="!isEditMode" :class="{'error': !model || !model?.length}">{{ model && model.length ? `Ваш ник ${model}` : "Введите ник!" }}</span>
         </div>
         <template #tooltip>Ник необходим для загрузки твоих персонажей</template>
       </tooltip>
