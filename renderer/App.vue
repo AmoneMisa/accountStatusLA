@@ -103,7 +103,7 @@ provide('isShowLoader', isShowLoader);
   <div class="wrapper">
     <div class="tabs">
       <template v-for="tab in tabButtonsList" :key="tab.data" >
-        <button v-if="tab.data === 'settings' || tab.data === 'main' || tabVisibility?.[tab.data]" type="button" class="tab-button" :class="{'active': currentTab === tab.data}"
+        <button v-if="tab.data === 'settings' || tab.data === 'main' || tabVisibility[tab.data] ? tabVisibility[tab.data] : true" type="button" class="tab-button" :class="{'active': currentTab === tab.data}"
                 @click="changeTab(tab)">{{ tab.name }}
         </button>
       </template>
