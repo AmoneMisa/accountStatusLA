@@ -107,7 +107,6 @@ async function updateOnlineProfile () {
     saveSettings({UUID: user._id});
   }
 
-  console.log(user);
   if (!_.isEqual(user.characterSettings, settings.value.characterSettings)
       || !_.isEqual(user.characterList, settings.value.characterList)) {
     await online.update(user._id);

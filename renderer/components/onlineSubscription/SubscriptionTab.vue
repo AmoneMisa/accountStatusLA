@@ -73,8 +73,12 @@ async function resetKey() {
 
 let subs = ref([]);
 (async function () {
-  const res = await online.getSubscribers(settings.value?.inviteKey || user.value?.inviteKey);
-  subs.value = res.data;
+  try {
+    const res = await online.getSubscribers(settings.value?.inviteKey || user.value?.inviteKey);
+    subs.value = res.data;
+  } catch (e) {
+    console.error("Error with getting subscribers for inviteKey:", inviteKey, e);
+  }
 })();
 
 function createSubsProperty() {
@@ -108,18 +112,25 @@ function toggleSub(inviteKey) {
 
 let filter = ref('all'); // 'all' | 'subs'
 let filteredUsers = ref([]); // 'all' | 'subs'
+const foundedUser = ref(null);
+
 const filterUsers = async () => {
   let subUsers = [];
   for (let inviteKey of localSubs.value) {
     let sub;
-    const res = await online.getUserByInviteKey(inviteKey);
 
-    if (res.status !== 200) {
-      continue;
+    try {
+      const res = await online.getUserByInviteKey(inviteKey);
+
+      if (res.status !== 200) {
+        continue;
+      }
+
+      sub = res.data;
+      subUsers.push(sub);
+    } catch (e) {
+      console.error("User not found by InviteKey:", inviteKey, e);
     }
-
-    sub = res.data;
-    subUsers.push(sub);
   }
 
   filteredUsers.value = filter.value === 'all'
@@ -140,15 +151,19 @@ function goBack() {
   selectedUser.value = null;
 }
 
-const foundedUser = ref({});
-
 async function searchUser(inviteKey) {
   if (inviteKey.length !== 12) {
+    foundedUser.value = null;
+
     return;
   }
 
-  const res = await online.getUserByInviteKey(inviteKey);
-  foundedUser.value = res.data;
+  try {
+    const res = await online.getUserByInviteKey(inviteKey);
+    foundedUser.value = res.data;
+  } catch (e) {
+    console.error("User not found by InviteKey:", inviteKey, e);
+  }
 }
 </script>
 
@@ -158,7 +173,7 @@ async function searchUser(inviteKey) {
       <h1 class="title">Подписки</h1>
       <template #tooltip>Список всех доступных пользователей для подписки</template>
     </tooltip>
-    <div class="online-subs__row">
+    <div class="online-subs__row" v-if="!selectedUser">
       <div v-if="user.inviteKey || settings.inviteKey" class="online-subs__invite-key">
         <div class="online-subs__invite-key-code">Твой код приглашения:
           <copy-wrapper>{{ user.inviteKey || settings.inviteKey }}</copy-wrapper>
@@ -176,7 +191,7 @@ async function searchUser(inviteKey) {
                @input="searchUser(inviteKey)" maxlength="12" minlength="12">
       </div>
     </div>
-    <div class="group-filters">
+    <div class="group-filters" v-if="!selectedUser">
       <div class="group-filters__list">
         <div :class="{ 'group-filters__list-item_current': filter === 'all' }" class="group-filters__list-item"
              @click="filter = 'all'">Подписки
@@ -192,14 +207,10 @@ async function searchUser(inviteKey) {
       <UserRaidTable :user="selectedUser"/>
     </div>
 
-    <div v-if="foundedUser.hasOwnProperty('inviteKey') && filter === 'all'" class="online-subs__list">
-      <user-card :user="foundedUser"
-                 :is-subscribed="localSubs.includes(foundedUser.inviteKey)"
-                 @select="selectUser(foundedUser)"
-                 @toggle="toggleSub"
-      />
+    <div v-if="!foundedUser && inviteKey.length" class="online-subs__list">
+      Пользователь не найден
     </div>
-    <div v-if="!foundedUser.hasOwnProperty('inviteKey') && filteredUsers.length && !selectedUser && filter === 'all'"
+    <div v-else-if="!foundedUser && filteredUsers.length && !selectedUser && filter === 'all'"
          class="online-subs__list">
       <user-card v-for="_user in filteredUsers"
                  :key="_user.nickname"
@@ -217,6 +228,19 @@ async function searchUser(inviteKey) {
                  @click="selectUser(_user)"
                  @toggle="toggleSub"
       />
+    </div>
+    <div v-else-if="foundedUser && filter === 'all'" class="online-subs__list">
+      <user-card :user="foundedUser"
+                 :is-subscribed="localSubs.includes(foundedUser.inviteKey)"
+                 @select="selectUser(foundedUser)"
+                 @toggle="toggleSub"
+      />
+    </div>
+    <div v-else-if="!foundedUser && !filteredUsers.length && filter === 'all' && !selectedUser " class="online-subs__list">
+      Ты ещё ни на кого не подписан
+    </div>
+    <div v-else-if="!foundedUser && !subs.length && filter === 'subs' && !selectedUser " class="online-subs__list">
+      Ещё никто на тебя не подписался
     </div>
   </div>
 </template>
