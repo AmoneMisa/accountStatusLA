@@ -2,12 +2,15 @@
 import CalcRaidGoldRaidItem from "@/components/raidGold/calcRaidGoldRaidItem.vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 import cross from "../../../src/svg/cross.svg";
+import {ref} from "vue";
 
 const props = defineProps({
   characterSettings: Object,
   character: Object,
   goldCharacters: Array
 });
+
+const isHidden = ref({});
 
 const emit = defineEmits({'toggle-gold-receiver': [String, Boolean]});
 
@@ -25,7 +28,16 @@ function toggleGoldCharacter(target, characterName) {
 
 <template>
   <div class="calc-raid-gold__item" v-if="characterSettings && !characterSettings.delete && getCompletedRaids().length">
-    <div class="calc-raid-gold__title">{{ character.name }}
+    <div class="calc-raid-gold__header">
+      <tooltip>
+        <div class="calc-raid-gold__title"
+             @click="isHidden[character.name] ?
+            isHidden[character.name] = !isHidden[character.name] :
+             isHidden[character.name] = true">
+          {{ character.name }}
+        </div>
+        <template #tooltip>Свернуть или развернуть информацию о персонаже</template>
+      </tooltip>
       <tooltip>
         <button
             :class="{'inactive': !characterSettings?.goldReceiver && !characterSettings?.legate}"
@@ -36,7 +48,9 @@ function toggleGoldCharacter(target, characterName) {
         <template #tooltip>Убрать персонажа из общего расчёта золота</template>
       </tooltip>
     </div>
-    <calc-raid-gold-raid-item v-for="raid in getCompletedRaids()" :key="raid" :raid="raid" :character="character"/>
+    <div v-if="!isHidden[character.name]" class="calc-raid-gold__body">
+      <calc-raid-gold-raid-item v-for="raid in getCompletedRaids()" :key="raid" :raid="raid" :character="character"/>
+    </div>
   </div>
 </template>
 
@@ -50,10 +64,16 @@ function toggleGoldCharacter(target, characterName) {
   transition: .2s ease;
   cursor: pointer;
   padding: 10px;
+  height: fit-content;
 }
 
 .calc-raid-gold__item:hover {
   background-color: var(--grey);
+}
+
+.calc-raid-gold__header {
+  display: flex;
+  justify-content: space-between;
 }
 
 .calc-raid-gold__title {

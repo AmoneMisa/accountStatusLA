@@ -479,6 +479,8 @@ const isShowCharacter = computed(() => {
     flex-wrap: wrap;
     flex-direction: row;
     width: -webkit-fill-available;
+    height: -webkit-fill-available;
+    align-items: center;
   }
 
   .character__icons {

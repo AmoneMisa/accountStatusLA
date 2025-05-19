@@ -195,7 +195,7 @@ const tabCheckboxes = [
 ];
 
 function changeTabVisibility(modelKey, target) {
-  tabVisibility[modelKey] = target.checked;
+  tabVisibility.value[modelKey] = target.checked;
 
   saveSettings({
     tabVisibility: tabVisibility.value,
