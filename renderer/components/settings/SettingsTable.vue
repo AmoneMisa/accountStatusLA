@@ -267,7 +267,7 @@ const tabCheckboxes = [
           v-for="item in tabCheckboxes"
           :key="item.id"
           :id="item.id"
-          :checked="tabVisibility[item.modelKey]"
+          :checked="tabVisibility[item.modelKey] ? tabVisibility[item.modelKey] : true"
           @change="({target}) => tabVisibility[item.modelKey] = target.checked"
           :text="item.label"
       />
