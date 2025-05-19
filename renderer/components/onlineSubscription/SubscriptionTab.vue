@@ -23,8 +23,11 @@ const online = new OnlineModule(settings.value.nickname, onlineSettings.value);
 
 let user = ref({});
 let inviteKey = ref("");
+const isShowLoader = inject("isShowLoader");
 
 async function getUser() {
+  isShowLoader.value = true;
+
   if (settings.value.UUID) {
     try {
       const res = await online.getUser(settings.value.UUID);
@@ -47,10 +50,10 @@ async function getUser() {
   const userCharacterSettingsObj = {};
 
   for (const userSettingsKey of userCharacterSettingsKeys) {
-    userCharacterSettingsObj[userSettingsKey] = JSON.parse(JSON.stringify(user.value.settings[userSettingsKey]));
+    userCharacterSettingsObj[userSettingsKey] = toRaw(user.value.settings[userSettingsKey]);
   }
 
-  if (!_.isEqual(userCharacterSettingsObj, JSON.parse(JSON.stringify(settings.value?.characterSettings)))
+  if (!_.isEqual(userCharacterSettingsObj, toRaw(settings.value?.characterSettings))
       || !_.isEqual(user.value?.settings?.online?.subs, settings.value?.online?.subs)) {
     const res = await online.update(user.value._id);
     user.value = res.data;
@@ -61,21 +64,29 @@ async function getUser() {
     user.value.inviteKey = res.data.inviteKey;
     saveSettings({inviteKey: user.value.inviteKey});
   }
+
+  isShowLoader.value = false;
 }
 
 await getUser();
 
 async function resetKey() {
+  isShowLoader.value = true;
+
   const res = await online.resetInviteKey(user.value._id);
   user.value.inviteKey = res.data.inviteKey;
   saveSettings({inviteKey: user.value.inviteKey});
+
+  isShowLoader.value = false;
 }
 
 let subs = ref([]);
 (async function () {
   try {
+    isShowLoader.value = true;
     const res = await online.getSubscribers(settings.value?.inviteKey || user.value?.inviteKey);
     subs.value = res.data;
+    isShowLoader.value = false;
   } catch (e) {
     console.error("Error with getting subscribers for inviteKey:", inviteKey, e);
   }
@@ -115,6 +126,8 @@ let filteredUsers = ref([]); // 'all' | 'subs'
 const foundedUser = ref(null);
 
 const filterUsers = async () => {
+  isShowLoader.value = true;
+
   let subUsers = [];
   for (let inviteKey of localSubs.value) {
     let sub;
@@ -136,6 +149,8 @@ const filterUsers = async () => {
   filteredUsers.value = filter.value === 'all'
       ? subUsers.filter(u => localSubs.value.includes(u.inviteKey))
       : subUsers;
+
+  isShowLoader.value = false;
 };
 
 await filterUsers();
@@ -143,8 +158,10 @@ await filterUsers();
 let selectedUser = ref(null);
 
 async function selectUser(user) {
+  isShowLoader.value = true;
   const res = await online.getUser(user._id);
   selectedUser.value = res.data;
+  isShowLoader.value = false;
 }
 
 function goBack() {
@@ -159,8 +176,10 @@ async function searchUser(inviteKey) {
   }
 
   try {
+    isShowLoader.value = true;
     const res = await online.getUserByInviteKey(inviteKey);
     foundedUser.value = res.data;
+    isShowLoader.value = false;
   } catch (e) {
     console.error("User not found by InviteKey:", inviteKey, e);
   }

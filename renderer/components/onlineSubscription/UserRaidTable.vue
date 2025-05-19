@@ -40,8 +40,8 @@ const characterList = computed(() => {
           <ul class="raid-table__raids">
             <li class="raid-table__raid" v-for="raid in user.settings[char.name].raids" :key="raid">
               <span class="raid-table__raid-name">{{ raid }}</span>
-              <checkArrow class="icon check-icon" v-if="user.settings[char.name].raidStatus?.[raid]"/>
-              <cross class="icon cross-icon" v-else/>
+              <checkArrow class="raid-table__icon icon check-icon" v-if="user.settings[char.name].raidStatus?.[raid]"/>
+              <cross class="raid-table__icon icon cross-icon" v-else/>
             </li>
           </ul>
         </td>
@@ -89,5 +89,9 @@ ul {
   color: var(--gold);
   font-family: var(--font-family-decorative), serif;
   font-size: var(--font-h2);
+}
+
+.raid-table__icon {
+  min-width: 28px;
 }
 </style>

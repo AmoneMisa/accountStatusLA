@@ -83,4 +83,5 @@ function format(date) {
     }
   }
 }
+
 </style>

@@ -188,6 +188,7 @@ const tabCheckboxes = [
   {id: 'tabVisibilityList', modelKey: 'checkList', label: 'Чек-лист'},
   {id: 'tabVisibilityNotifications', modelKey: 'notification', label: 'Уведомления'},
   {id: 'tabVisibilityUtils', modelKey: 'tools', label: 'Инструменты'},
+  {id: 'tabVisibilityFetranite', modelKey: 'fetranite', label: 'Фетранит'},
   {id: 'tabVisibilityGold', modelKey: 'calcRaidGold', label: 'Золото с рейдов'},
   {id: 'tabVisibilityOnline', modelKey: 'online', label: 'Подписки'},
   {id: 'tabVisibilityFAQ', modelKey: 'FAQ', label: 'FAQ'}
@@ -267,7 +268,7 @@ const tabCheckboxes = [
           v-for="item in tabCheckboxes"
           :key="item.id"
           :id="item.id"
-          :checked="tabVisibility[item.modelKey] ? tabVisibility[item.modelKey] : true"
+          :checked="tabVisibility.hasOwnProperty(item.modelKey) ? tabVisibility[item.modelKey] : true"
           @change="({target}) => tabVisibility[item.modelKey] = target.checked"
           :text="item.label"
       />

@@ -3,7 +3,7 @@ import romb from "../../../src/svg/romb.svg";
 import plus from "../../../src/svg/plus.svg";
 import minus from "../../../src/svg/minus.svg";
 
-import {computed, onMounted, ref, watch} from 'vue';
+import {computed, inject, onMounted, ref, watch} from 'vue';
 import Tooltip from "@/components/utils/Tooltip.vue";
 
 import _ from "lodash";
@@ -69,8 +69,11 @@ function Calculator(targets, cache) {
 }
 
 const calculator = ref();
+const isShowLoader = inject("isShowLoader");
 
 async function loadCacheFromFile() {
+  isShowLoader.value = true;
+
   const data = await window.electron.ipcRenderer.loadCacheJson();
   if (data) {
     cache.value = new Map(data);
@@ -86,6 +89,8 @@ async function loadCacheFromFile() {
     {minA: 10, minB: 6, maxC: 4},
     {minA: 6, minB: 10, maxC: 4}
   ], cache.value);
+
+  isShowLoader.value = false;
 }
 
 onMounted(() => loadCacheFromFile());

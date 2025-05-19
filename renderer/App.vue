@@ -12,6 +12,7 @@ import CalcRaidGoldTab from "@/components/raidGold/calcRaidGoldTab.vue";
 import FAQTab from "@/components/FAQ/FAQTab.vue";
 import {logError} from "../utils/errors.js";
 import SubscriptionTab from "@/components/onlineSubscription/SubscriptionTab.vue";
+import FetraniteTab from "@/components/fetranite/FetraniteTab.vue";
 
 window.addEventListener('error', (e) => {
   logError(e);
@@ -28,6 +29,8 @@ const tabButtonsList = [
     data: "notification", name: "Уведомления"
   }, {
     data: "tools", name: "Инструменты"
+  }, {
+    data: "fetranite", name: "Фетранит"
   }, {
     data: "calcRaidGold", name: "Золото с рейдов"
   }, {
@@ -103,7 +106,7 @@ provide('isShowLoader', isShowLoader);
   <div class="wrapper">
     <div class="tabs">
       <template v-for="tab in tabButtonsList" :key="tab.data" >
-        <button v-if="tab.data === 'settings' || tab.data === 'main' || tabVisibility[tab.data] ? tabVisibility[tab.data] : true" type="button" class="tab-button" :class="{'active': currentTab === tab.data}"
+        <button v-if="tab.data === 'settings' || tab.data === 'main' || (tabVisibility.hasOwnProperty(tab.data) ? tabVisibility[tab.data] : true)" type="button" class="tab-button" :class="{'active': currentTab === tab.data}"
                 @click="changeTab(tab)">{{ tab.name }}
         </button>
       </template>
@@ -114,6 +117,7 @@ provide('isShowLoader', isShowLoader);
       <check-list-tab v-if="currentTab === 'checkList'"/>
       <notifications-tab v-if="currentTab === 'notification'"/>
       <tools-tab v-if="currentTab === 'tools'"/>
+      <fetranite-tab v-if="currentTab === 'fetranite'"/>
       <calc-raid-gold-tab v-if="currentTab === 'calcRaidGold'"/>
       <f-a-q-tab v-if="currentTab === 'FAQ'"/>
       <suspense>
@@ -512,18 +516,15 @@ body {
 
 .icon {
   max-width: 28px;
-  min-width: 28px;
   max-height: 28px;
   width: 100%;
 
   &_small {
     max-width: 20px;
-    min-width: 16px;
   }
 
   &_very-small {
    max-width: 16px;
-    min-width: 12px;
   }
 }
 
