@@ -194,6 +194,17 @@ const tabCheckboxes = [
   {id: 'tabVisibilityFAQ', modelKey: 'FAQ', label: 'FAQ'}
 ];
 
+function changeTabVisibility(modelKey, target) {
+  tabVisibility[modelKey] = target.checked;
+
+  saveSettings({
+    tabVisibility: tabVisibility.value,
+  });
+  document.getElementById("message").innerText = "Настройки отображения вкладок сохранены";
+  document.getElementById("message").classList.add("active");
+  setTimeout(() => document.getElementById("message").classList.remove("active"), 1000);
+}
+
 </script>
 
 <template>
@@ -269,7 +280,7 @@ const tabCheckboxes = [
           :key="item.id"
           :id="item.id"
           :checked="tabVisibility.hasOwnProperty(item.modelKey) ? tabVisibility[item.modelKey] : true"
-          @change="({target}) => tabVisibility[item.modelKey] = target.checked"
+          @change="({target}) => changeTabVisibility(item.modelKey, target)"
           :text="item.label"
       />
     </div>
