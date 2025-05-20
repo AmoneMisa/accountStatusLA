@@ -4,32 +4,39 @@ import {parse} from 'node-html-parser';
 export async function parseLostArkProfile(nickname) {
     try {
         const page = await getCharacterPage(nickname);
-        const charNameList = getCharacterList(page, '.profile-character-list__char');
+        const charNameLists = getCharacterList(page, '.profile-character-list__char');
         const characters = [];
 
-        for (let name of charNameList) {
-            if (characters.find(char => char.name === name)) {
+        console.log(charNameLists);
+        for (const charNameList of charNameLists) {
+            if (!charNameList.length) {
                 continue;
             }
 
-            let _page = await getCharacterPage(name);
-            let gearScore = getGearScore(_page);
-            if (!gearScore) {
-                continue;
+            for (let name of charNameList) {
+                if (characters.find(char => char.name === name)) {
+                    continue;
+                }
+
+                let _page = await getCharacterPage(name);
+                let gearScore = getGearScore(_page);
+                if (!gearScore) {
+                    continue;
+                }
+
+                let className = getClassName(_page);
+                if (!className) {
+                    continue;
+                }
+
+                characters.push({
+                    name,
+                    gearScore,
+                    className
+                });
+
+                await new Promise(res => setTimeout(res, 1000));
             }
-
-            let className = getClassName(_page);
-            if (!className) {
-                continue;
-            }
-
-            characters.push({
-                name,
-                gearScore,
-                className
-            });
-
-            await new Promise(res => setTimeout(res, 1000));
         }
 
         characters.sort((a, b) => b.gearScore - a.gearScore);
@@ -41,10 +48,11 @@ export async function parseLostArkProfile(nickname) {
 }
 
 export function getCharacterList(page, listSelector) {
-    return page.querySelector(listSelector)
-        .innerText.replaceAll(/Ур\.\d+/g, '')
-        .split(/\s/)
-        .filter(name => name !== '');
+    return page.querySelectorAll(listSelector).map(list => {
+       return list.innerText.replaceAll(/Ур\.\d+/g, '')
+            .split(/\s/)
+            .filter(name => name !== '');
+    });
 }
 
 export async function getCharacterPage(nickname) {

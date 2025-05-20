@@ -2,7 +2,7 @@
   "name": "accountstatusla",
   "author": "WhitesLove",
   "type": "module",
-  "version": "1.2.3",
+  "version": "1.2.3.1",
   "description": "Manage characters status in Lost Ark",
   "main": "dist-electron/main.js",
   "scripts": {
