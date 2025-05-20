@@ -1,7 +1,4 @@
 import {app, dialog, ipcMain, Menu, net, Notification, shell, Tray} from 'electron';
-
-const isPortable = process.argv.includes('--portable');
-
 import path from 'path';
 import {getCharacterPage, getClassName, getGearScore, parseLostArkProfile} from "../utils/parser.js";
 import {changeSettingsPath, getToolsInfo, loadAppDataSettings, loadSettings, saveSettings} from "../utils/storage.js";
@@ -13,8 +10,15 @@ import applySettings from "../mainProcess/applySettings.js";
 import {resetDailyActivities, resetWeeklyActivities} from "../mainProcess/resetActivities.js";
 import semver from 'semver';
 import schedule from "node-schedule";
-import {getErrorLog} from "../utils/errors.js";
 import * as fontList from "font-list";
+// Далее, перед использованием autoUpdater:
+import {createRequire} from 'module';
+import log from 'electron-log';
+
+log.transports.console.level = 'info';
+log.transports.file.level = 'info';
+
+const isPortable = process.argv.includes('--portable');
 
 process.env.DIST = path.join(import.meta.dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged
@@ -83,10 +87,8 @@ async function checkForUpdates(mainWindow = mainWindow) {
     }
 }
 
-// Далее, перед использованием autoUpdater:
-import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const { autoUpdater } = require('electron-updater');
+const {autoUpdater} = require('electron-updater');
 
 // Подключи автообновление только если не portable:
 if (!isPortable) {
@@ -107,6 +109,7 @@ if (!isPortable) {
 
     autoUpdater.on('error', (error) => {
         mainWindow.webContents.send('update-error', error.message);
+        log.error(error.message);
     });
 }
 
@@ -182,17 +185,17 @@ app.on('ready', async () => {
 });
 
 ipcMain.handle('clear-character-settings', () => {
-    console.log("Очищаем настройки персонажей...");
+    log.info("Очищаем настройки персонажей...");
     mainWindow.webContents.send('clear-character-settings');
 });
 
 ipcMain.handle('clear-characters-list', () => {
-    console.log("Очищаем список персонажей...");
+    log.info("Очищаем список персонажей...");
     mainWindow.webContents.send('clear-characters-list');
 });
 
 ipcMain.handle('clear-characters-qubes', () => {
-    console.log("Очищаем список персонажей...");
+    log.info("Очищаем список персонажей...");
     mainWindow.webContents.send('clear-characters-qubes');
 });
 
@@ -367,14 +370,68 @@ ipcMain.handle('check-for-updates', async () => {
     }
 });
 
-ipcMain.handle('install-update-now', () => {
-    if (!isPortable) {
-        autoUpdater.quitAndInstall();
+ipcMain.on('install-update-now', () => {
+    log.info(`isPortable: ${isPortable}`);
+    if (isPortable) {
+        return;
+    }
+
+    autoUpdater.quitAndInstall();
+});
+
+async function generateFullLog(settings) {
+    const {shell, app} = await import('electron');
+    const fs = await import('fs/promises');
+    const path = await import('path');
+
+    const logDir = path.join(app.getPath('userData'), 'logs');
+    await fs.mkdir(logDir, {recursive: true});
+
+    const logFile = path.join(logDir, `settings-log-${Date.now()}.txt`);
+
+    const content = `Лог создан: ${new Date().toISOString()}
+
+--- Настройки ---
+${JSON.stringify(settings, null, 2)}
+
+--- Последние ошибки (main.log) ---
+Смотри файл: ${log.transports.file.getFile().path}
+`;
+
+    await fs.writeFile(logFile, content, 'utf-8');
+    shell.showItemInFolder(logFile);
+}
+
+ipcMain.handle('is-newer-version', async (_, current, latest) => {
+    try {
+        log.info(latest);
+        log.info(current);
+        return semver.gt(semver.coerce(latest), semver.coerce(semver.coerce(current)));
+    } catch (e) {
+        log.error(e);
     }
 });
 
-ipcMain.handle('is-newer-version', async (_, current, latest) => {
-    return semver.gt(semver.coerce(latest), semver.coerce(current));
+process.on('uncaughtException', (error) => {
+    log.error('[UncaughtException]', error);
+});
+
+process.on('unhandledRejection', (reason) => {
+    const err = reason instanceof Error ? reason : new Error(String(reason));
+    log.error('[UnhandledRejection]', err);
+});
+
+ipcMain.on('log-error', (_, err) => {
+    log.error(`[Renderer] ${err.message}\n${err.stack}`);
+});
+
+ipcMain.handle('generate-log', async () => {
+    try {
+        await generateFullLog(loadSettings());
+        return {message: 'Лог создан и открыт.'};
+    } catch (e) {
+        return {message: `Ошибка при создании лога: ${e.message}`};
+    }
 });
 
 ipcMain.handle('set-autostart', (event, enable) => {
@@ -495,7 +552,7 @@ ipcMain.handle('get-system-fonts', async () => {
     try {
         return await fontList.getFonts();
     } catch (err) {
-        console.error('Ошибка получения шрифтов:', err);
+        log.error('Ошибка получения шрифтов:', err);
         return [];
     }
 });
@@ -543,34 +600,5 @@ ipcMain.handle('restore-config-from-backup', async () => {
         return {message: 'Конфиг восстановлен из бэкапа.'};
     } catch (e) {
         return {message: `Ошибка восстановления: ${e.message}`};
-    }
-});
-
-// 🧾 Сформировать лог
-ipcMain.handle('generate-log', async () => {
-    try {
-        const logDir = path.join(app.getPath('userData'), 'logs');
-        if (!fs.existsSync(logDir)) {
-            fs.mkdirSync(logDir, {recursive: true});
-        }
-        const logFile = path.join(logDir, `log-${Date.now()}.txt`);
-
-        const settingsDump = JSON.stringify(loadSettings(), null, 2);
-        const errorDump = JSON.stringify(getErrorLog(), null, 2);
-
-        const content = `Лог создан: ${new Date().toISOString()}
-
---- Настройки ---
-${settingsDump}
-
---- Последние ошибки ---
-${errorDump || 'Ошибок не зафиксировано.'}
-`;
-
-        fs.writeFileSync(logFile, content, 'utf-8');
-        shell.showItemInFolder(logFile);
-        return {message: 'Лог создан и открыт.'};
-    } catch (e) {
-        return {message: `Ошибка при создании лога: ${e.message}`};
     }
 });

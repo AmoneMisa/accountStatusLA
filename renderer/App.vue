@@ -10,12 +10,22 @@ import ToolsTab from "@/components/toolsList/ToolsTab.vue";
 import {computed, onMounted, provide, ref} from "vue";
 import CalcRaidGoldTab from "@/components/raidGold/calcRaidGoldTab.vue";
 import FAQTab from "@/components/FAQ/FAQTab.vue";
-import {logError} from "../utils/errors.js";
 import SubscriptionTab from "@/components/onlineSubscription/SubscriptionTab.vue";
 import FetraniteTab from "@/components/fetranite/FetraniteTab.vue";
+import DownloadPopup from "@/components/utils/DownloadPopup.vue";
 
 window.addEventListener('error', (e) => {
-  logError(e);
+  window.electron.ipcRenderer.send('log-error', {
+    message: e.message,
+    stack: `${e.filename}:${e.lineno}:${e.colno}`
+  });
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+  window.electron.ipcRenderer.send('log-error', {
+    message: e.reason?.message || String(e.reason),
+    stack: e.reason?.stack || ''
+  });
 });
 
 const tabButtonsList = [
@@ -60,24 +70,15 @@ window.electron.ipcRenderer.on('update-settings', (settings_) => {
   settings.value = settings_;
 });
 
+const isDownloadPopupOpen = ref(false);
+
 window.electron.ipcRenderer.on('update-downloaded', () => {
-  const message = document.getElementById("message");
-  message.innerText = `Обновление загружено. Нажмите для установки.`;
-  message.classList.add("active");
-
-  const installButton = document.createElement("button");
-  installButton.innerText = "Установить сейчас";
-  installButton.style.marginLeft = "10px";
-  installButton.onclick = () => {
-    window.electron.ipcRenderer.invoke("install-update-now");
-  };
-
-  message.appendChild(installButton);
-
-  setTimeout(() => {
-    message.classList.remove("active");
-  }, 10000);
+  isDownloadPopupOpen.value = true;
 });
+
+function update() {
+  window.electron.ipcRenderer.send('install-update-now');
+}
 
 onMounted(async () => {
   settings.value = await window.electron.ipcRenderer.invoke('load-settings');
@@ -125,6 +126,13 @@ provide('isShowLoader', isShowLoader);
       </suspense>
       <settings-table v-if="currentTab === 'settings'"/>
     </div>
+    <download-popup
+        v-if="isDownloadPopupOpen"
+        text="Обновление загружено. Нажмите для установки."
+        title="Доступно новое обновление"
+        @accept="update"
+        @close-popup="isDownloadPopupOpen = false"
+    />
     <div id="message" class="message"></div>
     <div id="error" class="error"></div>
     <div id="loader" class="loader" v-show="isShowLoader">
