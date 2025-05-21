@@ -1,12 +1,72 @@
 <script setup>
 import Tooltip from '@/components/utils/Tooltip.vue';
 import heart from "../../../src/svg/heart.svg";
-import { DateTime } from 'luxon';
+import save from "../../../src/svg/save.svg";
+import pencil from "../../../src/svg/pencil.svg";
+import cross from "../../../src/svg/cross.svg";
+import {DateTime} from 'luxon';
+import {inject, onMounted, ref} from "vue";
+import {saveSettings} from "../../../utils/utils.js";
 
 const props = defineProps({
   user: Object,
   isSubscribed: Boolean,
 });
+
+let settings = inject('settings');
+const note = ref("");
+
+const subNotes = ref({});
+
+function fillSubNotes() {
+  subNotes.value = settings.value?.online?.subsNotes;
+}
+
+onMounted(() => fillSubNotes());
+
+const isEditNote = ref(false);
+
+function saveNote(inviteKey) {
+  isEditNote.value = false;
+
+  if (note.value.length < 1) {
+    return;
+  }
+
+  if (note.value.length > 24) {
+    note.value = note.value.slice(0, 24);
+  }
+
+  if (!subNotes.value) {
+    subNotes.value = {};
+  }
+
+  subNotes.value[inviteKey] = note.value;
+
+  saveSettings({
+    online: {
+      ...settings.value.online,
+      ["subsNotes"]: subNotes.value
+    }
+  });
+}
+
+function clearNote(inviteKey) {
+  isEditNote.value = false;
+
+  if (!subNotes.value) {
+    subNotes.value = {};
+  }
+
+  subNotes.value[inviteKey] = "";
+
+  saveSettings({
+    online: {
+      ...settings.value.online,
+      ["subsNotes"]: subNotes.value
+    }
+  });
+}
 
 const emit = defineEmits(['select', 'toggle']);
 
@@ -22,19 +82,52 @@ function format(date) {
 </script>
 
 <template>
-  <div class="online-subs__list-item" @click="emit('select', user)">
-    <span class="online-subs__list-item-nickname">{{ user.nickname }}</span>
+  <div class="online-subs__list-item">
+    <tooltip>
+      <span class="online-subs__list-item-nickname" @click.stop="emit('select', user)">{{ user.nickname }}</span>
+      <template #tooltip>Открыть карточку пользователя</template>
+    </tooltip>
     <span class="online-subs__list-item-update">
       Последнее обновление: {{
         user?.lastUpdateAt ? format(user?.lastUpdateAt) : format(user?.createdAt)
       }}
     </span>
+    <div class="online-subs__note">
+      <div v-if="!isEditNote && subNotes && subNotes[user.inviteKey]" class="online-subs__note-row">
+        {{ subNotes[user.inviteKey] }}
+        <tooltip>
+          <button class="button button_icon">
+            <pencil class="icon pencil-icon" @click="isEditNote = true"/>
+          </button>
+          <template #tooltip>Редактировать заметку</template>
+        </tooltip>
+
+      </div>
+      <div v-else-if="isEditNote || !subNotes?.[user.inviteKey]" class="online-subs__note-row">
+        <label class="label" :for="`userNote_${user.nickname}`">Заметка:</label>
+        <input class="input"
+               :id="`userNote_${user.nickname}`"
+               v-model="note"
+               placeholder="Заметка..."
+               minlength="0"
+               maxlength="24">
+        <button class="button button_icon" @click="saveNote(user.inviteKey)">
+          <save class="icon save-icon"/>
+        </button>
+        <tooltip>
+          <button class="button button_icon" @click="clearNote(user.inviteKey)">
+            <cross class="icon cross-icon"/>
+          </button>
+          <template #tooltip>Удалить заметку у пользователя</template>
+        </tooltip>
+      </div>
+    </div>
     <tooltip class="online-subs__button">
       <button type="button"
               class="button button_icon online-subs__button"
               :class="{ 'online-subs__button_active': isSubscribed }"
               @click.stop="emit('toggle', user.inviteKey)">
-        <heart class="icon heart-icon" />
+        <heart class="icon heart-icon"/>
       </button>
       <template #tooltip>{{ isSubscribed ? 'Отписаться' : 'Подписаться' }}</template>
     </tooltip>
@@ -65,12 +158,20 @@ function format(date) {
 
 .online-subs__list-item-nickname {
   color: var(--gold);
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: ease-in .2s;
+
+  &:hover {
+    color: var(--gs);
+    border-bottom-color: var(--gs);
+  }
 }
 
 .online-subs__button {
   position: absolute;
   top: 0;
-  right: 0;
+  right: 5px;
 
   .heart-icon {
     filter: grayscale(1);
@@ -84,4 +185,16 @@ function format(date) {
   }
 }
 
+.online-subs__list-item-note {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.online-subs__note-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 </style>

@@ -234,7 +234,7 @@ async function searchUser(inviteKey) {
       <user-card v-for="_user in filteredUsers"
                  :key="_user.nickname"
                  :user="_user"
-                 @click="selectUser(_user)"
+                 @select="selectUser(_user)"
                  :is-subscribed="localSubs.includes(_user.inviteKey)"
                  @toggle="toggleSub"
       />
