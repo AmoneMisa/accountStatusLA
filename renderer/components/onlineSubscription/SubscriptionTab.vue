@@ -184,6 +184,10 @@ async function searchUser(inviteKey) {
     console.error("User not found by InviteKey:", inviteKey, e);
   }
 }
+
+const userNickname = ref("");
+const userNote = ref("");
+
 </script>
 
 <template>
@@ -219,6 +223,17 @@ async function searchUser(inviteKey) {
              @click="filter = 'subs'">Мои подписчики
         </div>
       </div>
+
+      <div class="group-filters__search">
+        <div class="group-filters__search-item">
+          <label class="label" for="user-search">Поиск по нику пользователя</label>
+          <input class="input" id="user-search" type="search" placeholder="Введите ник..." v-model="userNickname">
+        </div>
+        <div class="group-filters__search-item">
+          <label class="label" for="note-search">Поиск по заметке пользователя</label>
+          <input class="input" id="note-search" type="search" placeholder="Введите заметку..."  v-model="userNote">
+        </div>
+      </div>
     </div>
 
     <div v-if="selectedUser">
@@ -231,13 +246,17 @@ async function searchUser(inviteKey) {
     </div>
     <div v-else-if="!foundedUser && filteredUsers.length && !selectedUser && filter === 'all'"
          class="online-subs__list">
-      <user-card v-for="_user in filteredUsers"
-                 :key="_user.nickname"
-                 :user="_user"
-                 @select="selectUser(_user)"
-                 :is-subscribed="localSubs.includes(_user.inviteKey)"
-                 @toggle="toggleSub"
-      />
+      <template v-for="_user in filteredUsers"
+                :key="_user.nickname">
+        <user-card :user-nickname="userNickname"
+                   :user-note="userNote"
+                   :user="_user"
+                   @select="selectUser(_user)"
+                   :is-subscribed="localSubs.includes(_user.inviteKey)"
+                   @toggle="toggleSub"
+        />
+      </template>
+
     </div>
     <div v-else-if="subs.length && !selectedUser && filter === 'subs'" class="online-subs__list">
       <user-card v-for="_user in subs"
@@ -278,6 +297,7 @@ async function searchUser(inviteKey) {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .online-subs__search {
@@ -300,5 +320,29 @@ async function searchUser(inviteKey) {
 
 .online-subs__invite-key-code {
   margin-bottom: 10px;
+}
+
+.group-filters__search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--font-very-small);
+  margin-top: 10px;
+  justify-self: left;
+  flex-wrap: wrap;
+}
+
+.group-filters__search-item {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.group-filters {
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--grey);
+  padding-right: 0;
+  padding-left: 0;
 }
 </style>

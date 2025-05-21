@@ -5,12 +5,14 @@ import save from "../../../src/svg/save.svg";
 import pencil from "../../../src/svg/pencil.svg";
 import cross from "../../../src/svg/cross.svg";
 import {DateTime} from 'luxon';
-import {inject, onMounted, ref} from "vue";
+import {computed, inject, onMounted, ref} from "vue";
 import {saveSettings} from "../../../utils/utils.js";
 
 const props = defineProps({
   user: Object,
   isSubscribed: Boolean,
+  userNickname: String,
+  userNote: String,
 });
 
 let settings = inject('settings');
@@ -79,10 +81,22 @@ function format(date) {
       ? dt.toLocal().toFormat('HH:mm - dd.MM.yyyy')
       : 'Invalid date';
 }
+
+const isShowUser = computed(() => {
+  if (props?.userNickname?.length > 0) {
+    return props.user.nickname.toLowerCase().includes(props.userNickname.toLowerCase());
+  }
+
+  if (props?.userNote?.length > 0 && subNotes.value && subNotes.value?.[props.user.inviteKey]) {
+    return subNotes.value?.[props.user.inviteKey].toLowerCase().includes(props.userNote.toLowerCase())
+  }
+
+  return true;
+});
 </script>
 
 <template>
-  <div class="online-subs__list-item">
+  <div v-if="isShowUser" class="online-subs__list-item">
     <tooltip>
       <span class="online-subs__list-item-nickname" @click.stop="emit('select', user)">{{ user.nickname }}</span>
       <template #tooltip>Открыть карточку пользователя</template>
@@ -120,6 +134,7 @@ function format(date) {
           </button>
           <template #tooltip>Удалить заметку у пользователя</template>
         </tooltip>
+
       </div>
     </div>
     <tooltip class="online-subs__button">
