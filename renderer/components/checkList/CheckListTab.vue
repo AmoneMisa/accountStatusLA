@@ -6,7 +6,7 @@ import {saveSettings} from "../../../utils/utils.js";
 
 const isOpenPopup = ref(false);
 let settings = inject('settings');
-const todos = computed(() => settings.value.todos)
+const todos = computed(() => settings.value.todos || []);
 
 function deleteItem(index) {
   todos.value.splice(index, 1);

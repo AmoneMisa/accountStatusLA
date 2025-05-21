@@ -7,7 +7,6 @@ export async function parseLostArkProfile(nickname) {
         const charNameLists = getCharacterList(page, '.profile-character-list__char');
         const characters = [];
 
-        console.log(charNameLists);
         for (const charNameList of charNameLists) {
             if (!charNameList.length) {
                 continue;

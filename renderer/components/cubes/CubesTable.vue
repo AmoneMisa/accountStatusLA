@@ -55,11 +55,6 @@ const decrement = (charName, col) => {
   updateValue(charName, col, Math.max(0, getCellValue(charName, col) - 1));
 };
 
-function saveCubesSettings() {
-  console.log("save", cubesSettings.value);
-  saveSettings({cubesSettings: cubesSettings.value});
-}
-
 watch(cubesSettings, (newValue) => {
   settings.value.cubesSettings = newValue;
   saveSettings({ cubesSettings: newValue });

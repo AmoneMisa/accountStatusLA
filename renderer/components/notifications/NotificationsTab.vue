@@ -6,7 +6,7 @@ import Tooltip from "@/components/utils/Tooltip.vue";
 
 let isOpenPopup = ref(false);
 let settings = inject('settings');
-const customNotifications = computed(() => settings.value.customNotifications);
+const customNotifications = computed(() => settings.value.customNotifications || []);
 </script>
 
 <template>

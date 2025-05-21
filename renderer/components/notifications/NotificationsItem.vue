@@ -26,19 +26,26 @@ const formattedDays = computed(() =>
     props.notification.days.map(day => daysMap[day]).join(', ')
 );
 
+
 let settings = inject('settings');
-const customNotifications = computed(() => settings.value.customNotifications);
+const customNotifications = computed(() => settings.value.customNotifications || []);
 
 function onToggle() {
-  const settings = customNotifications.value || [];
-  settings[props.index].enable = props.notification.enable;
-  saveSettings({customNotifications: settings});
+  if (!customNotifications.value?.[props.index]) {
+    customNotifications.value[props.index] = {enable: true};
+  }
+
+  customNotifications.value[props.index].enable = props.notification.enable;
+  saveSettings({customNotifications: customNotifications.value});
 }
 
 function onDelete() {
-  const settings = customNotifications.value || [];
-  settings.splice(props.index, 1);
-  saveSettings({customNotifications: settings});
+  if (!customNotifications.value?.[props.index]) {
+    return;
+  }
+
+  customNotifications.value.splice(props.index, 1);
+  saveSettings({customNotifications: customNotifications.value});
   emit('remove', props.index);
 }
 </script>
@@ -55,7 +62,7 @@ function onDelete() {
     <customCheckbox
         text="Вкл. уведомления"
         class="notification-item__checkbox"
-        v-model="notification.enable"
+        :checked="notification.enable"
         @change="onToggle"
         label-class="notification-item__cell"
     />

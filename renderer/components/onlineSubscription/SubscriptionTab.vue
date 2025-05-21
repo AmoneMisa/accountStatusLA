@@ -256,16 +256,18 @@ const userNote = ref("");
                    @toggle="toggleSub"
         />
       </template>
-
     </div>
     <div v-else-if="subs.length && !selectedUser && filter === 'subs'" class="online-subs__list">
-      <user-card v-for="_user in subs"
-                 :key="_user.nickname"
-                 :user="_user"
-                 :is-subscribed="localSubs.includes(_user.inviteKey)"
-                 @click="selectUser(_user)"
-                 @toggle="toggleSub"
-      />
+      <template v-for="_user in subs"
+                :key="_user.nickname">
+        <user-card :user-nickname="userNickname"
+                   :user-note="userNote"
+                   :user="_user"
+                   @select="selectUser(_user)"
+                   :is-subscribed="localSubs.includes(_user.inviteKey)"
+                   @toggle="toggleSub"
+        />
+      </template>
     </div>
     <div v-else-if="foundedUser && filter === 'all'" class="online-subs__list">
       <user-card :user="foundedUser"

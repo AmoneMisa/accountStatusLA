@@ -2,24 +2,25 @@
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject, ref} from "vue";
 import cross from "../../../src/svg/cross.svg";
+import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
 
 const emit = defineEmits(['close', 'saveItem']);
-let selectDays = ref();
+let selectDays = ref([]);
 let selectFrequency = ref();
 let inputValue = ref();
 let settings = inject('settings');
-const customNotifications = computed(() => settings.value.customNotifications);
+const customNotifications = computed(() => settings.value.customNotifications || []);
 
 function saveItem() {
   if (inputValue.length < 1) {
     return;
   }
 
-  const selectedOptions = Array.from(selectDays.value);
+  const selectedOptions = selectDays.value;
 
   customNotifications.value.push({name: inputValue.value, frequency: selectFrequency.value, days: selectedOptions, enable: false});
   inputValue.value = "";
-  selectDays.value = "";
+  selectDays.value = [];
   selectFrequency.value = "";
 
   saveSettings({customNotifications: customNotifications.value});
@@ -29,6 +30,27 @@ function saveItem() {
 function close() {
   inputValue = "";
   emit("close");
+}
+
+const daysMap = {
+  1: "Пн",
+  2: "Вт",
+  3: "Ср",
+  4: "Чт",
+  5: "Пт",
+  6: "Сб",
+  7: "Вс"
+}
+
+function toggleDay(index) {
+  const dayIndex = Number(index);
+  const i = selectDays.value.indexOf(dayIndex);
+
+  if (i !== -1) {
+    selectDays.value.splice(i, 1);
+  } else {
+    selectDays.value.push(dayIndex);
+  }
 }
 </script>
 
@@ -52,19 +74,16 @@ function close() {
         </select>
       </label>
       <div class="notification__create-days">
-        <label class="popup__label">
-          Дни для напоминаний.<br>
-          Нажми <i>Cntrl</i> для мульти-выбора
-          <select class="notification__create-select-days" multiple  v-model="selectDays">
-            <option value="1">Пн</option>
-            <option value="2">Вт</option>
-            <option value="3">Ср</option>
-            <option value="4">Чт</option>
-            <option value="5">Пт</option>
-            <option value="6">Сб</option>
-            <option value="7">Вс</option>
-          </select>
-        </label>
+        <div class="popup__label">
+          Дни для напоминаний
+        </div>
+          <custom-checkbox
+              v-for="[index, day] in Object.entries(daysMap)"
+              :text="day"
+              :checked="selectDays.includes(Number(index))"
+              @change="() => toggleDay(index)"
+          />
+
       </div>
       <button class="button notification__create-button" @click="saveItem">Сохранить</button>
     </div>
