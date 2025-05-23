@@ -404,8 +404,6 @@ ${JSON.stringify(settings, null, 2)}
 
 ipcMain.handle('is-newer-version', async (_, current, latest) => {
     try {
-        log.info(latest);
-        log.info(current);
         return semver.gt(semver.coerce(latest), semver.coerce(semver.coerce(current)));
     } catch (e) {
         log.error(e);

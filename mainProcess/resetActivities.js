@@ -34,7 +34,7 @@ export function resetWeeklyActivities(DateTime) {
         if (charSettings[charName]?.raids) {
             charSettings[charName].raids.forEach(raid => {
                 if (!["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
-                    charSettings[charName].raidStatus[raid] = false;
+                    charSettings[charName].raidStatus[raid] = "unfinished";
                 }
             });
         }
@@ -69,7 +69,7 @@ export function resetDailyActivities(DateTime) {
         if (charSettings[charName]?.raids) {
             charSettings[charName].raids.forEach(raid => {
                 if (["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
-                    charSettings[charName].raidStatus[raid] = false;
+                    charSettings[charName].raidStatus[raid] = "unfinished";
                 }
             });
         }
