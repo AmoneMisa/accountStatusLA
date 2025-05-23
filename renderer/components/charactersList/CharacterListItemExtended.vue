@@ -131,11 +131,11 @@ function updateOldTypes() {
   }
 
   for (let raid of props.characterSettings.raids) {
-    if (props.characterSettings.raidStatus[raid] === true) {
+    if (props.characterSettings?.raidStatus?.[raid] === true) {
       props.characterSettings.raidStatus[raid] = "finished";
     }
 
-    if (props.characterSettings.raidStatus[raid] === false) {
+    if (props.characterSettings?.raidStatus?.[raid] === false) {
       props.characterSettings.raidStatus[raid] = "unfinished";
     }
   }
@@ -144,7 +144,7 @@ function updateOldTypes() {
 updateOldTypes();
 
 async function toggleRaidStatus(elem, raid) {
-  props.characterSettings.raidStatus = props.characterSettings.raidStatus || {};
+  props.characterSettings.raidStatus = props.characterSettings?.raidStatus || {};
   props.characterSettings.raidStatus[raid] = elem.target.value;
 
   saveSettings({
