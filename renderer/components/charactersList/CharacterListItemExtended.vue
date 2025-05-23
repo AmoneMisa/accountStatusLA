@@ -20,7 +20,6 @@ import OnlineModule from "../../../utils/OnlineModule.js";
 const props = defineProps({
   character: Object,
   isEditMode: Boolean,
-  windowWidth: Number,
   characterSettings: Object,
   currentTag: String,
   searchCharacter: String,

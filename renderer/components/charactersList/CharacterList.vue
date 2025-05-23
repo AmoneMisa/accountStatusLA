@@ -2,7 +2,7 @@
 import CharacterListItem from "@/components/charactersList/CharacterListItem.vue";
 import CharacterListItemExtended from "@/components/charactersList/CharacterListItemExtended.vue";
 import ShareSnippet from "@/components/utils/ShareSnippet.vue";
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, inject, onMounted, ref, watch} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 import {saveSettings} from "../../../utils/utils.js";
 
@@ -22,7 +22,8 @@ const props = defineProps({
   isEditMode: Boolean,
 });
 
-const isGridView = ref(false);
+let settings = inject('settings');
+const isGridView = ref(settings.value?.isCharactersGridView || false);
 const windowWidth = ref(window.innerWidth);
 const currentFilter = ref("none");
 const currentTag = ref("none");
@@ -34,13 +35,7 @@ const newGroupName = ref("");
 let draggedCharacter = ref(null);
 let draggedFromGroup = ref(null);
 let draggedGroup = ref(null);
-let isHiddenFilters = ref(false);
-
-window.addEventListener("resize", (e) => {
-  setTimeout(() => {
-    windowWidth.value = e.target.innerWidth;
-  }, 1000);
-});
+let isHiddenFilters = ref(settings.value?.isCharactersFiltersHidden || false);
 
 function buildGrouped() {
   const sorted = {};
@@ -323,13 +318,22 @@ const tagOptions = [
   {label: 'Золото получатели', value: 'goldReceiver'}
 ];
 
+function toggleFilters() {
+  isHiddenFilters.value = !isHiddenFilters.value;
+  saveSettings({isCharactersFiltersHidden: isHiddenFilters.value });
+}
+
+function toggleView() {
+  isGridView.value = !isGridView.value;
+  saveSettings({isCharactersGridView: isGridView.value });
+}
 </script>
 
 <template>
   <h1 class="title character-list__title">
     <span>Список персонажей</span>
     <tooltip v-if="!isExtendedMode">
-      <button class="button button_icon character-list__button" @click="isGridView = !isGridView">
+      <button class="button button_icon character-list__button" @click="toggleView">
         <changeMenu class="icon menu-icon"/>
       </button>
       <template #tooltip>Изменить отображение</template>
@@ -345,7 +349,7 @@ const tagOptions = [
   </div>
 
   <tooltip>
-    <button type="button" class="button button_icon group-filters-button" @click="isHiddenFilters = !isHiddenFilters">
+    <button type="button" class="button button_icon group-filters-button" @click="toggleFilters">
       <plus v-if="isHiddenFilters" class="icon minus-icon"></plus>
       <minus v-else class="icon minus-icon"></minus>
     </button>
@@ -462,7 +466,6 @@ const tagOptions = [
                   v-if="isExtendedMode"
                   :character="character"
                   :is-edit-mode="isEditMode"
-                  :window-width="windowWidth"
                   :character-settings="characterSettings[character.name]"
                   @show-raid-selector="(characterName) => emit('show-raid-selector', characterName)"
                   @dragstart="onCharacterDragStart(character.name, group, $event)"
@@ -480,7 +483,7 @@ const tagOptions = [
                   v-else
                   :character="character"
                   :is-edit-mode="isEditMode"
-                  :window-width="windowWidth"
+                  :is-grid="isGridView"
                   :character-settings="characterSettings[character.name]"
                   @show-raid-selector="(characterName) => emit('show-raid-selector', characterName)"
                   @dragstart="onCharacterDragStart(character.name, group, $event)"
@@ -515,12 +518,6 @@ const tagOptions = [
 .character-list__title {
   display: flex;
   justify-content: space-between;
-}
-
-.character-list__button {
-  @media screen and (max-width: 980px) {
-    display: none !important;
-  }
 }
 
 .character-dropzone {

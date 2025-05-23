@@ -18,7 +18,7 @@ import OnlineModule from "../../../utils/OnlineModule.js";
 const props = defineProps({
   character: Object,
   isEditMode: Boolean,
-  windowWidth: Number,
+  isGrid: Boolean,
   characterSettings: Object,
   currentTag: String,
   searchCharacter: String,
@@ -238,7 +238,7 @@ const isShowCharacter = computed(() => {
 <template>
   <div v-if="isShowCharacter"
        class="character"
-       :class="[isEditMode ? '' : 'view-mode', isSupport ? 'character_support' : 'character_dd']"
+       :class="[isEditMode ? '' : 'view-mode', isSupport ? 'character_support' : 'character_dd', isGrid ? '' : 'grid-view']"
   >
     <tooltip v-if="!isEditMode">
       <div class="character__cell character__drag" draggable="true">
@@ -287,8 +287,7 @@ const isShowCharacter = computed(() => {
     </div>
 
     <div class="character__cell character__raids raids" v-if="!isEditMode">
-      <!--      <template v-if="windowWidth > 980">-->
-      <template v-if="true">
+      <template v-if="!isGrid">
         <div
             v-for="raid in characterSettings?.raids || []"
             :key="raid"
@@ -373,6 +372,10 @@ const isShowCharacter = computed(() => {
   max-width: -webkit-fill-available;
   box-shadow: var(--shadow);
 
+  &:hover {
+    background-color: var(--grey);
+  }
+
   &:not(.view-mode) .character__icons {
     display: flex;
     flex-direction: row;
@@ -399,7 +402,7 @@ const isShowCharacter = computed(() => {
     border-right: 1px solid var(--dark-grey);
   }
 
-  &.view-mode {
+  &.grid-view {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -426,8 +429,6 @@ const isShowCharacter = computed(() => {
     }
 
     &:hover {
-      background-color: var(--grey);
-
       @media screen and (max-width: 801px) {
         .character__cell:not(:last-child) {
           border: none;
@@ -663,18 +664,13 @@ const isShowCharacter = computed(() => {
     justify-content: center;
   }
 
-  .raids__row {
-    &:first-child {
-      border-right: 1px solid var(--grey);
-    }
-  }
-
   .raid {
-    width: 100%;
+    width: auto;
     display: flex;
     justify-content: space-between;
     flex-direction: column;
     align-items: center;
+    border-right: none;
 
     &:nth-child(odd) {
       border-right: none;
