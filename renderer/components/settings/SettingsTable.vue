@@ -7,6 +7,7 @@ import FontsSelect from "@/components/settings/FontsSelect.vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 
 let settings = inject('settings');
+
 const savePath = computed(() => settings.value.savePath);
 const theme = computed({
   get: () => settings.value.theme,

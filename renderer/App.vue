@@ -613,6 +613,18 @@ body {
   color: var(--gs);
 }
 
+.check-icon {
+  color: var(--check);
+}
+
+.heart-icon {
+  color: var(--error);
+}
+
+.crown-icon {
+  color: var(--crown);
+}
+
 #app {
   display: flex;
   flex-direction: column;

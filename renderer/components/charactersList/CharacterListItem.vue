@@ -599,16 +599,4 @@ const isShowCharacter = computed(() => {
   margin-right: 5px;
 }
 
-.check-icon {
-  color: var(--check);
-}
-
-.heart-icon {
-  color: var(--error);
-}
-
-.crown-icon {
-  color: var(--crown);
-}
-
 </style>

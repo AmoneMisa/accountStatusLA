@@ -461,6 +461,10 @@ function editRaidPrice(target, raid) {
   gap: 10px;
 }
 
+.character__gearscore {
+  color: var(--gs);
+}
+
 .character__raids {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -512,17 +516,5 @@ function editRaidPrice(target, raid) {
 .character__icon_edit {
   width: 22px;
   margin-right: 5px;
-}
-
-.check-icon {
-  color: var(--check);
-}
-
-.heart-icon {
-  color: var(--error);
-}
-
-.crown-icon {
-  color: var(--crown);
 }
 </style>
