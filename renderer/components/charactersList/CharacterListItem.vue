@@ -287,7 +287,8 @@ const isShowCharacter = computed(() => {
     </div>
 
     <div class="character__cell character__raids raids" v-if="!isEditMode">
-      <template v-if="windowWidth > 980">
+      <!--      <template v-if="windowWidth > 980">-->
+      <template v-if="true">
         <div
             v-for="raid in characterSettings?.raids || []"
             :key="raid"
@@ -372,17 +373,6 @@ const isShowCharacter = computed(() => {
   max-width: -webkit-fill-available;
   box-shadow: var(--shadow);
 
-  &.view-mode {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-    margin-bottom: 10px;
-    width: 100%;
-    text-align: center;
-    font-size: var(--font-very-small);
-  }
-
   &:not(.view-mode) .character__icons {
     display: flex;
     flex-direction: row;
@@ -401,16 +391,149 @@ const isShowCharacter = computed(() => {
     font-size: var(--font-body);
   }
 
-  &:hover {
-    background-color: var(--grey);
-  }
-
   &:hover .character__cell:not(:last-child) {
     border-right: 2px solid var(--dark-grey);
   }
 
   &:hover .character__cell:not(:last-child) .raid {
     border-right: 1px solid var(--dark-grey);
+  }
+
+  &.view-mode {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: center;
+    font-size: var(--font-very-small);
+
+    @media screen and (max-width: 801px) {
+      width: calc(100% / 2 - 40px);
+      display: grid;
+      grid-template-areas:
+      "drag icons info"
+      "raids raids raids"
+      "actions actions actions";
+      grid-template-columns: 15% 1fr;
+      gap: 5px;
+      padding: 10px;
+      border: 1px solid var(--grey);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      background: var(--dark-grey);
+    }
+
+    &:hover {
+      background-color: var(--grey);
+
+      @media screen and (max-width: 801px) {
+        .character__cell:not(:last-child) {
+          border: none;
+        }
+
+        .raid {
+          border: none !important;
+        }
+
+        .character__actions {
+          border-top: 1px solid var(--dark-grey);
+        }
+
+        .character__raids {
+          border-top: 1px solid var(--dark-grey) !important;
+        }
+      }
+    }
+
+    @media screen and (max-width: 801px) {
+      .character__cell {
+        border: none;
+        padding: 0 5px;
+      }
+
+      .character__drag {
+        grid-area: drag;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .character__icons {
+        grid-area: icons;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        align-items: center;
+        flex-direction: row;
+        width: 60px;
+
+        .icon {
+          max-width: 16px;
+        }
+      }
+
+      .raid {
+        border: none;
+        flex: auto;
+        text-align: -webkit-center;
+      }
+
+      .character__info {
+        grid-area: info;
+        display: flex;
+        align-items: flex-start;
+        padding-left: 10px;
+        flex-direction: row;
+        width: fit-content;
+        flex-wrap: wrap;
+
+        .character__name {
+          font-weight: bold;
+          font-size: var(--font-small);
+        }
+
+        .character__gearscore {
+          color: var(--gs);
+          font-size: var(--font-very-small);
+        }
+
+        .character__class {
+          font-size: var(--font-very-small);
+        }
+      }
+
+      .character__raids {
+        grid-area: raids;
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        padding-top: 10px;
+        border-top: 1px solid var(--grey);
+      }
+
+      .character__actions {
+        grid-area: actions;
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        padding-top: 10px;
+        border-top: 1px solid var(--grey);
+      }
+    }
+  }
+}
+
+.character_support {
+  .character__class {
+    color: var(--support);
+  }
+}
+
+.character_dd {
+  .character__class {
+    color: var(--dd);
   }
 }
 
@@ -450,11 +573,16 @@ const isShowCharacter = computed(() => {
 
 .character__raids {
   width: -webkit-fill-available;
+  padding-left: 5px;
+  padding-right: 5px;
+  flex-wrap: wrap;
 }
 
 .raid {
-  width: max-content;
+  width: 105px;
+  text-align: -webkit-center;
   border-right: 1px solid var(--grey);
+  padding: 0 5px;
 }
 
 .raid__header {

@@ -308,19 +308,19 @@ const availableClasses = computed(() => {
       continue;
     }
 
-    classes.push({value: character.className, label:character.className});
+    classes.push({value: character.className, label: character.className});
   }
 
   return classes;
 });
 
 const tagOptions = [
-  { label: 'Все', value: 'none' },
-  { label: 'ДД', value: 'dd' },
-  { label: 'Сап', value: 'sup' },
-  { label: 'Легат', value: 'legate' },
-  { label: 'Избранные', value: 'favorite' },
-  { label: 'Золото получатели', value: 'goldReceiver' }
+  {label: 'Все', value: 'none'},
+  {label: 'ДД', value: 'dd'},
+  {label: 'Сап', value: 'sup'},
+  {label: 'Легат', value: 'legate'},
+  {label: 'Избранные', value: 'favorite'},
+  {label: 'Золото получатели', value: 'goldReceiver'}
 ];
 
 </script>
@@ -336,79 +336,80 @@ const tagOptions = [
     </tooltip>
   </h1>
 
-    <div class="group-controls" v-if="!isEditMode">
-      <input v-model="newGroupName" placeholder="Новая группа"/>
-      <button class="button" @click="createGroup">
-        <plus class="icon icon_small plus-icon plus-icon_small"/>
-        Добавить группу
-      </button>
-    </div>
+  <div class="group-controls" v-if="!isEditMode">
+    <input v-model="newGroupName" placeholder="Новая группа"/>
+    <button class="button" @click="createGroup">
+      <plus class="icon icon_small plus-icon plus-icon_small"/>
+      Добавить группу
+    </button>
+  </div>
 
-    <tooltip>
-      <button type="button" class="button button_icon group-filters-button" @click="isHiddenFilters = !isHiddenFilters">
-        <plus v-if="isHiddenFilters" class="icon minus-icon"></plus>
-        <minus v-else class="icon minus-icon"></minus>
-      </button>
-      <template #tooltip>Скрыть или показать список фильтров</template>
-    </tooltip>
+  <tooltip>
+    <button type="button" class="button button_icon group-filters-button" @click="isHiddenFilters = !isHiddenFilters">
+      <plus v-if="isHiddenFilters" class="icon minus-icon"></plus>
+      <minus v-else class="icon minus-icon"></minus>
+    </button>
+    <template #tooltip>Скрыть или показать список фильтров</template>
+  </tooltip>
 
-    <div class="group-filters" v-if="!isEditMode && !isHiddenFilters">
-      <div class="group-filters__title">Фильтр групп</div>
-      <div class="group-filters__list">
-        <div class="group-filters__list-item" :class="{'group-tags__list-item_current': currentFilter === 'none'}"
-             @click="currentFilter = 'none'">Все
-        </div>
-        <div class="group-filters__list-item" :class="{'group-tags__list-item_current': currentFilter === group}"
-             v-for="group in props.groupOrder" :key="group" @click="currentFilter = group">{{ group }}
-        </div>
+  <div class="group-filters" v-if="!isEditMode && !isHiddenFilters">
+    <div class="group-filters__title">Фильтр групп</div>
+    <div class="group-filters__list">
+      <div class="group-filters__list-item" :class="{'group-tags__list-item_current': currentFilter === 'none'}"
+           @click="currentFilter = 'none'">Все
+      </div>
+      <div class="group-filters__list-item" :class="{'group-tags__list-item_current': currentFilter === group}"
+           v-for="group in props.groupOrder" :key="group" @click="currentFilter = group">{{ group }}
       </div>
     </div>
+  </div>
 
-    <div class="group-tags" v-if="!isEditMode && !isHiddenFilters">
-      <div class="group-tags__col">
-        <div class="group-tags__title">Фильтр персонажей</div>
-        <div class="group-tags__list">
-          <div
-              v-for="tag in [...tagOptions, ...availableClasses]"
-              :key="tag.value"
-              class="group-tags__list-item"
-              :class="{ 'group-tags__list-item_current': currentTag === tag.value }"
-              @click="currentTag = tag.value"
-          >
-            {{ tag.label }}
-          </div>
-        </div>
-      </div>
-      <div class="group-tags__col">
-        <div class="group-tags__search">
-          <label class="custom-label group-tags__search-label" for="search-character">
-            Поиск по нику персонажа
-          </label>
-          <input class="input group-tags__search-input" id="search-character" type="search" v-model="searchCharacter"
-                 placeholder="Nickname">
-        </div>
-      </div>
-      <div class="group-tags__col">
-        <div class="group-tags__gear-score">
-          <label class="custom-label group-tags__gear-score-label" for="gs-character">
-            Поиск по ГС персонажа. Значение: {{ rangeGSCharacter.from }} - {{ rangeGSCharacter.to }}
-          </label>
-          <input class="input input_number group-tags__gear-score-input" id="gs-character-input-min" type="number"
-                 @change="({target}) => validateGsInput(target)" :value="rangeGSCharacter.from"
-                 placeholder="От" :min="minGs" :max="maxGs" name="gs-from">
-          <input class="input input_number group-tags__gear-score-input" id="gs-character-input-max" type="number"
-                 @change="({target}) => validateGsInput(target)" :value="rangeGSCharacter.to"
-                 placeholder="До" :min="minGs" :max="maxGs" name="gs-to">
-          <input class="input group-tags__gear-score-input" id="gs-character" type="range"
-                 v-model="rangeGSCharacter.from"
-                 :min="minGs" :max="maxGs">
-          <input class="input group-tags__gear-score-input" id="gs-character" type="range" v-model="rangeGSCharacter.to"
-                 :min="minGs" :max="maxGs">
+  <div class="group-tags" v-if="!isEditMode && !isHiddenFilters">
+    <div class="group-tags__col">
+      <div class="group-tags__title">Фильтр персонажей</div>
+      <div class="group-tags__list">
+        <div
+            v-for="tag in [...tagOptions, ...availableClasses]"
+            :key="tag.value"
+            class="group-tags__list-item"
+            :class="{ 'group-tags__list-item_current': currentTag === tag.value }"
+            @click="currentTag = tag.value"
+        >
+          {{ tag.label }}
         </div>
       </div>
     </div>
+    <div class="group-tags__col">
+      <div class="group-tags__search">
+        <label class="custom-label group-tags__search-label" for="search-character">
+          Поиск по нику персонажа
+        </label>
+        <input class="input group-tags__search-input" id="search-character" type="search" v-model="searchCharacter"
+               placeholder="Nickname">
+      </div>
+    </div>
+    <div class="group-tags__col">
+      <div class="group-tags__gear-score">
+        <label class="custom-label group-tags__gear-score-label" for="gs-character">
+          Поиск по ГС персонажа. Значение: {{ rangeGSCharacter.from }} - {{ rangeGSCharacter.to }}
+        </label>
+        <input class="input input_number group-tags__gear-score-input" id="gs-character-input-min" type="number"
+               @change="({target}) => validateGsInput(target)" :value="rangeGSCharacter.from"
+               placeholder="От" :min="minGs" :max="maxGs" name="gs-from">
+        <input class="input input_number group-tags__gear-score-input" id="gs-character-input-max" type="number"
+               @change="({target}) => validateGsInput(target)" :value="rangeGSCharacter.to"
+               placeholder="До" :min="minGs" :max="maxGs" name="gs-to">
+        <input class="input group-tags__gear-score-input" id="gs-character" type="range"
+               v-model="rangeGSCharacter.from"
+               :min="minGs" :max="maxGs">
+        <input class="input group-tags__gear-score-input" id="gs-character" type="range" v-model="rangeGSCharacter.to"
+               :min="minGs" :max="maxGs">
+      </div>
+    </div>
+  </div>
   <share-snippet>
-    <div id="character-list" class="character-list" :class="{'grid': !isExtendedMode && (isGridView || windowWidth < 980)}" v-if="grouped">
+    <!--    <div id="character-list" class="character-list" :class="{'grid': !isExtendedMode && (isGridView || windowWidth < 980)}" v-if="grouped">-->
+    <div id="character-list" class="character-list" :class="{'grid': !isExtendedMode && isGridView}" v-if="grouped">
       <template v-for="group in props.groupOrder" :key="group">
         <div class="character-group" v-if="currentFilter === group || currentFilter === 'none'">
           <div
@@ -529,6 +530,10 @@ const tagOptions = [
   flex-direction: column;
   width: 100%;
 
+  @media screen and (max-width: 801px) {
+    flex-direction: row;
+  }
+
   &_extended {
     flex-direction: row;
   }
@@ -635,7 +640,7 @@ const tagOptions = [
 }
 
 .group-tags__list {
- flex-wrap: wrap;
+  flex-wrap: wrap;
   gap: 5px;
 }
 

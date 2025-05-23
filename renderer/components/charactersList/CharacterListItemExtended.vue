@@ -379,6 +379,9 @@ function editRaidPrice(target, raid) {
   box-shadow: var(--shadow);
   font-size: var(--font-very-small);
   width: calc(100% / 3 - 40px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 
   @media screen and (max-width: 980px) {
     width: calc(100% / 2 - 40px);
@@ -436,8 +439,12 @@ function editRaidPrice(target, raid) {
   flex-wrap: wrap;
   align-items: flex-start;
 
-  &:not(:last-child) {
+  &:first-child {
     border-bottom: 1px solid var(--grey);
+  }
+
+  &:last-child {
+    border-top: 1px solid var(--grey);
   }
 }
 
@@ -468,6 +475,10 @@ function editRaidPrice(target, raid) {
 .character__raids {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+
+.character__info {
+ flex-wrap: wrap;
 }
 
 .raid {

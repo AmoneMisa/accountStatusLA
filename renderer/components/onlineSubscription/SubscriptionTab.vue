@@ -231,7 +231,7 @@ const userNote = ref("");
         </div>
         <div class="group-filters__search-item">
           <label class="label" for="note-search">Поиск по заметке пользователя</label>
-          <input class="input" id="note-search" type="search" placeholder="Введите заметку..."  v-model="userNote">
+          <input class="input" id="note-search" type="search" placeholder="Введите заметку..." v-model="userNote">
         </div>
       </div>
     </div>
@@ -293,6 +293,12 @@ const userNote = ref("");
 .title-row {
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.online-subs__list {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .online-subs__row {

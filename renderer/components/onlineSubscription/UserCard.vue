@@ -150,7 +150,6 @@ const isShowUser = computed(() => {
 </template>
 
 <style scoped lang="scss">
-
 .online-subs__list-item {
   display: flex;
   flex-direction: column;
@@ -211,5 +210,6 @@ const isShowUser = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 5px;
 }
 </style>
