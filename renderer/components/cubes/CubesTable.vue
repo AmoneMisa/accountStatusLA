@@ -4,7 +4,7 @@ import {saveSettings} from '../../../utils/utils.js';
 import ShareSnippet from "@/components/utils/ShareSnippet.vue";
 import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
 
-const columnNames = ['3.1', '3.2', '3.3', '3.4', '3.5', '4.1', '4.2'];
+const columnNames = ['3.1', '3.2', '3.3', '3.4', '3.5', '4.1', '4.2', '4.3'];
 
 let settings = inject('settings');
 const characterList = computed(() => settings.value.characterList);
