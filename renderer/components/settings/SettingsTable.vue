@@ -12,6 +12,10 @@ const theme = computed({
   get: () => settings.value.theme,
   set: (newValue) => settings.value.theme = newValue
 });
+const mode = computed({
+  get: () => settings.value.mode || 'default',
+  set: (newValue) => settings.value.mode = newValue
+});
 const font = computed({
   get: () => settings.value.font,
   set: (newValue) => settings.value.font = newValue
@@ -71,6 +75,7 @@ function save() {
   saveSettings({
     savePath: savePath.value,
     theme: theme.value,
+    mode: mode.value,
     font: font.value,
     minimizeOnClose: minimizeOnClose.value,
     rememberWindowSize: rememberWindowSize.value,
@@ -212,6 +217,14 @@ function changeTabVisibility(modelKey, target) {
     <div class="settings-table__cell">Название настройки</div>
     <div class="settings-table__cell">Значение</div>
 
+    <div class="settings-table__cell">Режим</div>
+    <div class="settings-table__cell">
+      <select id="mode" class="choose-mode-select" v-model="mode">
+        <option value="default">Базовый</option>
+        <option value="extended">Расширенный</option>
+      </select>
+    </div>
+
     <div class="settings-table__cell">Изменить путь сохранения настроек</div>
     <div class="settings-table__cell">
       <input type="text" id="savePath" class="choose-folder-input" readonly v-model="savePath"/>
@@ -312,7 +325,7 @@ function changeTabVisibility(modelKey, target) {
 
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
-      <button type="button" id="update-app" class="button" data-current-version="1.2.5" @click="updateApp">
+      <button type="button" id="update-app" class="button" data-current-version="2.0.0" @click="updateApp">
         Обновить приложение
       </button>
     </div>

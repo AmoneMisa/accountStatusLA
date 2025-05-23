@@ -106,9 +106,11 @@ provide('isShowLoader', isShowLoader);
   <custom-header/>
   <div class="wrapper">
     <div class="tabs">
-      <template v-for="tab in tabButtonsList" :key="tab.data" >
-        <button v-if="tab.data === 'settings' || tab.data === 'main' || (tabVisibility.hasOwnProperty(tab.data) ? tabVisibility[tab.data] : true)" type="button" class="tab-button" :class="{'active': currentTab === tab.data}"
-                @click="changeTab(tab)">{{ tab.name }}
+      <template v-for="tab in tabButtonsList" :key="tab.data">
+        <button
+            v-if="tab.data === 'settings' || tab.data === 'main' || (tabVisibility.hasOwnProperty(tab.data) ? tabVisibility[tab.data] : true)"
+            type="button" class="tab-button" :class="{'active': currentTab === tab.data}"
+            @click="changeTab(tab)">{{ tab.name }}
         </button>
       </template>
     </div>
@@ -175,6 +177,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #eab00f;
   --shadow: 0px 4px 10px rgba(129, 106, 0, 0.3);
   --inner-shadow: inset 0 0 10px rgba(103, 103, 103, 0.35);
+  --color-prison: rgb(180, 148, 0);
+  --color-seller: rgb(70, 150, 200);
 
   --check: #00d26a;
   --crown: #feb929;
@@ -198,6 +202,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #ffb07d;
   --shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
   --inner-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  --color-prison: rgb(200, 160, 0);
+  --color-seller: rgb(90, 170, 220);
 }
 
 [data-theme="light"] {
@@ -216,6 +222,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #c69c6d;
   --shadow: 0px 4px 10px rgba(107, 107, 107, 0.3);
   --inner-shadow: inset 0 0 10px #a8a8a8;
+  --color-prison: rgb(230, 195, 0);
+  --color-seller: rgb(100, 180, 230);
 }
 
 [data-theme="red"] {
@@ -234,6 +242,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #ff8c00;
   --shadow: 0px 4px 10px rgba(255, 89, 0, 0.3);
   --inner-shadow: inset 0 0 10px rgba(110, 11, 11, 0.59);
+  --color-prison: rgb(255, 165, 0);
+  --color-seller: rgb(130, 190, 240);
 }
 
 [data-theme="blue"] {
@@ -252,6 +262,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #ffa500;
   --shadow: 0px 4px 10px rgba(77, 202, 255, 0.3);
   --inner-shadow: inset 0 0 10px rgba(67, 104, 194, 0.63);
+  --color-prison: rgb(255, 210, 140);
+  --color-seller: rgb(120, 200, 255);
 }
 
 [data-theme="green"] {
@@ -270,6 +282,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #eab00f;
   --shadow: 0px 4px 10px rgba(0, 255, 21, 0.3);
   --inner-shadow: inset 0 0 10px rgba(0, 161, 78, 0.63);
+  --color-prison: rgb(195, 220, 120);
+  --color-seller: rgb(110, 200, 250);
 }
 
 [data-theme="yellow"] {
@@ -288,6 +302,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #ffd700;
   --shadow: 0px 4px 10px rgba(255, 215, 0, 0.3);
   --inner-shadow: inset 0 0 10px rgba(182, 176, 121, 0.48);
+  --color-prison: rgb(220, 180, 50);
+  --color-seller: rgb(140, 200, 250);
 }
 
 [data-theme="gradient-dark"] {
@@ -306,6 +322,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #f4c542;
   --shadow: 0px 4px 10px rgba(206, 28, 129, 0.3);
   --inner-shadow: inset 0 0 10px rgba(206, 122, 171, 0.48);
+  --color-prison: rgb(230, 200, 60);
+  --color-seller: rgb(160, 200, 250);
 }
 
 [data-theme="rose"] {
@@ -324,6 +342,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #ffcad4;
   --shadow: 0px 4px 10px rgba(255, 182, 193, 0.3);
   --inner-shadow: inset 0 0 10px rgba(255, 192, 203, 0.4);
+  --color-prison: rgb(255, 220, 130);
+  --color-seller: rgb(180, 220, 255);
 }
 
 [data-theme="light-blue"] {
@@ -342,6 +362,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #bee3f8;
   --shadow: 0px 4px 10px rgba(159, 211, 248, 0.3);
   --inner-shadow: inset 0 0 10px rgba(189, 224, 254, 0.4);
+  --color-prison: rgb(255, 240, 180);
+  --color-seller: rgb(140, 210, 255);
 }
 
 [data-theme="mint"] {
@@ -360,6 +382,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #78c9ad;
   --shadow: 0px 4px 10px rgba(141, 224, 197, 0.3);
   --inner-shadow: inset 0 0 10px rgba(141, 224, 197, 0.4);
+  --color-prison: rgb(230, 250, 200);
+  --color-seller: rgb(130, 220, 255);
 }
 
 [data-theme="forest"] {
@@ -378,6 +402,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #E6FFDF;
   --shadow: 0px 4px 10px rgba(47, 86, 47, 0.3);
   --inner-shadow: inset 0 0 10px rgba(102, 154, 102, 0.35);
+  --color-prison: rgb(190, 170, 80);
+  --color-seller: rgb(100, 180, 230);
 }
 
 [data-theme="oceanic"] {
@@ -396,6 +422,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #FFF3E0;
   --shadow: 0px 4px 10px rgba(0, 184, 212, 0.3);
   --inner-shadow: inset 0 0 10px rgba(129, 211, 255, 0.35);
+  --color-prison: rgb(255, 235, 160);
+  --color-seller: rgb(80, 210, 255);
 }
 
 [data-theme="purple"] {
@@ -414,6 +442,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #E0AAFF;
   --shadow: 0px 4px 10px rgba(91, 0, 121, 0.4);
   --inner-shadow: inset 0 0 10px rgba(162, 89, 255, 0.35);
+  --color-prison: rgb(255, 215, 140);
+  --color-seller: rgb(150, 210, 255);
 }
 
 [data-theme="dark-blue-gradient"] {
@@ -432,6 +462,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #CAF0F8;
   --shadow: 0px 4px 10px rgb(0 123 255 / 40%);
   --inner-shadow: inset 0 0 10px rgba(119, 141, 169, 0.35);
+  --color-prison: rgb(230, 200, 90);
+  --color-seller: rgb(140, 200, 255);
 }
 
 [data-theme="orange"] {
@@ -450,24 +482,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #ffe2b0;
   --shadow: 0px 4px 10px rgba(255, 140, 0, 0.4);
   --inner-shadow: inset 0 0 10px rgba(255, 183, 77, 0.3);
-}
-
-[data-theme="water-road"] {
-  --dark-grey: #2f3640;
-  --middle-grey: #353b48;
-  --grey: #718093;
-  --light-grey: #a4b0be;
-  --black: #1e272e;
-  --white: #dcdde1;
-  --error: #ff6b81;
-  --gold: #4b7bec;
-  --loader-border: #a4b0be;
-  --loader-top: #70a1ff;
-  --support: #7bed9f;
-  --dd: #dff9fb;
-  --gs: #ced6e0;
-  --shadow: 0px 4px 10px rgba(71, 84, 102, 0.4);
-  --inner-shadow: inset 0 0 10px rgba(112, 161, 255, 0.2);
+  --color-prison: rgb(255, 200, 120);
+  --color-seller: rgb(160, 210, 255);
 }
 
 [data-theme="peach"] {
@@ -486,6 +502,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #fff2e1;
   --shadow: 0px 4px 10px rgba(255, 160, 122, 0.4);
   --inner-shadow: inset 0 0 10px rgba(255, 193, 161, 0.3);
+  --color-prison: rgb(255, 225, 160);
+  --color-seller: rgb(180, 230, 255);
 }
 
 [data-theme="raspberry"] {
@@ -504,6 +522,8 @@ provide('isShowLoader', isShowLoader);
   --gs: #ffb3c6;
   --shadow: 0px 4px 10px rgba(255, 30, 86, 0.4);
   --inner-shadow: inset 0 0 10px rgba(255, 117, 143, 0.3);
+  --color-prison: rgb(255, 215, 150);
+  --color-seller: rgb(190, 240, 255);
 }
 
 body {
@@ -532,7 +552,7 @@ body {
   }
 
   &_very-small {
-   max-width: 16px;
+    max-width: 16px;
   }
 }
 
@@ -583,6 +603,14 @@ body {
 
 .money-icon {
   color: var(--money);
+}
+
+.prison-icon {
+  color: var(--white);
+}
+
+.seller-icon {
+  color: var(--gs);
 }
 
 #app {

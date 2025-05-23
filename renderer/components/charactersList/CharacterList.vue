@@ -1,5 +1,6 @@
 <script setup>
 import CharacterListItem from "@/components/charactersList/CharacterListItem.vue";
+import CharacterListItemExtended from "@/components/charactersList/CharacterListItemExtended.vue";
 import ShareSnippet from "@/components/utils/ShareSnippet.vue";
 import {computed, onMounted, ref, watch} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
@@ -14,6 +15,7 @@ import update from "../../../src/svg/update.svg";
 
 const emit = defineEmits(["show-raid-selector", "update-character-group", "update-character", "fetch-character"]);
 const props = defineProps({
+  isExtendedMode: Boolean,
   characterList: Array,
   characterSettings: Object,
   groupOrder: Array,
@@ -326,7 +328,7 @@ const tagOptions = [
 <template>
   <h1 class="title character-list__title">
     <span>Список персонажей</span>
-    <tooltip>
+    <tooltip v-if="!isExtendedMode">
       <button class="button button_icon character-list__button" @click="isGridView = !isGridView">
         <changeMenu class="icon menu-icon"/>
       </button>
@@ -406,7 +408,7 @@ const tagOptions = [
       </div>
     </div>
   <share-snippet>
-    <div id="character-list" class="character-list" :class="{'grid': isGridView || windowWidth < 980}" v-if="grouped">
+    <div id="character-list" class="character-list" :class="{'grid': !isExtendedMode && (isGridView || windowWidth < 980)}" v-if="grouped">
       <template v-for="group in props.groupOrder" :key="group">
         <div class="character-group" v-if="currentFilter === group || currentFilter === 'none'">
           <div
@@ -453,9 +455,28 @@ const tagOptions = [
             </div>
           </div>
 
-          <div class="character-dropzone">
+          <div class="character-dropzone" :class="{'character-dropzone_extended': isExtendedMode}">
             <template v-for="(character, index) in grouped[group]" :key="character.name">
+              <character-list-item-extended
+                  v-if="isExtendedMode"
+                  :character="character"
+                  :is-edit-mode="isEditMode"
+                  :window-width="windowWidth"
+                  :character-settings="characterSettings[character.name]"
+                  @show-raid-selector="(characterName) => emit('show-raid-selector', characterName)"
+                  @dragstart="onCharacterDragStart(character.name, group, $event)"
+                  @dragover.prevent
+                  @drop="onCharacterDrop($event)"
+                  :data-group="group"
+                  :data-index="index"
+                  :currentTag="currentTag"
+                  :searchCharacter="searchCharacter"
+                  :gsFilter="rangeGSCharacter"
+                  @updateCharacter="(characterName) => emit('update-character', characterName)"
+                  @fetchCharacter="(characterName) => emit('fetch-character', characterName)"
+              />
               <character-list-item
+                  v-else
                   :character="character"
                   :is-edit-mode="isEditMode"
                   :window-width="windowWidth"
@@ -507,6 +528,10 @@ const tagOptions = [
   gap: 10px;
   flex-direction: column;
   width: 100%;
+
+  &_extended {
+    flex-direction: row;
+  }
 }
 
 .character-list.edit-mode {

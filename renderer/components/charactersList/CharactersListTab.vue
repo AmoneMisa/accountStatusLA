@@ -22,6 +22,7 @@ const nickname = computed({
 const characterList = computed(() => settings.value?.characterList || []);
 const characterSettings = computed(() => settings.value?.characterSettings || {});
 const groupOrder = computed(() => settings.value?.groupOrder || []);
+const mode = computed(() => settings.value?.mode || "default");
 
 function toggleEditCharacters() {
   isEditMode.value = !isEditMode.value;
@@ -202,7 +203,8 @@ function mergeCharactersPreferMaxGS(list) {
       :characterList="characterList"
       :characterSettings="characterSettings"
       :groupOrder="groupOrder"
-      :isEditMode="isEditMode"
+      :is-edit-mode="isEditMode"
+      :is-extended-mode="mode === 'extended'"
       @showRaidSelector="showRaidSelector"
       @updateCharacterGroup="updateCharactersGroup"
       @fetchCharacter="updateSingleCharacter"

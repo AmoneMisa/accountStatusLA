@@ -19,6 +19,7 @@ const characterSettings = computed(() => settings.value.characterSettings);
 const getGoldFromRaid = computed(() => {
   let earned = 0;
   let spent = 0;
+  let selled = 0;
   const phases = raidGold[props.raid] || [];
   const savedPhases = characterSettings.value?.[props.character.name]?.phases?.[props.raid] || {};
 
@@ -42,7 +43,13 @@ const getGoldFromRaid = computed(() => {
     }
   });
 
-  return {earned, spent, total: earned - spent};
+  if (characterSettings.value?.[props.character.name]?.customRaidPrices
+      && characterSettings.value?.[props.character.name]?.customRaidPrices?.[props.raid]
+      && characterSettings.value?.[props.character.name]?.customRaidPrices?.[props.raid] > 0) {
+    selled += parseInt(characterSettings.value?.[props.character.name]?.customRaidPrices?.[props.raid]);
+  }
+
+  return {earned, spent, total: earned - spent, selled};
 });
 
 const isDisabledGoldRaidStatus = computed(() => {
@@ -74,21 +81,25 @@ function toggleRaid(charName, raid) {
 <template>
   <div class="calc-raid-gold__raid-name">
     <customCheckbox
-      :text="raid"
-      class="calc-raid-gold__checkbox"
-      label-class="calc-raid-gold__label"
-      :checked="!isDisabledGoldRaidStatus"
-      @change="toggleRaid(character.name, raid)"
+        :text="raid"
+        class="calc-raid-gold__checkbox"
+        label-class="calc-raid-gold__label"
+        :checked="!isDisabledGoldRaidStatus"
+        @change="toggleRaid(character.name, raid)"
     />
   </div>
   <div v-for="(phase, index) in raidGold[raid]" :key="index" class="calc-raid-gold__phase">
-    <calc-gold-phase-item :character-name="character.name" :index="index" :phase="phase" :raid="raid" />
+    <calc-gold-phase-item :character-name="character.name" :index="index" :phase="phase" :raid="raid"/>
   </div>
 
   <div class="calc-raid-gold__raid-total">
     <div class="calc-raid-gold__raid-total-item">
       <coin class="icon icon_very-small coin-icon"/>
       Получено: {{ getGoldFromRaid.earned }}
+    </div>
+    <div class="calc-raid-gold__raid-total-item" v-if="getGoldFromRaid.selled > 0">
+      <coin class="icon icon_very-small coin-icon"/>
+      За продажу: {{ getGoldFromRaid.selled }}
     </div>
     <div class="calc-raid-gold__raid-total-item">
       <chest class="icon icon_very-small chest-icon"/>

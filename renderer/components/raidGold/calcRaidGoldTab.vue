@@ -5,6 +5,7 @@ import raidGold from "@/raidGold.js";
 import coin from "../../../src/svg/coin.svg";
 import money from "../../../src/svg/money.svg";
 import chest from "../../../src/svg/chest.svg";
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 let settings = inject('settings');
 const characterSettings = computed(() => settings.value.characterSettings);
@@ -17,6 +18,7 @@ const totalGold = computed(() => {
   let earned = 0;
   let spent = 0;
   let bound = 0;
+  let selled = 0;
 
   for (const char of characterList.value) {
     if (goldCharacters.value.includes(char.name)) {
@@ -31,16 +33,18 @@ const totalGold = computed(() => {
       const g = getGoldFromRaid(char.name, raid);
       earned += g.earned;
       earned += g.bound;
+      earned += g.selled;
       bound += g.bound;
       spent += g.spent;
+      selled += g.selled;
     }
   }
-  return {earned, spent, total: earned - spent, bound};
+  return {earned, spent, total: earned - spent, bound, selled};
 });
 
 function getGoldFromRaid(charName, raid) {
   if (!characterSettings.value?.[charName]?.raidStatus?.[raid]) {
-    return {earned: 0, spent: 0, total: 0, bound: 0};
+    return {earned: 0, spent: 0, total: 0, bound: 0, selled: 0};
   }
 
   const isGoldReceiver = characterSettings.value?.[charName]?.goldReceiver;
@@ -50,16 +54,16 @@ function getGoldFromRaid(charName, raid) {
 
   if (!isGoldReceiver && !isLegate) {
     if (!hasReceiverInfo) {
-      return { earned: 0, spent: 0, total: 0, bound: 0 };
+      return {earned: 0, spent: 0, total: 0, bound: 0, selled: 0};
     }
     if (!isReceiver) {
-      return { earned: 0, spent: 0, total: 0, bound: 0 };
+      return {earned: 0, spent: 0, total: 0, bound: 0, selled: 0};
     }
   }
 
   if (isGoldReceiver || isLegate) {
     if (hasReceiverInfo && !isReceiver) {
-      return { earned: 0, spent: 0, total: 0, bound: 0 };
+      return {earned: 0, spent: 0, total: 0, bound: 0, selled: 0};
     }
   }
 
@@ -68,6 +72,13 @@ function getGoldFromRaid(charName, raid) {
   let spent = 0;
   const phases = raidGold[raid] || [];
   const savedPhases = characterSettings.value?.[charName]?.phases?.[raid] || {};
+
+  let selled = 0;
+  if (characterSettings.value?.[charName]?.customRaidPrices
+      && characterSettings.value?.[charName]?.customRaidPrices?.[raid]
+      && characterSettings.value?.[charName]?.customRaidPrices?.[raid] > 0) {
+    selled += parseInt(characterSettings.value?.[charName]?.customRaidPrices?.[raid]);
+  }
 
   phases.forEach((phase, index) => {
     const bought = savedPhases[index]?.chestBought;
@@ -91,7 +102,7 @@ function getGoldFromRaid(charName, raid) {
     }
   });
 
-  return {earned, spent, total: earned - spent, bound};
+  return {earned, spent, total: earned + selled - spent, bound, selled};
 }
 
 function toggleGoldCharacter([characterName, isReceiver]) {
@@ -117,6 +128,13 @@ function toggleGoldCharacter([characterName, isReceiver]) {
     <div class="calc-raid-gold__total-item">
       <coin class="icon icon_very-small coin-icon"/>
       Из них привязанное: {{ totalGold.bound }}
+    </div>
+    <div class="calc-raid-gold__total-item" v-if="totalGold.selled">
+      <coin class="icon icon_very-small coin-icon"/>
+      <tooltip>
+        За продажи: {{ totalGold.selled * 0.95 }}
+        <template #tooltip>С учётом 5% комиссии</template>
+      </tooltip>
     </div>
     <div class="calc-raid-gold__total-item">
       <chest class="icon icon_very-small chest-icon"/>

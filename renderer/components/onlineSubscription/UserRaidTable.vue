@@ -2,6 +2,8 @@
 import {computed} from 'vue';
 import checkArrow from "../../../src/svg/check.svg";
 import cross from "../../../src/svg/cross.svg";
+import prison from "../../../src/svg/prison.svg";
+import seller from "../../../src/svg/seller.svg";
 
 const props = defineProps({
   user: {
@@ -40,7 +42,9 @@ const characterList = computed(() => {
           <ul class="raid-table__raids">
             <li class="raid-table__raid" v-for="raid in user.settings[char.name].raids" :key="raid">
               <span class="raid-table__raid-name">{{ raid }}</span>
-              <checkArrow class="raid-table__icon icon check-icon" v-if="user.settings[char.name].raidStatus?.[raid]"/>
+              <checkArrow class="raid-table__icon icon check-icon" v-if="user.settings[char.name].raidStatus?.[raid] === 'finished'"/>
+              <prison class="raid-table__icon icon check-icon" v-else-if="user.settings[char.name].raidStatus?.[raid] === 'prison'"/>
+              <seller class="raid-table__icon icon check-icon" v-else-if="user.settings[char.name].raidStatus?.[raid] === 'sell'"/>
               <cross class="raid-table__icon icon cross-icon" v-else/>
             </li>
           </ul>

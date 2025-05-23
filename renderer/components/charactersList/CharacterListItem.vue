@@ -1,6 +1,6 @@
 <script setup>
 import {saveSettings} from "../../../utils/utils.js";
-import {computed, inject, ref, toRaw} from "vue";
+import {computed, inject, onMounted, ref, toRaw} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 
 import checkArrow from "../../../src/svg/check.svg";
@@ -29,6 +29,24 @@ const emit = defineEmits({'show-raid-selector': String, 'update-character': Stri
 let settings = inject('settings');
 const isSupport = ['Художница', 'Менестрель', 'Паладин'].includes(props.character.className);
 const draggedRaid = ref(null);
+
+const raidStatus = ref({});
+
+function fillRaidStatus() {
+  if (!props.characterSettings.raidStatus) {
+    return;
+  }
+
+  for (let [raid, status] of Object.entries(props.characterSettings.raidStatus)) {
+    if (status) {
+      raidStatus.value[raid] = 'finished';
+    } else {
+      raidStatus.value[raid] = 'unfinished';
+    }
+  }
+}
+
+onMounted(() => fillRaidStatus());
 
 function onRaidDragStart(raid) {
   draggedRaid.value = raid;
@@ -86,11 +104,11 @@ function toggleIcon(target, statusTitle) {
   emit('update-character', props.character.name);
 }
 
-async function updateOnlineProfile () {
+async function updateOnlineProfile() {
   const online = new OnlineModule(settings.value.nickname, toRaw(Object.assign(settings.value.characterSettings, {characterList: settings.value.characterList})));
 
   let user;
-  
+
   if (settings.value.UUID) {
     try {
       const res = await online.getUser(settings.value.UUID);
@@ -113,9 +131,30 @@ async function updateOnlineProfile () {
   }
 }
 
+function updateOldTypes() {
+  if (!props.characterSettings?.raids?.length) {
+    return;
+  }
+
+  for (let raid of props.characterSettings.raids) {
+    if (props.characterSettings.raidStatus[raid] === true) {
+      props.characterSettings.raidStatus[raid] = "finished";
+    } else if (props.characterSettings.raidStatus[raid] === false) {
+      props.characterSettings.raidStatus[raid] = "unfinished";
+    }
+  }
+}
+
+updateOldTypes();
+
 async function toggleRaidStatus(raid) {
   props.characterSettings.raidStatus = props.characterSettings.raidStatus || {};
-  props.characterSettings.raidStatus[raid] = !props.characterSettings.raidStatus[raid];
+
+  if (props.characterSettings.raidStatus[raid] === "finished") {
+    props.characterSettings.raidStatus[raid] = "unfinished";
+  } else {
+    props.characterSettings.raidStatus[raid] = "finished";
+  }
 
   saveSettings({
     characterSettings: {
@@ -181,7 +220,7 @@ const isShowCharacter = computed(() => {
       || props.characterSettings[props.currentTag]
       || props.currentTag === 'sup' && isSupport
       || props.currentTag === 'dd' && !isSupport
-      ) && props.character.className !== props.currentTag) {
+  ) && props.character.className !== props.currentTag) {
     return false;
   }
 
@@ -270,7 +309,7 @@ const isShowCharacter = computed(() => {
           </div>
           <tooltip>
             <button class="raid-status button button_icon" @click="toggleRaidStatus(raid)">
-              <checkArrow class="icon check-icon" v-if="characterSettings?.raidStatus?.[raid]"/>
+              <checkArrow class="icon check-icon" v-if="characterSettings?.raidStatus?.[raid] === 'finished'"/>
               <cross class="icon cross-icon" v-else/>
             </button>
             <template #tooltip>Рейд пройден</template>
@@ -292,7 +331,7 @@ const isShowCharacter = computed(() => {
             </div>
             <tooltip>
               <button class="raid-status button button_icon" @click="toggleRaidStatus(raid)">
-                <checkArrow class="icon check-icon" v-if="characterSettings?.raidStatus?.[raid]"/>
+                <checkArrow class="icon check-icon" v-if="characterSettings?.raidStatus?.[raid] === 'finished'"/>
                 <cross class="icon cross-icon" v-else/>
               </button>
               <template #tooltip>Пройдено ли</template>
@@ -321,7 +360,7 @@ const isShowCharacter = computed(() => {
 
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .character {
   border-radius: 10px;
   background-color: var(--dark-grey);
@@ -410,7 +449,6 @@ const isShowCharacter = computed(() => {
 }
 
 .character__raids {
-  gap: 10px;
   width: -webkit-fill-available;
 }
 
@@ -450,7 +488,6 @@ const isShowCharacter = computed(() => {
     grid-template-areas: "a b";
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     grid-column: 1 / -1;
-    gap: 0;
     border-top: 1px solid var(--grey);
     border-bottom: 1px solid var(--grey);
     border-left: 1px solid var(--grey);
