@@ -2,8 +2,6 @@
 import {saveSettings} from "../../../utils/utils.js";
 import {computed, inject, onMounted, ref, toRaw} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
-
-import checkArrow from "../../../src/svg/check.svg";
 import cross from "../../../src/svg/cross.svg";
 import heart from "../../../src/svg/heart.svg";
 import crown from "../../../src/svg/crown.svg";
@@ -12,8 +10,7 @@ import plus from "../../../src/svg/plus.svg";
 import trash from "../../../src/svg/trash.svg";
 import burger from "../../../src/svg/burger.svg";
 import update from "../../../src/svg/update.svg";
-import prison from "../../../src/svg/prison.svg";
-import seller from "../../../src/svg/seller.svg";
+
 import _ from "lodash";
 import OnlineModule from "../../../utils/OnlineModule.js";
 
@@ -162,6 +159,25 @@ async function toggleRaidStatus(elem, raid) {
       }
     }
   });
+
+
+  if (raidPrices.value[raid] > 0 && elem.target.value !== 'sell') {
+    raidPrices.value[raid] = 0;
+
+    saveSettings({
+      characterSettings: {
+        ...settings.value.characterSettings,
+        [props.character.name]: {
+          ...props.characterSettings || {},
+          customRaidPrices: {
+            ...props.characterSettings.customRaidPrices,
+            [raid]: raidPrices.value[raid]
+          }
+        }
+      }
+    });
+  }
+
   emit('update-character', props.character.name);
 
   await updateOnlineProfile();

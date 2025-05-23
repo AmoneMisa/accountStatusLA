@@ -24,7 +24,6 @@ const props = defineProps({
 
 let settings = inject('settings');
 const isGridView = ref(settings.value?.isCharactersGridView || false);
-const windowWidth = ref(window.innerWidth);
 const currentFilter = ref("none");
 const currentTag = ref("none");
 const searchCharacter = ref("");
@@ -250,6 +249,7 @@ function deleteGroup(group) {
 }
 
 const getGs = (char) => parseFloat(char.gearScore?.replace(',', '') || 0);
+
 const minGs = computed(() => {
   if (!props.characterList || !props.characterList.length) {
     return 0;
