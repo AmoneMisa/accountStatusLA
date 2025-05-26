@@ -31,9 +31,11 @@ const cubes = [{
   name: "9"
 }];
 
+// К-во вторых камней
 const cubeDrop = {
   'T4-1': 3,
-  'T4-2': 6
+  'T4-2': 6,
+  'T4-3': 8,
 };
 
 function convertToLevel2Amount(level, count) {
@@ -65,17 +67,21 @@ function calculate() {
 
   const fullT41 = Math.ceil(requiredGems / cubeDrop['T4-1']);
   const fullT42 = Math.ceil(requiredGems / cubeDrop['T4-2']);
+  const fullT43 = Math.ceil(requiredGems / cubeDrop['T4-3']);
 
   const needT41 = Math.ceil(gemsNeeded / cubeDrop['T4-1']);
   const needT42 = Math.ceil(gemsNeeded / cubeDrop['T4-2']);
+  const needT43 = Math.ceil(gemsNeeded / cubeDrop['T4-3']);
 
   resultEl.innerHTML = `
             🔹 <b>Без учёта</b> ваших камней:<br>
             ▫️ T4-1: <b>${fullT41}</b> кубов<br>
-            ▫️ T4-2: <b>${fullT42}</b> кубов<br><br>
+            ▫️ T4-2: <b>${fullT42}</b> кубов<br>
+            ▫️ T4-3: <b>${fullT43}</b> кубов<br><br>
             🔸 <b>С учётом</b> ваших камней:<br>
             ▫️ T4-1: <b>${needT41}</b> кубов<br>
-            ▫️ T4-2: <b>${needT42}</b> кубов
+            ▫️ T4-2: <b>${needT42}</b> кубов<br>
+            ▫️ T4-3: <b>${needT43}</b> кубов
         `;
 }
 

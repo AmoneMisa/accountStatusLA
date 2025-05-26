@@ -8,6 +8,7 @@ import CalcCommission from "@/components/toolsList/CalcCommission.vue";
 import CalcCraftResources from "@/components/toolsList/CalcCraftResources.vue";
 import CalcCraftNeededResources from "@/components/toolsList/CalcCraftNeededResources.vue";
 import CalcCrystalPriceComparison from "@/components/toolsList/CalcCrystalPriceComparison.vue";
+import CalcGems from "@/components/toolsList/CalcGems.vue";
 </script>
 
 <template>
@@ -18,6 +19,7 @@ import CalcCrystalPriceComparison from "@/components/toolsList/CalcCrystalPriceC
     <div class="tools-container__main">
       <calc-bet />
       <calc-cubes />
+      <calc-gems />
       <calc-cards />
       <calc-auction-sum />
       <calc-commission />
