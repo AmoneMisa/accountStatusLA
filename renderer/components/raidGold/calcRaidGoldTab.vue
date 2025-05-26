@@ -32,7 +32,6 @@ const totalGold = computed(() => {
     for (const raid of characterSettings.value?.[char.name]?.raids || []) {
       const g = getGoldFromRaid(char.name, raid);
       earned += g.earned;
-      earned += g.bound;
       earned += g.selled;
       bound += g.bound;
       spent += g.spent;
@@ -102,7 +101,7 @@ function getGoldFromRaid(charName, raid) {
     }
   });
 
-  return {earned, spent, total: earned + selled - spent, bound, selled};
+  return {earned, spent, total: earned - spent, bound, selled};
 }
 
 function toggleGoldCharacter([characterName, isReceiver]) {
