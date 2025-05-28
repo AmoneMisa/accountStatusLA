@@ -79,6 +79,12 @@ const resources = [
     language: "KR / EN"
   },
   {
+    type: "Гайды / Видео",
+    name: "TimelessDragon (YouTube)",
+    url: "https://www.youtube.com/@timedrag",
+    language: "RU"
+  },
+  {
     type: "Сообщество",
     name: "Reddit",
     url: "https://www.reddit.com/r/lostarkgame",

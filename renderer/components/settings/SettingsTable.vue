@@ -339,7 +339,7 @@ function changeTabVisibility(modelKey, target) {
 
     <div class="settings-table__cell">Проверить обновления приложения</div>
     <div class="settings-table__cell">
-      <button type="button" id="update-app" class="button" data-current-version="2.1.0" @click="updateApp">
+      <button type="button" id="update-app" class="button" data-current-version="2.2.0" @click="updateApp">
         Обновить приложение
       </button>
     </div>
