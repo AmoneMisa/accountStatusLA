@@ -6,7 +6,7 @@ import share from "../../../src/svg/share.svg"
 const targetRef = ref(null);
 
 async function capture() {
-  const canvas = await html2canvas(targetRef.value, {backgroundColor: "#000000"});
+  const canvas = await html2canvas(targetRef.value);
   canvas.toBlob(blob => {
     const item = new ClipboardItem({'image/png': blob});
     navigator.clipboard.write([item]).then(() => {
@@ -20,7 +20,7 @@ async function capture() {
 
 <template>
   <div class="share-snippet">
-    <div ref="targetRef">
+    <div ref="targetRef" style="background-color: var(--black)">
       <slot/>
     </div>
     <tooltip>

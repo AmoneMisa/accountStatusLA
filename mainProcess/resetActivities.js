@@ -12,7 +12,13 @@ export function resetWeeklyActivities(DateTime) {
     const now = DateTime.now();
 
     if (lastResetWeekly) {
-        let date = DateTime.fromISO(lastResetWeekly).plus({days: 7}).set({weekday: 3, hours: 6, minutes: 0, seconds: 0, milliseconds: 0});
+        let date = DateTime.fromISO(lastResetWeekly).plus({days: 7}).set({
+            weekday: 3,
+            hours: 6,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0
+        });
 
         if (now < date) {
             return;
@@ -33,9 +39,33 @@ export function resetWeeklyActivities(DateTime) {
     Object.keys(charSettings).forEach(charName => {
         if (charSettings[charName]?.raids) {
             charSettings[charName].raids.forEach(raid => {
-                if (!["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
-                    charSettings[charName].raidStatus[raid] = "unfinished";
+                if (["Эфонка", "Хранитель", "Хаос"].includes(raid)) {
+                    return;
                 }
+
+                if (!charSettings[charName]?.raidStatus || !charSettings[charName]?.raidStatus?.[raid]) {
+                    return;
+                }
+
+                charSettings[charName].raidStatus[raid] = "unfinished";
+                if (!charSettings[charName]?.raidStatus[raid]?.phases) {
+                    return;
+                }
+
+                for (let phase of Object.keys(charSettings[charName]?.raidStatus[raid]?.phases)) {
+                    if (!charSettings[charName]?.raidStatus[raid]?.phases[phase]?.chestBought) {
+                        continue;
+                    }
+
+                    charSettings[charName].raidStatus[raid].phases[phase].chestBought = false;
+                }
+
+
+                if (!charSettings[charName]?.customRaidPrices[raid]) {
+                    return;
+                }
+
+                charSettings[charName].customRaidPrices[raid] = 0;
             });
         }
     });
@@ -48,7 +78,12 @@ export function resetDailyActivities(DateTime) {
     const now = DateTime.now();
 
     if (lastResetDaily) {
-        let date = DateTime.fromISO(lastResetDaily).plus({days: 1}).set({hours: 6, minutes: 0, seconds: 0, milliseconds: 0});
+        let date = DateTime.fromISO(lastResetDaily).plus({days: 1}).set({
+            hours: 6,
+            minutes: 0,
+            seconds: 0,
+            milliseconds: 0
+        });
 
         if (now < date) {
             return;

@@ -7,6 +7,7 @@ import money from "../../../src/svg/money.svg";
 import chest from "../../../src/svg/chest.svg";
 import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
 import CalcGoldPhaseItem from "@/components/raidGold/CalcGoldPhaseItem.vue";
+import Tooltip from "@/components/utils/Tooltip.vue";
 
 const props = defineProps({
   raid: String,
@@ -15,6 +16,7 @@ const props = defineProps({
 
 let settings = inject('settings');
 const characterSettings = computed(() => settings.value.characterSettings);
+const calcGoldMode = computed(() => settings.value.calcGoldMode || 'default');
 
 const getGoldFromRaid = computed(() => {
   let earned = 0;
@@ -80,19 +82,42 @@ function toggleRaid(charName, raid) {
 
 <template>
   <div class="calc-raid-gold__raid-name">
-    <customCheckbox
-        :text="raid"
-        class="calc-raid-gold__checkbox"
-        label-class="calc-raid-gold__label"
-        :checked="!isDisabledGoldRaidStatus"
-        @change="toggleRaid(character.name, raid)"
-    />
+    <tooltip>
+      <customCheckbox
+          :text="raid"
+          class="calc-raid-gold__checkbox"
+          label-class="calc-raid-gold__label"
+          :checked="!isDisabledGoldRaidStatus"
+          @change="toggleRaid(character.name, raid)"
+      />
+      <template #tooltip>Рейд с золотом (вкл - с золотом, выкл - без золота)</template>
+    </tooltip>
   </div>
   <div v-for="(phase, index) in raidGold[raid]" :key="index" class="calc-raid-gold__phase">
     <calc-gold-phase-item :character-name="character.name" :index="index" :phase="phase" :raid="raid"/>
   </div>
 
-  <div class="calc-raid-gold__raid-total">
+  <div class="calc-raid-gold__raid-total" v-if="calcGoldMode === 'minimized'">
+    <tooltip>
+      <div class="calc-raid-gold__raid-total-item">
+        <money class="icon icon_very-small money-icon"/>
+        Всего: {{ getGoldFromRaid.total }}
+      </div>
+      <template #tooltip>
+        <div class="calc-raid-gold__raid-tooltip">
+          <span class="calc-raid-gold__raid-tooltip-item"><coin
+              class="icon icon_very-small coin-icon"/>Получено: {{ getGoldFromRaid.earned }}</span>
+          <span class="calc-raid-gold__raid-tooltip-item" v-if="getGoldFromRaid.selled > 0"><coin
+              class="icon icon_very-small coin-icon"/>За продажу: {{ getGoldFromRaid.selled }}</span>
+          <span class="calc-raid-gold__raid-tooltip-item"><chest class="icon icon_very-small chest-icon"/>Потрачено на сундуки: {{
+              getGoldFromRaid.spent
+            }}</span>
+        </div>
+      </template>
+    </tooltip>
+  </div>
+
+  <div class="calc-raid-gold__raid-total" v-else>
     <div class="calc-raid-gold__raid-total-item">
       <coin class="icon icon_very-small coin-icon"/>
       Получено: {{ getGoldFromRaid.earned }}
@@ -141,5 +166,20 @@ function toggleRaid(charName, raid) {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.calc-raid-gold__raid-tooltip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.calc-raid-gold__raid-tooltip-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 </style>

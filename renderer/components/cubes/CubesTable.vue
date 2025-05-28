@@ -55,10 +55,30 @@ const decrement = (charName, col) => {
   updateValue(charName, col, Math.max(0, getCellValue(charName, col) - 1));
 };
 
+const totalCubes = computed(() => {
+  let total = {};
+
+  for (let character of filteredCharacters.value) {
+    if (!tableData.value[character.name]) {
+      continue;
+    }
+
+    for (let cube of Object.keys(tableData.value[character.name])) {
+      if (!total[cube]) {
+        total[cube] = 0;
+      }
+
+      total[cube] += getCellValue(character.name, cube);
+    }
+  }
+
+  return total;
+});
+
 watch(cubesSettings, (newValue) => {
   settings.value.cubesSettings = newValue;
-  saveSettings({ cubesSettings: newValue });
-}, { deep: true });
+  saveSettings({cubesSettings: newValue});
+}, {deep: true});
 </script>
 
 <template>
@@ -124,6 +144,16 @@ watch(cubesSettings, (newValue) => {
           </div>
         </div>
       </div>
+
+      <div class="cubes-table__total">
+        <div class="cubes-table__total-item">Всего:</div>
+        <template v-for="[cube, count] in Object.entries(totalCubes).sort()" :key="cube">
+          <div class="cubes-table__total-item" v-if="count > 0 && cubesSettings[cube]">
+            <span><b>{{ cube }}</b> x{{ count }}</span>
+          </div>
+        </template>
+
+       </div>
     </share-snippet>
   </div>
 </template>
@@ -201,5 +231,39 @@ watch(cubesSettings, (newValue) => {
 
 .cubes-table_support {
   color: var(--support);
+}
+
+.cubes-table__total {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  border: 1px solid var(--grey);
+  border-radius: 8px;
+  padding: 10px 0;
+  flex-wrap: wrap;
+}
+
+b {
+  color: var(--gold);
+}
+
+.cubes-table__total-item {
+  border-right: 1px solid var(--grey);
+  padding: 0 10px;
+  width: 60px;
+  font-size: var(--font-small);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: auto;
+  &:first-child {
+    min-width: 60px;
+    max-width: 30%;
+  }
+
+  &:last-child {
+    border-right: none;
+  }
 }
 </style>

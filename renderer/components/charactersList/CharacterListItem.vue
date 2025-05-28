@@ -429,8 +429,10 @@ const isShowCharacter = computed(() => {
     }
 
     &:hover {
+      background-color: var(--grey);
+
       @media screen and (max-width: 801px) {
-        .character__cell:not(:last-child) {
+        .character__cell:not(:last-child):not(.raids) {
           border: none;
         }
 
@@ -443,7 +445,8 @@ const isShowCharacter = computed(() => {
         }
 
         .character__raids {
-          border-top: 1px solid var(--dark-grey) !important;
+          border-top: 1px solid var(--dark-grey);
+          border-right: none;
         }
       }
     }

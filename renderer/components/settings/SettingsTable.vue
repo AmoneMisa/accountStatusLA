@@ -17,6 +17,10 @@ const mode = computed({
   get: () => settings.value.mode || 'default',
   set: (newValue) => settings.value.mode = newValue
 });
+const calcGoldMode = computed({
+  get: () => settings.value.calcGoldMode || 'default',
+  set: (newValue) => settings.value.calcGoldMode = newValue
+});
 const font = computed({
   get: () => settings.value.font,
   set: (newValue) => settings.value.font = newValue
@@ -77,6 +81,7 @@ function save() {
     savePath: savePath.value,
     theme: theme.value,
     mode: mode.value,
+    calcGoldMode: calcGoldMode.value,
     font: font.value,
     minimizeOnClose: minimizeOnClose.value,
     rememberWindowSize: rememberWindowSize.value,
@@ -223,6 +228,14 @@ function changeTabVisibility(modelKey, target) {
       <select id="mode" class="choose-mode-select" v-model="mode">
         <option value="default">Базовый</option>
         <option value="extended">Расширенный</option>
+      </select>
+    </div>
+
+    <div class="settings-table__cell">Режим отображения расчёта золота</div>
+    <div class="settings-table__cell">
+      <select id="calc-gold-mode" class="choose-mode-select" v-model="calcGoldMode">
+        <option value="default">Базовый</option>
+        <option value="minimized">Минималистичный</option>
       </select>
     </div>
 
