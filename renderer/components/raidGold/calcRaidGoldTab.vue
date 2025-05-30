@@ -46,6 +46,10 @@ function getGoldFromRaid(charName, raid) {
     return {earned: 0, spent: 0, total: 0, bound: 0, selled: 0};
   }
 
+  if (characterSettings.value?.[charName]?.raidStatus?.[raid] === "unfinished") {
+    return {earned: 0, spent: 0, total: 0, bound: 0, selled: 0};
+  }
+
   const isGoldReceiver = characterSettings.value?.[charName]?.goldReceiver;
   const isLegate = characterSettings.value?.[charName]?.legate;
   const hasReceiverInfo = currentReceivers.value.hasOwnProperty(charName);

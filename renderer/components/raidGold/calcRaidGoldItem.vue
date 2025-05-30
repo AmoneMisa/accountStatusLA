@@ -17,7 +17,7 @@ const emit = defineEmits({'toggle-gold-receiver': [String, Boolean]});
 function getCompletedRaids() {
   const raids = props.characterSettings?.raids || [];
   const raidStatus = props.characterSettings?.raidStatus || {};
-  return raids.filter(raid => raidStatus[raid] && raid !== "Хранитель" && raid !== "Эфонка" && raid !== "Хаос");
+  return raids.filter(raid => raidStatus[raid] !== 'unfinished' && raid !== "Хранитель" && raid !== "Эфонка" && raid !== "Хаос");
 }
 
 function toggleGoldCharacter(target, characterName) {
