@@ -238,6 +238,11 @@ const userNickname = ref("");
 const userNote = ref("");
 
 const isPublicProfile = ref(settings.value?.online?.isPublic || false);
+const isShowDiscord = ref(settings.value?.online?.isShowDiscord || false);
+const isShowTelegram = ref(settings.value?.online?.isShowTelegram || false);
+const telegram = ref(settings.value?.online?.telegram || "");
+const discord = ref(settings.value?.online?.discord || "");
+
 async function changePublicProfile() {
   isPublicProfile.value = !isPublicProfile.value;
 
@@ -245,6 +250,82 @@ async function changePublicProfile() {
     online: {
       ...settings.value.online,
       isPublic: isPublicProfile.value
+    }
+  });
+
+  const res = await online.update(user.value._id);
+  user.value = res.data;
+}
+
+async function changePublicDiscord() {
+  isShowDiscord.value = !isShowDiscord.value;
+
+  saveSettings({
+    online: {
+      ...settings.value.online,
+      isShowDiscord: isShowDiscord.value
+    }
+  });
+
+  const res = await online.update(user.value._id);
+  user.value = res.data;
+}
+
+async function changePublicTelegram() {
+  isShowTelegram.value = !isShowTelegram.value;
+
+  saveSettings({
+    online: {
+      ...settings.value.online,
+      isShowTelegram: isShowTelegram.value
+    }
+  });
+
+  const res = await online.update(user.value._id);
+  user.value = res.data;
+}
+
+async function updateTelegram() {
+  if (!telegram.value) {
+    return;
+  }
+
+  if (telegram.value.length < 4) {
+    return;
+  }
+
+  if (telegram.value.length > 32) {
+    return;
+  }
+
+  saveSettings({
+    online: {
+      ...settings.value.online,
+      telegram: telegram.value
+    }
+  });
+
+  const res = await online.update(user.value._id);
+  user.value = res.data;
+}
+
+async function updateDiscord() {
+  if (!discord.value) {
+    return;
+  }
+
+  if (discord.value.length < 4) {
+    return;
+  }
+
+  if (discord.value.length > 32) {
+    return;
+  }
+
+  saveSettings({
+    online: {
+      ...settings.value.online,
+      discord: discord.value
     }
   });
 
@@ -280,7 +361,19 @@ async function changePublicProfile() {
         </div>
       </div>
       <div class="online-subs__row-item">
-        <custom-checkbox text="Отображать профиль в публичном списке профилей" @change="changePublicProfile" :checked="isPublicProfile"/>
+        <div class="online-subs__setting">
+          <custom-checkbox text="Отображать профиль в публичном списке профилей" @change="changePublicProfile" :checked="isPublicProfile"/>
+        </div>
+        <div class="online-subs__setting">
+          <custom-checkbox text="Отображать Discord на странице просмотра рейдов" @change="changePublicDiscord" :checked="isShowDiscord"/>
+          <label class="custom-label">Никнейм в Discord</label>
+          <input class="input" v-model="discord" @input="updateDiscord" placeholder="#abebus3213"/>
+        </div>
+        <div class="online-subs__setting">
+          <custom-checkbox text="Отображать Telegram на странице просмотра рейдов" @change="changePublicTelegram" :checked="isShowTelegram"/>
+          <label class="custom-label">Никнейм в Telegram</label>
+          <input class="input" v-model="telegram" @input="updateTelegram" placeholder="@telegram" />
+        </div>
       </div>
     </div>
     <div class="group-filters" v-if="!selectedUser">
@@ -394,12 +487,19 @@ async function changePublicProfile() {
 }
 
 .online-subs__row-item {
-  font-size: var(--font-small);
+  font-size: var(--font-very-small);
 
   &:last-child {
     align-self: flex-start;
-    max-width: 210px;
+    max-width: 300px;
   }
+}
+
+.online-subs__setting {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
 }
 
 .group-filters__search {

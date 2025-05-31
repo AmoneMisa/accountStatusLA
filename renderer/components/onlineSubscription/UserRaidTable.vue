@@ -24,6 +24,8 @@ const characterList = computed(() => {
 <template>
   <div class="raid-table">
     <h2 class="title">Персонажи игрока: {{ user.nickname }}</h2>
+    <div class="raid-table__row" v-if="user.settings?.telegram && user.settings?.isShowTelegram">Telegram: {{ user.settings.telegram }}</div>
+    <div class="raid-table__row" v-if="user.settings?.discord && user.settings?.isShowDiscord">Discord: {{ user.settings.discord }}</div>
     <table>
       <thead>
       <tr>
@@ -60,6 +62,11 @@ const characterList = computed(() => {
   max-width: 100%;
   overflow-x: auto;
   font-size: var(--font-small);
+}
+
+.raid-table__row {
+  margin-bottom: 10px;
+  color: var(--gold);
 }
 
 .title {
