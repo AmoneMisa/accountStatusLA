@@ -1,12 +1,13 @@
 <script setup>
 import Tooltip from "@/components/utils/Tooltip.vue";
 import OnlineModule from "../../../utils/OnlineModule.js";
-import {computed, inject, ref, toRaw} from "vue";
+import {computed, inject, ref, toRaw, watch} from "vue";
 import {saveSettings} from "../../../utils/utils.js";
 import UserRaidTable from "@/components/onlineSubscription/UserRaidTable.vue";
 import _ from "lodash";
 import CopyWrapper from "@/components/utils/CopyWrapper.vue";
 import UserCard from "@/components/onlineSubscription/UserCard.vue";
+import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
 
 let settings = inject('settings');
 
@@ -14,7 +15,8 @@ const onlineSettings = computed(() => {
   return toRaw(Object.assign({}, settings.value?.characterSettings, {
     characterList: settings.value?.characterList,
     online: {
-      subs: settings.value?.online?.subs || []
+      subs: settings.value?.online?.subs || [],
+      isPublic: settings.value?.online?.isPublic || false
     }
   }));
 });
@@ -80,17 +82,84 @@ async function resetKey() {
   isShowLoader.value = false;
 }
 
-let subs = ref([]);
-(async function () {
+let displayedUsers = ref([]);
+
+// Получить список моих подписок
+async function getSubsUsers() {
+  let subUsers = [];
+  try {
+    isShowLoader.value = true;
+    for (let inviteKey of localSubs.value) {
+      try {
+        const res = await online.getUserByInviteKey(inviteKey);
+        if (res.status === 200) subUsers.push(res.data);
+      } catch (e) {
+        console.error("User not found by InviteKey:", inviteKey, e);
+      }
+    }
+    return subUsers;
+  } finally {
+    isShowLoader.value = false;
+  }
+}
+
+// Получить список подписчиков
+async function getSubscribersUsers() {
   try {
     isShowLoader.value = true;
     const res = await online.getSubscribers(settings.value?.inviteKey || user.value?.inviteKey);
-    subs.value = res.data;
-    isShowLoader.value = false;
+    if (res.status === 200) return res.data;
+    return [];
   } catch (e) {
-    console.error("Error with getting subscribers for inviteKey:", inviteKey, e);
+    console.error("Error with getting subscribers:", e);
+    return [];
+  } finally {
+    isShowLoader.value = false;
   }
-})();
+}
+
+// Получить список публичных профилей
+async function getPublicUsersList() {
+  try {
+    isShowLoader.value = true;
+    const res = await online.getUsers(user.value._id);
+    if (res.status === 200) return res.data;
+    return [];
+  } catch (e) {
+    console.error("Error with getting public users:", e);
+    return [];
+  } finally {
+    isShowLoader.value = false;
+  }
+}
+
+let filter = ref('all'); // 'all' | 'subs' | public
+const foundedUser = ref(null);
+let selectedUser = ref(null);
+
+watch(filter, async (newFilter) => {
+  if (selectedUser.value) {
+    return;
+  } // если открыт юзер — ничего не делаем
+
+  isShowLoader.value = true;
+  try {
+    // Мои подписки
+    if (newFilter === 'all') {
+      displayedUsers.value = await getSubsUsers();
+    } else if (newFilter === 'subs') {
+      // Мои подписчики
+      displayedUsers.value = await getSubscribersUsers();
+    } else if (newFilter === 'public') {
+      // Публичные профили
+      displayedUsers.value = await getPublicUsersList();
+    }
+  } catch (e) {
+    displayedUsers.value = [];
+  } finally {
+    isShowLoader.value = false;
+  }
+}, { immediate: true });
 
 function createSubsProperty() {
   if (!settings.value.hasOwnProperty('online')) {
@@ -116,46 +185,11 @@ function toggleSub(inviteKey) {
 
   saveSettings({
     online: {
+      ...settings.value.online,
       subs: localSubs.value
     }
   });
 }
-
-let filter = ref('all'); // 'all' | 'subs'
-let filteredUsers = ref([]); // 'all' | 'subs'
-const foundedUser = ref(null);
-
-const filterUsers = async () => {
-  isShowLoader.value = true;
-
-  let subUsers = [];
-  for (let inviteKey of localSubs.value) {
-    let sub;
-
-    try {
-      const res = await online.getUserByInviteKey(inviteKey);
-
-      if (res.status !== 200) {
-        continue;
-      }
-
-      sub = res.data;
-      subUsers.push(sub);
-    } catch (e) {
-      console.error("User not found by InviteKey:", inviteKey, e);
-    }
-  }
-
-  filteredUsers.value = filter.value === 'all'
-      ? subUsers.filter(u => localSubs.value.includes(u.inviteKey))
-      : subUsers;
-
-  isShowLoader.value = false;
-};
-
-await filterUsers();
-
-let selectedUser = ref(null);
 
 async function selectUser(user) {
   isShowLoader.value = true;
@@ -188,6 +222,21 @@ async function searchUser(inviteKey) {
 const userNickname = ref("");
 const userNote = ref("");
 
+const isPublicProfile = ref(settings.value?.online?.isPublic || false);
+async function changePublicProfile() {
+  isPublicProfile.value = !isPublicProfile.value;
+
+  saveSettings({
+    online: {
+      ...settings.value.online,
+      isPublic: isPublicProfile.value
+    }
+  });
+
+  const res = await online.update(user.value._id);
+  user.value = res.data;
+}
+
 </script>
 
 <template>
@@ -197,21 +246,26 @@ const userNote = ref("");
       <template #tooltip>Список всех доступных пользователей для подписки</template>
     </tooltip>
     <div class="online-subs__row" v-if="!selectedUser">
-      <div v-if="user.inviteKey || settings.inviteKey" class="online-subs__invite-key">
-        <div class="online-subs__invite-key-code">Твой код приглашения:
-          <copy-wrapper>{{ user.inviteKey || settings.inviteKey }}</copy-wrapper>
+      <div class="online-subs__row-item">
+        <div v-if="user.inviteKey || settings.inviteKey" class="online-subs__invite-key">
+          <div class="online-subs__invite-key-code">Твой код приглашения:
+            <copy-wrapper>{{ user.inviteKey || settings.inviteKey }}</copy-wrapper>
+          </div>
+          <div class="online-subs__invite-key-button-wrapper">
+            <button class="button" @click="resetKey">Сбросить код</button>
+          </div>
         </div>
-        <div class="online-subs__invite-key-button-wrapper">
-          <button class="button" @click="resetKey">Сбросить код</button>
+        <div class="online-subs__search">
+          <label class="label" for="searchSub">
+            Введите код другого пользователя, чтобы найти его
+          </label>
+          <input id="searchSub" class="input" type="search" :placeholder="user.inviteKey || settings.inviteKey"
+                 v-model="inviteKey"
+                 @input="searchUser(inviteKey)" maxlength="12" minlength="12">
         </div>
       </div>
-      <div class="online-subs__search">
-        <label class="label" for="searchSub">
-          Введите код другого пользователя, чтобы найти его
-        </label>
-        <input id="searchSub" class="input" type="search" :placeholder="user.inviteKey || settings.inviteKey"
-               v-model="inviteKey"
-               @input="searchUser(inviteKey)" maxlength="12" minlength="12">
+      <div class="online-subs__row-item">
+        <custom-checkbox text="Отображать профиль в публичном списке профилей" @change="changePublicProfile" :checked="isPublicProfile"/>
       </div>
     </div>
     <div class="group-filters" v-if="!selectedUser">
@@ -221,6 +275,9 @@ const userNote = ref("");
         </div>
         <div :class="{ 'group-filters__list-item_current': filter === 'subs' }" class="group-filters__list-item"
              @click="filter = 'subs'">Мои подписчики
+        </div>
+        <div :class="{ 'group-filters__list-item_current': filter === 'public' }" class="group-filters__list-item"
+             @click="filter = 'public'">Публичные профили
         </div>
       </div>
 
@@ -244,28 +301,15 @@ const userNote = ref("");
     <div v-if="!foundedUser && inviteKey.length" class="online-subs__list">
       Пользователь не найден
     </div>
-    <div v-else-if="!foundedUser && filteredUsers.length && !selectedUser && filter === 'all'"
-         class="online-subs__list">
-      <template v-for="_user in filteredUsers"
-                :key="_user.nickname">
-        <user-card :user-nickname="userNickname"
-                   :user-note="userNote"
-                   :user="_user"
-                   @select="selectUser(_user)"
-                   :is-subscribed="localSubs.includes(_user.inviteKey)"
-                   @toggle="toggleSub"
-        />
-      </template>
-    </div>
-    <div v-else-if="subs.length && !selectedUser && filter === 'subs'" class="online-subs__list">
-      <template v-for="_user in subs"
-                :key="_user.nickname">
-        <user-card :user-nickname="userNickname"
-                   :user-note="userNote"
-                   :user="_user"
-                   @select="selectUser(_user)"
-                   :is-subscribed="localSubs.includes(_user.inviteKey)"
-                   @toggle="toggleSub"
+    <div v-else-if="displayedUsers.length && !selectedUser" class="online-subs__list">
+      <template v-for="_user in displayedUsers" :key="_user.nickname">
+        <user-card
+            :user-nickname="userNickname"
+            :user-note="userNote"
+            :user="_user"
+            @select="selectUser(_user)"
+            :is-subscribed="localSubs.includes(_user.inviteKey)"
+            @toggle="toggleSub"
         />
       </template>
     </div>
@@ -276,11 +320,14 @@ const userNote = ref("");
                  @toggle="toggleSub"
       />
     </div>
-    <div v-else-if="!foundedUser && !filteredUsers.length && filter === 'all' && !selectedUser " class="online-subs__list">
+    <div v-else-if="!foundedUser && !displayedUsers.length && filter === 'all' && !selectedUser" class="online-subs__list">
       Ты ещё ни на кого не подписан
     </div>
-    <div v-else-if="!foundedUser && !subs.length && filter === 'subs' && !selectedUser " class="online-subs__list">
+    <div v-else-if="!foundedUser && !displayedUsers.length && filter === 'subs' && !selectedUser" class="online-subs__list">
       Ещё никто на тебя не подписался
+    </div>
+    <div v-else-if="!foundedUser && !displayedUsers.length && filter === 'public' && !selectedUser" class="online-subs__list">
+      Нет публичных профилей
     </div>
   </div>
 </template>
@@ -297,8 +344,9 @@ const userNote = ref("");
 
 .online-subs__list {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .online-subs__row {
@@ -323,11 +371,20 @@ const userNote = ref("");
 
 .online-subs__invite-key {
   width: 100%;
-  font-size: var(--font-very-small);
+  font-size: var(--font-small);
 }
 
 .online-subs__invite-key-code {
   margin-bottom: 10px;
+}
+
+.online-subs__row-item {
+  font-size: var(--font-small);
+
+  &:last-child {
+    align-self: flex-start;
+    max-width: 210px;
+  }
 }
 
 .group-filters__search {

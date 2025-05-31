@@ -154,7 +154,6 @@ const isShowUser = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 15px;
   border: 1px solid var(--grey);
   box-shadow: var(--shadow);
   max-width: 300px;
@@ -164,6 +163,13 @@ const isShowUser = computed(() => {
   position: relative;
   transition: .35s ease;
   cursor: pointer;
+  width: -webkit-fill-available;
+  flex-basis: calc((100% - 30px) / 4);
+  flex-grow: 1;
+
+  @media screen and (max-width: 1024px){
+    flex: 1 1 calc((100% - 30px) / 3);
+  }
 
   &:hover {
     transform: scale(1.05);

@@ -23,7 +23,7 @@ export default class {
     }
 
     getUsers = async (id) => {
-        return await axios.get(`${API_PATH}/all?exclude=${id}`);
+        return await axios.get(`${API_PATH}/all?exclude=${id}&isPublic=true`);
     }
 
     update = async (id) => {
