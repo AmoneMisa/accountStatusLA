@@ -26,6 +26,7 @@ const online = new OnlineModule(settings.value.nickname, onlineSettings.value);
 let user = ref({});
 let inviteKey = ref("");
 const isShowLoader = inject("isShowLoader");
+let localSubs = ref(settings.value?.online?.subs || []);
 
 async function getUser() {
   isShowLoader.value = true;
@@ -137,6 +138,23 @@ let filter = ref('all'); // 'all' | 'subs' | public
 const foundedUser = ref(null);
 let selectedUser = ref(null);
 
+await getSubsUsers();
+
+function deduplicateByNickname(users) {
+  // Ключ — nickname, значение — объект пользователя с самой свежей датой
+  const map = {};
+
+  for (const user of users) {
+    const prev = map[user.nickname];
+    if (!prev || new Date(user.lastUpdateAt) > new Date(prev.lastUpdateAt)) {
+      map[user.nickname] = user;
+    }
+  }
+
+  // Вернуть массив только свежих инстансов
+  return Object.values(map);
+}
+
 watch(filter, async (newFilter) => {
   if (selectedUser.value) {
     return;
@@ -146,13 +164,13 @@ watch(filter, async (newFilter) => {
   try {
     // Мои подписки
     if (newFilter === 'all') {
-      displayedUsers.value = await getSubsUsers();
+      displayedUsers.value = deduplicateByNickname(await getSubsUsers());
     } else if (newFilter === 'subs') {
       // Мои подписчики
-      displayedUsers.value = await getSubscribersUsers();
+      displayedUsers.value = deduplicateByNickname(await getSubscribersUsers());
     } else if (newFilter === 'public') {
       // Публичные профили
-      displayedUsers.value = await getPublicUsersList();
+      displayedUsers.value = deduplicateByNickname(await getPublicUsersList());
     }
   } catch (e) {
     displayedUsers.value = [];
@@ -172,8 +190,6 @@ function createSubsProperty() {
 }
 
 createSubsProperty();
-
-let localSubs = ref(settings.value?.online?.subs || []);
 
 function toggleSub(inviteKey) {
   const index = localSubs.value.indexOf(inviteKey);
@@ -301,7 +317,7 @@ async function changePublicProfile() {
     <div v-if="!foundedUser && inviteKey.length" class="online-subs__list">
       Пользователь не найден
     </div>
-    <div v-else-if="displayedUsers.length && !selectedUser" class="online-subs__list">
+    <div v-else-if="displayedUsers.length && !selectedUser && !foundedUser" class="online-subs__list">
       <template v-for="_user in displayedUsers" :key="_user.nickname">
         <user-card
             :user-nickname="userNickname"
@@ -346,7 +362,7 @@ async function changePublicProfile() {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .online-subs__row {

@@ -84,11 +84,11 @@ function format(date) {
 
 const isShowUser = computed(() => {
   if (props?.userNickname?.length > 0) {
-    return props.user.nickname.toLowerCase().includes(props.userNickname.toLowerCase());
+    return props?.user?.nickname?.toLowerCase().includes(props?.userNickname?.toLowerCase());
   }
 
-  if (props?.userNote?.length > 0 && subNotes.value && subNotes.value?.[props.user.inviteKey]) {
-    return subNotes.value?.[props.user.inviteKey].toLowerCase().includes(props.userNote.toLowerCase())
+  if (props?.userNote?.length > 0 && subNotes.value && subNotes.value?.[props?.user?.inviteKey]) {
+    return subNotes.value?.[props?.user?.inviteKey].toLowerCase().includes(props.userNote.toLowerCase())
   }
 
   return true;
@@ -96,7 +96,7 @@ const isShowUser = computed(() => {
 </script>
 
 <template>
-  <div v-if="isShowUser" class="online-subs__list-item">
+  <div v-if="isShowUser && user.nickname" class="online-subs__list-item" :class="{ 'online-subs__list-item_active': isSubscribed }">
     <tooltip>
       <span class="online-subs__list-item-nickname" @click.stop="emit('select', user)">{{ user.nickname }}</span>
       <template #tooltip>Открыть карточку пользователя</template>
@@ -166,6 +166,10 @@ const isShowUser = computed(() => {
   width: -webkit-fill-available;
   flex-basis: calc((100% - 30px) / 4);
   flex-grow: 1;
+
+  &_active {
+    border-color: var(--gold);
+  }
 
   @media screen and (max-width: 1024px){
     flex: 1 1 calc((100% - 30px) / 3);
