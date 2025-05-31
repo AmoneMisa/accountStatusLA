@@ -365,12 +365,12 @@ async function updateDiscord() {
           <custom-checkbox text="Отображать профиль в публичном списке профилей" @change="changePublicProfile" :checked="isPublicProfile"/>
         </div>
         <div class="online-subs__setting">
-          <custom-checkbox text="Отображать Discord на странице просмотра рейдов" @change="changePublicDiscord" :checked="isShowDiscord"/>
+          <custom-checkbox text="Отображать Discord" @change="changePublicDiscord" :checked="isShowDiscord"/>
           <label class="custom-label">Никнейм в Discord</label>
           <input class="input" v-model="discord" @input="updateDiscord" placeholder="#abebus3213"/>
         </div>
         <div class="online-subs__setting">
-          <custom-checkbox text="Отображать Telegram на странице просмотра рейдов" @change="changePublicTelegram" :checked="isShowTelegram"/>
+          <custom-checkbox text="Отображать Telegram" @change="changePublicTelegram" :checked="isShowTelegram"/>
           <label class="custom-label">Никнейм в Telegram</label>
           <input class="input" v-model="telegram" @input="updateTelegram" placeholder="@telegram" />
         </div>
