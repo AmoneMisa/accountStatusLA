@@ -17,7 +17,7 @@ const emit = defineEmits({
 
 let settings = inject('settings');
 const characterSettings = computed(() => settings.value.characterSettings);
-const calcGoldMode = computed(() => settings.value.calcGoldMode || 'default');
+const calcGoldMode = computed(() => settings.value?.calcGoldMode || 'default');
 
 const isChestBought = computed(() => {
   return characterSettings.value?.[props.characterName]?.phases?.[props.raid]?.[props.index]?.chestBought || false;

@@ -221,7 +221,6 @@ function goBack() {
 async function searchUser(inviteKey) {
   if (inviteKey.length !== 12) {
     foundedUser.value = null;
-
     return;
   }
 

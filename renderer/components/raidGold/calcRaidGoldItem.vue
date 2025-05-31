@@ -2,7 +2,7 @@
 import CalcRaidGoldRaidItem from "@/components/raidGold/calcRaidGoldRaidItem.vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
 import cross from "../../../src/svg/cross.svg";
-import {ref} from "vue";
+import {computed, inject, ref} from "vue";
 
 const props = defineProps({
   characterSettings: Object,
@@ -24,10 +24,16 @@ function toggleGoldCharacter(target, characterName) {
   target.closest('.button').classList.toggle("inactive");
   emit('toggle-gold-receiver', [characterName, !target.closest('.button').classList.contains('inactive')]);
 }
+
+let settings = inject('settings');
+const calcGoldMode = computed(() => settings.value?.calcGoldMode || 'default');
 </script>
 
 <template>
-  <div class="calc-raid-gold__item" v-if="characterSettings && !characterSettings.delete && getCompletedRaids().length">
+  <div class="calc-raid-gold__item"
+       v-if="characterSettings && !characterSettings.delete && getCompletedRaids().length"
+       :class="{'calc-raid-gold__item_min': calcGoldMode === 'minimized'}"
+  >
     <div class="calc-raid-gold__header">
       <tooltip>
         <div class="calc-raid-gold__title"
@@ -65,6 +71,18 @@ function toggleGoldCharacter(target, characterName) {
   cursor: pointer;
   padding: 10px;
   height: fit-content;
+
+  &_min {
+    flex: calc((100% - (30px * 5)) / 6);
+
+    @media screen and (max-width: 1024px){
+      flex: calc((100% - (30px * 4)) / 5);
+    }
+
+    @media screen and (max-width: 881px){
+      flex: calc((100% - (30px * 3)) / 4);
+    }
+  }
 }
 
 .calc-raid-gold__item:hover {
