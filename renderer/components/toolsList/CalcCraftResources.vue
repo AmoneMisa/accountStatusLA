@@ -74,6 +74,11 @@ function calculate() {
         inputsClone.dust
     );
 
+    const buyStack = {
+        green: Math.floor(excess.green / 50)
+        white: Math.floor(excess.white / 100)
+    };
+
     if (dustAvailable >= dustNeeded) {
       maxCrafts = target;
       bestReport = [
@@ -82,7 +87,7 @@ function calculate() {
         `- Зелёных: ${need.green} (не хватает ${missing.green})`,
         `- Белых: ${need.white} (не хватает ${missing.white})`,
         `Можно получить ${dustAvailable} пыли, нужно ${Math.ceil(dustNeeded)}.`,
-        `Избыточных зелёных: ${excess.green}, белых: ${excess.white}`
+        `Избыточных зелёных: ${excess.green} (${buyStack.green}), белых: ${excess.white} (${buyStack.white})`
       ];
     } else {
       break;
