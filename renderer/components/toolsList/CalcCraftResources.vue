@@ -75,7 +75,7 @@ function calculate() {
     );
 
     const buyStack = {
-        green: Math.floor(excess.green / 50)
+        green: Math.floor(excess.green / 50),
         white: Math.floor(excess.white / 100)
     };
 
@@ -87,7 +87,8 @@ function calculate() {
         `- Зелёных: ${need.green} (не хватает ${missing.green})`,
         `- Белых: ${need.white} (не хватает ${missing.white})`,
         `Можно получить ${dustAvailable} пыли, нужно ${Math.ceil(dustNeeded)}.`,
-        `Избыточных зелёных: ${excess.green} (${buyStack.green}), белых: ${excess.white} (${buyStack.white})`
+        `Избыточных зелёных: ${excess.green}, белых: ${excess.white}`,
+        `Кол-во стаков для обмена: зелёных: ${buyStack.green}, белых: ${buyStack.white}`,
       ];
     } else {
       break;

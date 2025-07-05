@@ -32,7 +32,7 @@ const totalGold = computed(() => {
     for (const raid of characterSettings.value?.[char.name]?.raids || []) {
       const g = getGoldFromRaid(char.name, raid);
       earned += g.earned;
-      earned += g.selled;
+      earned += g.selled * 0.95;
       bound += g.bound;
       spent += g.spent;
       selled += g.selled;
