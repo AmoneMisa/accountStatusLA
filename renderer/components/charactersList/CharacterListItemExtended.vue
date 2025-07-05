@@ -226,7 +226,7 @@ const isShowCharacter = computed(() => {
     return false;
   }
 
-  if (parseFloat(props.character.gearScore.replace(",", '')) > props.gsFilter.to) {
+  if (parseFloat(props.character.gearScore.replace(",", '')) > props.gsFilter.to.toFixed(1)) {
     return false;
   }
 

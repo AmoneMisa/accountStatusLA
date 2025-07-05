@@ -27,7 +27,6 @@ const isGridView = ref(settings.value?.isCharactersGridView || false);
 const currentFilter = ref("none");
 const currentTag = ref("none");
 const searchCharacter = ref("");
-const rangeGSCharacter = ref({from: 1580, to: 1735});
 const grouped = ref({});
 const editableGroupTitles = ref({});
 const newGroupName = ref("");
@@ -267,18 +266,28 @@ const maxGs = computed(() => {
 
 });
 
+const rangeGSCharacter = ref({from: minGs.value || 1580, to: maxGs.value || 1800});
+
 function validateGsInput(input) {
-  if (input.value < parseFloat(input.min)) {
-    input.value = input.min;
-  } else if (input.value > parseFloat(input.max)) {
-    input.value = input.max;
+  let value = input.value.toString().replace(',', '.');
+  value = parseFloat(value);
+
+  const min = parseFloat(input.min);
+  const max = parseFloat(input.max);
+
+  if (value < min) {
+    value = min;
+  } else if (value > max) {
+    value = max;
   }
 
   if (input.name === "gs-to") {
-    rangeGSCharacter.value.to = input.value;
+    rangeGSCharacter.value.to = value;
   } else if (input.name === "gs-from") {
-    rangeGSCharacter.value.from = input.value;
+    rangeGSCharacter.value.from = value;
   }
+
+  input.value = value.toFixed(3);
 }
 
 const visibleCharactersCount = computed(() => {
@@ -399,15 +408,15 @@ function toggleView() {
         </label>
         <input class="input input_number group-tags__gear-score-input" id="gs-character-input-min" type="number"
                @change="({target}) => validateGsInput(target)" :value="rangeGSCharacter.from"
-               placeholder="От" :min="minGs" :max="maxGs" name="gs-from">
+               placeholder="От" :min="minGs" :max="maxGs + 1" name="gs-from">
         <input class="input input_number group-tags__gear-score-input" id="gs-character-input-max" type="number"
                @change="({target}) => validateGsInput(target)" :value="rangeGSCharacter.to"
-               placeholder="До" :min="minGs" :max="maxGs" name="gs-to">
+               placeholder="До" :min="minGs" :max="maxGs + 1" name="gs-to">
         <input class="input group-tags__gear-score-input" id="gs-character" type="range"
                v-model="rangeGSCharacter.from"
-               :min="minGs" :max="maxGs">
+               :min="minGs" :max="maxGs + 1" step="0.015">
         <input class="input group-tags__gear-score-input" id="gs-character" type="range" v-model="rangeGSCharacter.to"
-               :min="minGs" :max="maxGs">
+               :min="minGs" :max="maxGs + 1" step="0.015">
       </div>
     </div>
   </div>
