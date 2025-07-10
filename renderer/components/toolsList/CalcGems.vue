@@ -1,9 +1,12 @@
 <script setup>
-import {ref, computed} from "vue";
+import {ref, inject, computed, watch} from "vue";
 import Tooltip from "@/components/utils/Tooltip.vue";
+import CustomCheckbox from "@/components/utils/CustomCheckbox.vue";
 
 // Камни, которые хотим посмотреть в пересчёте
-const gemLevels = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+const settings = inject('settings');
+const totalCubes = computed(() => settings?.value?.totalCubes || {});
+const useMyCubes = ref(false);
 
 // Сколько 2 ур. камней падает из каждого куба
 const cubeDrop = {
@@ -19,9 +22,9 @@ const cubes = ref({
 });
 
 const totalLevel2 = computed(() => {
-  return cubes.value['T4-1'] * cubeDrop['T4-1'] +
-      cubes.value['T4-2'] * cubeDrop['T4-2'] +
-      cubes.value['T4-3'] * cubeDrop['T4-3'];
+  return getCurrentCubes()['T4-1'] * cubeDrop['T4-1'] +
+      getCurrentCubes()['T4-2'] * cubeDrop['T4-2'] +
+      getCurrentCubes()['T4-3'] * cubeDrop['T4-3'];
 });
 
 const mergeUpTo = ref(10); // Максимальный уровень объединения
@@ -48,6 +51,7 @@ function clear() {
   cubes.value['T4-2'] = 0;
   cubes.value['T4-3'] = 0;
   mergeUpTo.value = 10;
+  useMyCubes.value = false;
 }
 
 const sortedTotals = computed(() => {
@@ -55,6 +59,50 @@ const sortedTotals = computed(() => {
       .map(([level, count]) => ({level: parseInt(level), count}))
       .filter(item => item.count > 0)
       .sort((a, b) => b.level - a.level);
+});
+
+function getCurrentCubes() {
+  if (useMyCubes.value) {
+    return convertToT4Totals(settings.value.tableData);
+  } else {
+    return cubes.value;
+  }
+}
+
+function convertToT4Totals(data) {
+  const result = {
+    'T4-1': 0,
+    'T4-2': 0,
+    'T4-3': 0
+  };
+
+  for (const character in data) {
+    const _cubes = data[character];
+
+    for (const [key, value] of Object.entries(_cubes)) {
+      const numericValue = parseInt(value) || 0;
+
+      if (key === '4.1') {
+        result['T4-1'] += numericValue;
+      }
+      if (key === '4.2') {
+        result['T4-2'] += numericValue;
+      }
+      if (key === '4.3') {
+        result['T4-3'] += numericValue;
+      }
+    }
+  }
+
+  return result;
+}
+
+watch(useMyCubes, (newVal) => {
+  if (newVal) {
+    cubes.value['T4-1'] = totalCubes.value['T4-1'] || 0;
+    cubes.value['T4-2'] = totalCubes.value['T4-2'] || 0;
+    cubes.value['T4-3'] = totalCubes.value['T4-3'] || 0;
+  }
 });
 </script>
 
@@ -68,6 +116,17 @@ const sortedTotals = computed(() => {
     </tooltip>
 
     <div class="tools-container__item-content">
+      <custom-checkbox
+          text="Использовать все мои кубы"
+          v-model="useMyCubes"
+      />
+
+      <div v-if="useMyCubes">
+        <ul>
+          <li v-for="[type, count] in Object.entries(getCurrentCubes())" :key="type">{{ type }} - {{ count }}</li>
+        </ul>
+      </div>
+
       <div class="calc-gems__inputs">
         <label class="tools-container__item-label">
           T4-1 кубов

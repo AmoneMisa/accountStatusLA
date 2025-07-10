@@ -348,6 +348,7 @@ function toggleView() {
       <template #tooltip>Изменить отображение</template>
     </tooltip>
   </h1>
+  <div class="warning">Для того, чтобы настроить отображение своих персонажей (указать их как легата, золотополучателей, скрыть) Вам необходимо нажать на иконку карандаша в правом нижнем углу!</div>
 
   <div class="group-controls" v-if="!isEditMode">
     <input v-model="newGroupName" placeholder="Новая группа"/>

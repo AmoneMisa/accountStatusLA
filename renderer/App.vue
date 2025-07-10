@@ -1060,4 +1060,9 @@ input[type=number]::-webkit-inner-spin-button {
   cursor: pointer;
 }
 
+.warning {
+  color: var(--error);
+  margin: 15px 0;
+  font-size: var(--font-very-small);
+}
 </style>
